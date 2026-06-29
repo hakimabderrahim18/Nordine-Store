@@ -510,19 +510,39 @@ export const importUsersFromExcel = async (req, res, next) => {
       let clientType = row[clientTypeKey]?.toString().trim().toLowerCase() || 'retail';
       const referenceVal = row[refKey]?.toString().trim();
 
-      // If email is not present, generate fallback from phone contact or client code
-      if (!email) {
-        const contactKey = Object.keys(row).find(k => /contact|téléphone|tel|phone/i.test(k));
-        const contactVal = row[contactKey]?.toString().trim().replace(/\s+/g, '');
-        if (contactVal) {
-          email = `${contactVal}@nordinestore.dz`;
-        } else if (referenceVal) {
-          email = `${referenceVal.toLowerCase()}@nordinestore.dz`;
+      // If email is present, clean it. Otherwise generate from phone contact or client code
+      const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+      if (email) {
+        email = email.replace(/\s+/g, '');
+        if (!emailRegex.test(email)) {
+          const cleanEmailPart = email.replace(/[^a-zA-Z0-9]/g, '');
+          email = cleanEmailPart ? `${cleanEmailPart.toLowerCase()}@nordinestore.dz` : '';
         }
       }
 
-      if (!name || !email) {
-        skippedUsers.push({ row, reason: 'Nom ou identifiant contact / email manquant' });
+      if (!email) {
+        const contactKey = Object.keys(row).find(k => /contact|téléphone|tel|phone/i.test(k));
+        const contactVal = row[contactKey]?.toString().trim();
+        let cleanContact = '';
+        if (contactVal) {
+          cleanContact = contactVal.replace(/[^a-zA-Z0-9]/g, '');
+        }
+        
+        if (cleanContact) {
+          email = `${cleanContact.toLowerCase()}@nordinestore.dz`;
+        } else if (referenceVal) {
+          const cleanRef = referenceVal.replace(/[^a-zA-Z0-9]/g, '');
+          email = cleanRef ? `${cleanRef.toLowerCase()}@nordinestore.dz` : '';
+        }
+      }
+
+      // Final fallback if still empty or invalid
+      if (!email || !emailRegex.test(email)) {
+        email = `client_${Date.now()}_${Math.floor(Math.random() * 1000)}@nordinestore.dz`;
+      }
+
+      if (!name) {
+        skippedUsers.push({ row, reason: 'Nom de client manquant' });
         continue;
       }
 
