@@ -1,0 +1,458 @@
+[
+  {
+    "_id": "6a3fedb9ec45a31277bda352",
+    "user": "6a3fed92ec45a31277bda2ff",
+    "isGuest": false,
+    "orderItems": [
+      {
+        "product": "6a3feb7360391ddc6ea2d58c",
+        "name": "TOURNEVIS ELECTRIQUE 28PCS 882037",
+        "quantity": 3,
+        "price": 5800,
+        "image": "/uploads/repair_tool.png",
+        "variant": {},
+        "_id": "6a3fedb9ec45a31277bda353"
+      }
+    ],
+    "shippingAddress": {
+      "street": "À Domicile",
+      "city": "Alger",
+      "state": "Alger",
+      "postalCode": "00000",
+      "country": "Algeria",
+      "phone": "0797060052"
+    },
+    "paymentMethod": "COD",
+    "deliveryType": "À Domicile",
+    "itemsPrice": 17400,
+    "shippingPrice": 0,
+    "discountPrice": 0,
+    "totalPrice": 17400,
+    "isPaid": true,
+    "isDelivered": true,
+    "deliveryStatus": "delivered",
+    "couponUsed": null,
+    "createdAt": "2026-06-27T15:35:21.476Z",
+    "updatedAt": "2026-06-27T15:36:51.381Z",
+    "__v": 0,
+    "deliveredAt": "2026-06-27T15:36:51.379Z",
+    "paidAt": "2026-06-27T15:36:51.379Z",
+    "trackingNumber": ""
+  },
+  {
+    "_id": "6a40466234fc9efc36a60423",
+    "user": "6a3ff763ef9c9dcd2380cb16",
+    "isGuest": false,
+    "orderItems": [
+      {
+        "product": "6a3ff978ef9c9dcd2380cdf9",
+        "name": "tet",
+        "quantity": 1,
+        "price": 12332,
+        "image": "/uploads/images-1782577528164-939883784.png",
+        "variant": {},
+        "_id": "6a40466234fc9efc36a60424"
+      }
+    ],
+    "shippingAddress": {
+      "street": "Beni Messous - StopDesk",
+      "city": "Alger",
+      "state": "Alger",
+      "postalCode": "00000",
+      "country": "Algeria",
+      "phone": "152145258"
+    },
+    "paymentMethod": "COD",
+    "deliveryType": "StopDesk",
+    "itemsPrice": 12332,
+    "shippingPrice": 0,
+    "discountPrice": 0,
+    "totalPrice": 12332,
+    "isPaid": true,
+    "isDelivered": true,
+    "deliveryStatus": "delivered",
+    "couponUsed": null,
+    "createdAt": "2026-06-27T21:53:38.237Z",
+    "updatedAt": "2026-06-28T02:07:34.454Z",
+    "__v": 0,
+    "deliveredAt": "2026-06-28T02:07:34.452Z",
+    "paidAt": "2026-06-28T02:07:34.452Z",
+    "trackingNumber": ""
+  },
+  {
+    "_id": "6a40805d9677bb0e61edf5fa",
+    "isGuest": true,
+    "guestInfo": {
+      "name": "sa sa",
+      "phone": "0785878585",
+      "wilaya": "Sétif (Beni Aziz)"
+    },
+    "orderItems": [
+      {
+        "product": "6a3ff978ef9c9dcd2380cdf9",
+        "name": "tet",
+        "quantity": 1,
+        "price": 11111,
+        "image": "/uploads/images-1782577528164-939883784.png",
+        "variant": {},
+        "_id": "6a40805d9677bb0e61edf5fb"
+      }
+    ],
+    "shippingAddress": {
+      "street": "Beni Aziz - StopDesk",
+      "city": "Sétif",
+      "state": "Sétif",
+      "postalCode": "00000",
+      "country": "Algeria",
+      "phone": "0785878585"
+    },
+    "paymentMethod": "COD",
+    "deliveryType": "StopDesk",
+    "itemsPrice": 11111,
+    "shippingPrice": 0,
+    "discountPrice": 0,
+    "totalPrice": 11111,
+    "isPaid": true,
+    "isDelivered": true,
+    "deliveryStatus": "delivered",
+    "couponUsed": null,
+    "createdAt": "2026-06-28T02:01:01.756Z",
+    "updatedAt": "2026-06-28T02:07:45.397Z",
+    "__v": 0,
+    "deliveredAt": "2026-06-28T02:07:45.396Z",
+    "paidAt": "2026-06-28T02:07:45.396Z",
+    "trackingNumber": ""
+  },
+  {
+    "_id": "6a40822af9d8fd29d5d3112c",
+    "isGuest": true,
+    "guestInfo": {
+      "name": "za za",
+      "phone": "046896589",
+      "wilaya": "Tiaret (Sougueur)"
+    },
+    "orderItems": [
+      {
+        "product": "6a3ff978ef9c9dcd2380cdf9",
+        "name": "tet",
+        "quantity": 4,
+        "price": 11111,
+        "image": "/uploads/images-1782577528164-939883784.png",
+        "variant": {},
+        "_id": "6a40822af9d8fd29d5d3112d"
+      }
+    ],
+    "shippingAddress": {
+      "street": "Sougueur - StopDesk",
+      "city": "Tiaret",
+      "state": "Tiaret",
+      "postalCode": "00000",
+      "country": "Algeria",
+      "phone": "046896589"
+    },
+    "paymentMethod": "COD",
+    "deliveryType": "StopDesk",
+    "itemsPrice": 44444,
+    "shippingPrice": 0,
+    "discountPrice": 0,
+    "totalPrice": 44444,
+    "isPaid": true,
+    "isDelivered": true,
+    "deliveryStatus": "delivered",
+    "couponUsed": null,
+    "createdAt": "2026-06-28T02:08:42.986Z",
+    "updatedAt": "2026-06-28T02:10:03.077Z",
+    "__v": 0,
+    "deliveredAt": "2026-06-28T02:10:03.076Z",
+    "paidAt": "2026-06-28T02:10:03.076Z",
+    "trackingNumber": ""
+  },
+  {
+    "_id": "6a40830ba151165b0f5c5623",
+    "user": "6a3ff763ef9c9dcd2380cb16",
+    "isGuest": false,
+    "orderItems": [
+      {
+        "product": "6a3ff978ef9c9dcd2380cdf9",
+        "name": "tet",
+        "quantity": 1,
+        "price": 12332,
+        "image": "/uploads/images-1782577528164-939883784.png",
+        "variant": {},
+        "_id": "6a40830ba151165b0f5c5624"
+      }
+    ],
+    "shippingAddress": {
+      "street": "Touggourt - StopDesk",
+      "city": "Touggourt",
+      "state": "Touggourt",
+      "postalCode": "00000",
+      "country": "Algeria",
+      "phone": "0787985858"
+    },
+    "paymentMethod": "COD",
+    "deliveryType": "StopDesk",
+    "itemsPrice": 12332,
+    "shippingPrice": 0,
+    "discountPrice": 0,
+    "totalPrice": 12332,
+    "isPaid": true,
+    "isDelivered": true,
+    "deliveryStatus": "delivered",
+    "couponUsed": null,
+    "createdAt": "2026-06-28T02:12:27.208Z",
+    "updatedAt": "2026-06-28T02:12:58.198Z",
+    "__v": 0,
+    "deliveredAt": "2026-06-28T02:12:58.198Z",
+    "paidAt": "2026-06-28T02:12:58.198Z",
+    "trackingNumber": ""
+  },
+  {
+    "_id": "6a40853dc6b99d4d1dd8b46f",
+    "user": "6a3fed92ec45a31277bda2ff",
+    "isGuest": false,
+    "orderItems": [
+      {
+        "product": "6a3ff068ef64c5384b51b5db",
+        "name": "WIRE 0.035",
+        "quantity": 1,
+        "price": 350,
+        "image": "/uploads/spare_part.png",
+        "variant": {},
+        "_id": "6a40853dc6b99d4d1dd8b470"
+      }
+    ],
+    "shippingAddress": {
+      "street": "Bouhlou - StopDesk",
+      "city": "Tlemcen",
+      "state": "Tlemcen",
+      "postalCode": "00000",
+      "country": "Algeria",
+      "phone": "1111111111111111"
+    },
+    "paymentMethod": "COD",
+    "deliveryType": "StopDesk",
+    "itemsPrice": 350,
+    "shippingPrice": 0,
+    "discountPrice": 0,
+    "totalPrice": 350,
+    "isPaid": true,
+    "isDelivered": true,
+    "deliveryStatus": "delivered",
+    "couponUsed": null,
+    "createdAt": "2026-06-28T02:21:49.873Z",
+    "updatedAt": "2026-06-28T02:22:23.314Z",
+    "__v": 0,
+    "deliveredAt": "2026-06-28T02:22:23.312Z",
+    "paidAt": "2026-06-28T02:22:23.312Z",
+    "trackingNumber": ""
+  },
+  {
+    "_id": "6a413a8b2ee174e334b6167d",
+    "user": "6a413a422ee174e334b61606",
+    "isGuest": false,
+    "orderItems": [
+      {
+        "product": "6a3ff068ef64c5384b51b5d8",
+        "name": "TRESS A DESOUDER WICK AT-2020",
+        "quantity": 10,
+        "price": 700,
+        "image": "/uploads/repair_tool.png",
+        "variant": {},
+        "_id": "6a413a8b2ee174e334b6167e"
+      }
+    ],
+    "shippingAddress": {
+      "street": "Tabelbala - StopDesk",
+      "city": "Béni Abbès",
+      "state": "Béni Abbès",
+      "postalCode": "00000",
+      "country": "Algeria",
+      "phone": "0784859695"
+    },
+    "paymentMethod": "COD",
+    "deliveryType": "StopDesk",
+    "itemsPrice": 7000,
+    "shippingPrice": 550,
+    "discountPrice": 0,
+    "totalPrice": 7550,
+    "isPaid": true,
+    "isDelivered": true,
+    "deliveryStatus": "delivered",
+    "couponUsed": null,
+    "createdAt": "2026-06-28T15:15:23.600Z",
+    "updatedAt": "2026-06-28T15:17:02.057Z",
+    "__v": 0,
+    "trackingNumber": "",
+    "deliveredAt": "2026-06-28T15:17:02.056Z",
+    "paidAt": "2026-06-28T15:17:02.056Z"
+  },
+  {
+    "_id": "6a423ca02ee174e334b61a27",
+    "user": "6a3fed92ec45a31277bda2ff",
+    "isGuest": false,
+    "orderItems": [
+      {
+        "product": "6a3ff068ef64c5384b51b5d8",
+        "name": "TRESS A DESOUDER WICK AT-2020",
+        "quantity": 1,
+        "price": 700,
+        "image": "/uploads/repair_tool.png",
+        "variant": {},
+        "_id": "6a423ca02ee174e334b61a28"
+      }
+    ],
+    "shippingAddress": {
+      "street": "El Fedjoudj - À Domicile",
+      "city": "Guelma",
+      "state": "Guelma",
+      "postalCode": "00000",
+      "country": "Algeria",
+      "phone": "07985698655"
+    },
+    "paymentMethod": "COD",
+    "deliveryType": "À Domicile",
+    "itemsPrice": 700,
+    "shippingPrice": 800,
+    "discountPrice": 0,
+    "totalPrice": 1500,
+    "isPaid": true,
+    "isDelivered": true,
+    "deliveryStatus": "delivered",
+    "couponUsed": null,
+    "createdAt": "2026-06-29T09:36:32.857Z",
+    "updatedAt": "2026-06-29T09:37:24.397Z",
+    "__v": 0,
+    "deliveredAt": "2026-06-29T09:37:24.396Z",
+    "paidAt": "2026-06-29T09:37:24.396Z",
+    "trackingNumber": ""
+  },
+  {
+    "_id": "6a4247cdf2d7e0c9b52e7cd6",
+    "user": "6a3ff763ef9c9dcd2380cb16",
+    "isGuest": false,
+    "orderItems": [
+      {
+        "product": "6a3ff068ef64c5384b51b5da",
+        "name": "UV LAMP L1 PRO",
+        "quantity": 1,
+        "price": 2900,
+        "image": "/uploads/spare_part.png",
+        "variant": {},
+        "_id": "6a4247cdf2d7e0c9b52e7cd7"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b5d8",
+        "name": "TRESS A DESOUDER WICK AT-2020",
+        "quantity": 1,
+        "price": 650,
+        "image": "/uploads/repair_tool.png",
+        "variant": {},
+        "_id": "6a4247cdf2d7e0c9b52e7cd8"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b5d9",
+        "name": "TRIPLETTE USB BST-P04 3X UNI",
+        "quantity": 1,
+        "price": 2800,
+        "image": "/uploads/spare_part.png",
+        "variant": {},
+        "_id": "6a4247cdf2d7e0c9b52e7cd9"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b5d7",
+        "name": "TRES DESOUDER WICK AT-2015",
+        "quantity": 1,
+        "price": 550,
+        "image": "/uploads/repair_tool.png",
+        "variant": {},
+        "_id": "6a4247cdf2d7e0c9b52e7cda"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b5d2",
+        "name": "TAPIS UT-D251",
+        "quantity": 1,
+        "price": 900,
+        "image": "/uploads/spare_part.png",
+        "variant": {},
+        "_id": "6a4247cdf2d7e0c9b52e7cdb"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b5d1",
+        "name": "TAPIS TE-703",
+        "quantity": 1,
+        "price": 250,
+        "image": "/uploads/spare_part.png",
+        "variant": {},
+        "_id": "6a4247cdf2d7e0c9b52e7cdc"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b5d3",
+        "name": "TEST CHARGE MECHANIC 6M",
+        "quantity": 1,
+        "price": 4900,
+        "image": "/uploads/connecteur.png",
+        "variant": {},
+        "_id": "6a4247cdf2d7e0c9b52e7cdd"
+      }
+    ],
+    "shippingAddress": {
+      "street": "Gueltat Sidi Saad - StopDesk",
+      "city": "Laghouat",
+      "state": "Laghouat",
+      "postalCode": "00000",
+      "country": "Algeria",
+      "phone": "5478547854"
+    },
+    "paymentMethod": "COD",
+    "deliveryType": "StopDesk",
+    "itemsPrice": 12950,
+    "shippingPrice": 550,
+    "discountPrice": 0,
+    "totalPrice": 13500,
+    "isPaid": false,
+    "isDelivered": false,
+    "deliveryStatus": "pending",
+    "couponUsed": null,
+    "createdAt": "2026-06-29T10:24:13.637Z",
+    "updatedAt": "2026-06-29T10:24:13.637Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a4249ad814a67767ac22d0f",
+    "user": "6a3ff763ef9c9dcd2380cb16",
+    "isGuest": false,
+    "orderItems": [
+      {
+        "product": "6a3ff068ef64c5384b51b5d8",
+        "name": "TRESS A DESOUDER WICK AT-2020",
+        "quantity": 1,
+        "price": 650,
+        "image": "/uploads/repair_tool.png",
+        "variant": {},
+        "_id": "6a4249ad814a67767ac22d10"
+      }
+    ],
+    "shippingAddress": {
+      "street": "Retrait au Magasin (Boutique)",
+      "city": "Tiaret",
+      "state": "Tiaret",
+      "postalCode": "00000",
+      "country": "Algeria",
+      "phone": "0145201452"
+    },
+    "paymentMethod": "COD",
+    "deliveryType": "Retrait au Magasin",
+    "itemsPrice": 650,
+    "shippingPrice": 0,
+    "discountPrice": 0,
+    "totalPrice": 650,
+    "isPaid": false,
+    "isDelivered": false,
+    "deliveryStatus": "pending",
+    "couponUsed": null,
+    "createdAt": "2026-06-29T10:32:13.770Z",
+    "updatedAt": "2026-06-29T10:32:13.770Z",
+    "__v": 0
+  }
+]

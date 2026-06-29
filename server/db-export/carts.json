@@ -1,0 +1,56 @@
+[
+  {
+    "_id": "6a3ed02eb8ed3a547c863f15",
+    "user": "6a3ed02eb8ed3a547c863f10",
+    "items": [
+      {
+        "product": "6a3ed02eb8ed3a547c863f45",
+        "quantity": 1,
+        "variant": {}
+      }
+    ],
+    "createdAt": "2026-06-26T19:17:02.499Z",
+    "updatedAt": "2026-06-28T02:07:07.623Z",
+    "__v": 7
+  },
+  {
+    "_id": "6a3ed02eb8ed3a547c863f19",
+    "user": "6a3ed02eb8ed3a547c863f11",
+    "items": [],
+    "createdAt": "2026-06-26T19:17:02.503Z",
+    "updatedAt": "2026-06-26T19:17:02.503Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a3fed92ec45a31277bda301",
+    "user": "6a3fed92ec45a31277bda2ff",
+    "items": [],
+    "createdAt": "2026-06-27T15:34:42.789Z",
+    "updatedAt": "2026-06-29T09:36:32.865Z",
+    "__v": 4
+  },
+  {
+    "_id": "6a3ff764ef9c9dcd2380cb18",
+    "user": "6a3ff763ef9c9dcd2380cb16",
+    "items": [],
+    "createdAt": "2026-06-27T16:16:36.067Z",
+    "updatedAt": "2026-06-29T10:32:13.779Z",
+    "__v": 11
+  },
+  {
+    "_id": "6a3ff783ef9c9dcd2380cb50",
+    "user": "6a3ff783ef9c9dcd2380cb4e",
+    "items": [],
+    "createdAt": "2026-06-27T16:17:07.853Z",
+    "updatedAt": "2026-06-28T15:03:17.007Z",
+    "__v": 1
+  },
+  {
+    "_id": "6a413a552ee174e334b6161b",
+    "user": "6a413a422ee174e334b61606",
+    "items": [],
+    "createdAt": "2026-06-28T15:14:29.420Z",
+    "updatedAt": "2026-06-28T15:15:23.612Z",
+    "__v": 1
+  }
+]

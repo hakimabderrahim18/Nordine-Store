@@ -1,0 +1,30 @@
+[
+  {
+    "_id": "6a3ed02eb8ed3a547c863f75",
+    "code": "NORDINE10",
+    "discountType": "percentage",
+    "discountValue": 10,
+    "minPurchaseAmount": 50,
+    "expiryDate": "2026-08-25T19:17:02.578Z",
+    "usageLimit": null,
+    "usageCount": 0,
+    "status": "active",
+    "createdAt": "2026-06-26T19:17:02.580Z",
+    "updatedAt": "2026-06-26T19:17:02.580Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a3ed02eb8ed3a547c863f76",
+    "code": "PROMOFIX30",
+    "discountType": "fixed",
+    "discountValue": 30,
+    "minPurchaseAmount": 150,
+    "expiryDate": "2026-07-26T19:17:02.578Z",
+    "usageLimit": null,
+    "usageCount": 0,
+    "status": "active",
+    "createdAt": "2026-06-26T19:17:02.580Z",
+    "updatedAt": "2026-06-26T19:17:02.580Z",
+    "__v": 0
+  }
+]

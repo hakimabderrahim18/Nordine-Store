@@ -1,0 +1,83 @@
+[
+  {
+    "_id": "6a3ff067ef64c5384b51ad68",
+    "name": "PIECE",
+    "image": "/uploads/spare_part.png",
+    "status": "active",
+    "slug": "piece",
+    "createdAt": "2026-06-27T15:46:47.589Z",
+    "updatedAt": "2026-06-27T15:53:13.976Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a3ff067ef64c5384b51ad6e",
+    "name": "BAT",
+    "image": "/uploads/battery.png",
+    "status": "active",
+    "slug": "bat",
+    "createdAt": "2026-06-27T15:46:47.606Z",
+    "updatedAt": "2026-06-27T15:53:13.994Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a3ff067ef64c5384b51ad71",
+    "name": "ACC",
+    "image": "/uploads/spare_part.png",
+    "status": "active",
+    "slug": "acc",
+    "createdAt": "2026-06-27T15:46:47.624Z",
+    "updatedAt": "2026-06-27T15:53:13.997Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a3ff067ef64c5384b51af69",
+    "name": "MATERIEL",
+    "image": "/uploads/repair_tool.png",
+    "status": "active",
+    "slug": "materiel",
+    "createdAt": "2026-06-27T15:46:47.815Z",
+    "updatedAt": "2026-06-27T15:53:13.999Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a3ff067ef64c5384b51af6c",
+    "name": "GLASS",
+    "image": "/uploads/glass.png",
+    "status": "active",
+    "slug": "glass",
+    "createdAt": "2026-06-27T15:46:47.833Z",
+    "updatedAt": "2026-06-27T15:53:14.001Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a3ff068ef64c5384b51b359",
+    "name": "POCH",
+    "image": "/uploads/pouch.png",
+    "status": "active",
+    "slug": "poch",
+    "createdAt": "2026-06-27T15:46:48.148Z",
+    "updatedAt": "2026-06-27T15:53:14.004Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a3ff068ef64c5384b51b551",
+    "name": "T GLASS",
+    "image": "/uploads/glass.png",
+    "status": "active",
+    "slug": "t-glass",
+    "createdAt": "2026-06-27T15:46:48.273Z",
+    "updatedAt": "2026-06-27T15:53:14.006Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a3ff93def9c9dcd2380cdbc",
+    "name": "test",
+    "description": "tzst",
+    "image": "/uploads/image-1782577469862-26216151.png",
+    "status": "active",
+    "slug": "test",
+    "createdAt": "2026-06-27T16:24:29.869Z",
+    "updatedAt": "2026-06-27T16:24:29.869Z",
+    "__v": 0
+  }
+]
