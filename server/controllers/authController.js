@@ -501,17 +501,28 @@ export const importUsersFromExcel = async (req, res, next) => {
       const passwordKey = Object.keys(row).find(k => /password|mot.*passe|pwd/i.test(k));
       const roleKey = Object.keys(row).find(k => /role|rôle/i.test(k));
       const clientTypeKey = Object.keys(row).find(k => /clientType|type.*client|tarif|famille/i.test(k));
-      const refKey = Object.keys(row).find(k => /reference|id/i.test(k));
+      const refKey = Object.keys(row).find(k => /reference|id|code.*client/i.test(k));
 
       const name = row[nameKey]?.toString().trim();
-      const email = row[emailKey]?.toString().trim().toLowerCase();
+      let email = row[emailKey]?.toString().trim().toLowerCase();
       let password = row[passwordKey]?.toString().trim();
       let role = row[roleKey]?.toString().trim().toLowerCase() || 'client';
       let clientType = row[clientTypeKey]?.toString().trim().toLowerCase() || 'retail';
       const referenceVal = row[refKey]?.toString().trim();
 
+      // If email is not present, generate fallback from phone contact or client code
+      if (!email) {
+        const contactKey = Object.keys(row).find(k => /contact|téléphone|tel|phone/i.test(k));
+        const contactVal = row[contactKey]?.toString().trim().replace(/\s+/g, '');
+        if (contactVal) {
+          email = `${contactVal}@nordinestore.dz`;
+        } else if (referenceVal) {
+          email = `${referenceVal.toLowerCase()}@nordinestore.dz`;
+        }
+      }
+
       if (!name || !email) {
-        skippedUsers.push({ row, reason: 'Nom ou email manquant' });
+        skippedUsers.push({ row, reason: 'Nom ou identifiant contact / email manquant' });
         continue;
       }
 
