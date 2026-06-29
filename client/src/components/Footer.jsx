@@ -76,11 +76,11 @@ export default function Footer() {
             <span>0550 08 26 85</span>
           </a>
           <a
-            href="mailto:nounoutelecomtiaret@gmail.com"
+            href="mailto:service@nounoutelecom.com"
             className="flex items-center space-x-2.5 text-xs text-slate-500 hover:text-brand-primary transition-colors"
           >
             <Mail size={15} className="text-brand-primary flex-shrink-0" />
-            <span>nounoutelecomtiaret@gmail.com</span>
+            <span>service@nounoutelecom.com</span>
           </a>
         </div>
       </div>

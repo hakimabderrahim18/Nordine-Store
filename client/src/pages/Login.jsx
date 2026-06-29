@@ -62,7 +62,7 @@ export default function Login() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="0554559860 ou email@exemple.com"
+                placeholder=""
                 className="w-full bg-slate-50 border border-slate-100 text-slate-800 text-xs rounded-[16px] pl-10 pr-4 py-3.5 focus:outline-none focus:border-brand-primary"
               />
               <Mail size={14} className="absolute left-3.5 top-4 text-slate-400" />

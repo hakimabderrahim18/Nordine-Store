@@ -10,7 +10,7 @@ const VPS_CONFIG = {
 const conn = new Client();
 conn.on('ready', () => {
   console.log('Connexion SSH établie pour récupération des logs...');
-  conn.exec('ls -la ~/.pm2/logs && echo "=== ERROR LOGS ===" && cat ~/.pm2/logs/nordinestore-backend-error* || true && echo "=== OUT LOGS ===" && cat ~/.pm2/logs/nordinestore-backend-out* || true', (err, stream) => {
+  conn.exec('echo "=== NGINX ERRORS ===" && tail -n 50 /var/log/nginx/error.log && echo "=== NGINX ACCESS ===" && tail -n 50 /var/log/nginx/access.log', (err, stream) => {
     if (err) throw err;
     stream.on('close', () => {
       conn.end();

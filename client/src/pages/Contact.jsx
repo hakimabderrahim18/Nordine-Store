@@ -82,7 +82,7 @@ export default function Contact() {
                 </div>
                 <div className="space-y-1">
                   <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider">Adresse E-mail</h4>
-                  <p className="text-xs font-semibold text-slate-600">nounoutelecomtiaret@gmail.com</p>
+                  <p className="text-xs font-semibold text-slate-600">service@nounoutelecom.com</p>
                 </div>
               </div>
 

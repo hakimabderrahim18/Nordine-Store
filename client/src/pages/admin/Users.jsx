@@ -16,6 +16,7 @@ export default function Users() {
   // Form fields
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('client');
   const [clientType, setClientType] = useState('retail');
@@ -71,6 +72,7 @@ export default function Users() {
     setEditingUser(null);
     setName('');
     setEmail('');
+    setPhone('');
     setPassword('');
     setRole('client');
     setClientType('retail');
@@ -80,7 +82,8 @@ export default function Users() {
   const handleOpenEdit = (user) => {
     setEditingUser(user);
     setName(user.name);
-    setEmail(user.email);
+    setEmail(user.email || '');
+    setPhone(user.phone || '');
     setPassword('');
     setRole(user.role);
     setClientType(user.clientType || 'retail');
@@ -107,8 +110,12 @@ export default function Users() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!name || !email) {
-      toast.error('Le nom et l\'email sont requis');
+    if (!name) {
+      toast.error('Le nom est requis');
+      return;
+    }
+    if (!email && !phone) {
+      toast.error('L\'adresse email ou le numéro de téléphone est requis');
       return;
     }
     if (!editingUser && !password) {
@@ -119,7 +126,8 @@ export default function Users() {
     setSaving(true);
     const userData = {
       name,
-      email,
+      email: email || undefined,
+      phone: phone || undefined,
       role,
       clientType,
       password: password || undefined
@@ -195,7 +203,7 @@ export default function Users() {
               <thead className="bg-gray-50 text-slate-700 font-bold uppercase tracking-wider">
                 <tr>
                   <th className="py-4 px-6">Nom</th>
-                  <th className="py-4 px-6">Email</th>
+                  <th className="py-4 px-6">Identifiant (Email / Tél)</th>
                   <th className="py-4 px-6">Rôle</th>
                   <th className="py-4 px-6">Type Client</th>
                   <th className="py-4 px-6">Créé Le</th>
@@ -211,7 +219,7 @@ export default function Users() {
                       </div>
                       <span>{u.name}</span>
                     </td>
-                    <td className="py-4 px-6 font-semibold text-slate-650">{u.email}</td>
+                    <td className="py-4 px-6 font-semibold text-slate-650">{u.email || u.phone || 'N/A'}</td>
                     <td className="py-4 px-6">
                       <span className={`font-black px-2.5 py-1 rounded-full text-[9px] uppercase tracking-wider ${
                         u.role === 'admin' ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-slate-50 text-slate-600'
@@ -293,10 +301,20 @@ export default function Users() {
                 <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Adresse Email</label>
                 <input
                   type="email"
-                  required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Ex: ahmed@example.com"
+                  className="w-full bg-slate-50 border border-slate-200 text-slate-800 text-xs rounded-[14px] px-4 py-3 focus:outline-none focus:border-brand-primary"
+                />
+              </div>
+
+              <div className="flex flex-col space-y-1">
+                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Numéro de Téléphone</label>
+                <input
+                  type="text"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="Ex: 0554559860"
                   className="w-full bg-slate-50 border border-slate-200 text-slate-800 text-xs rounded-[14px] px-4 py-3 focus:outline-none focus:border-brand-primary"
                 />
               </div>

@@ -27,7 +27,7 @@ const sendEmail = async (options) => {
   });
 
   const mailOptions = {
-    from: `${process.env.SMTP_FROM || 'noreply@nordinestore.com'}`,
+    from: `${process.env.SMTP_FROM || 'service@nounoutelecom.com'}`,
     to: options.email,
     subject: options.subject,
     text: options.message,

@@ -64,4 +64,4 @@ conn.on('ready', () => {
   });
 }).on('error', (err) => {
   console.error('Erreur SSH:', err);
-}).connect(VPS_CONFIG);
+}).connect({ ...VPS_CONFIG, readyTimeout: 45000 });

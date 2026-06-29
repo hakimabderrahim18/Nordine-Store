@@ -525,23 +525,16 @@ export const importUsersFromExcel = async (req, res, next) => {
         phone = contactVal.replace(/\s+/g, '').replace(/[^0-9]/g, '');
       }
 
-      // If email is present, clean it. Otherwise generate from phone contact or client code
+      // If email is present, clean it. Otherwise do not generate one (let it be undefined)
       const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
       if (email) {
         email = email.replace(/\s+/g, '');
         if (!emailRegex.test(email)) {
           const cleanEmailPart = email.replace(/[^a-zA-Z0-9]/g, '');
-          email = cleanEmailPart ? `${cleanEmailPart.toLowerCase()}@nordinestore.dz` : '';
+          email = cleanEmailPart ? `${cleanEmailPart.toLowerCase()}@nordinestore.dz` : undefined;
         }
-      }
-
-      if (!email) {
-        if (phone) {
-          email = `${phone.toLowerCase()}@nordinestore.dz`;
-        } else if (referenceVal) {
-          const cleanRef = referenceVal.replace(/[^a-zA-Z0-9]/g, '');
-          email = cleanRef ? `${cleanRef.toLowerCase()}@nordinestore.dz` : '';
-        }
+      } else {
+        email = undefined;
       }
 
       if (!phone && email && email.endsWith('@nordinestore.dz')) {
@@ -549,11 +542,6 @@ export const importUsersFromExcel = async (req, res, next) => {
         if (/^\d+$/.test(parts[0])) {
           phone = parts[0];
         }
-      }
-
-      // Final fallback if still empty or invalid
-      if (!email || !emailRegex.test(email)) {
-        email = `client_${Date.now()}_${Math.floor(Math.random() * 1000)}@nordinestore.dz`;
       }
 
       if (!name) {
@@ -587,14 +575,19 @@ export const importUsersFromExcel = async (req, res, next) => {
       if (isValidObjectId) {
         existingUser = await User.findById(referenceVal);
       }
-      if (!existingUser) {
+      if (!existingUser && phone) {
+        existingUser = await User.findOne({ phone });
+      }
+      if (!existingUser && email) {
         existingUser = await User.findOne({ email });
       }
 
       if (existingUser) {
         // Update user
         existingUser.name = name;
-        existingUser.email = email;
+        if (email !== undefined) {
+          existingUser.email = email;
+        }
         existingUser.role = role;
         existingUser.clientType = clientType;
         if (phone) {
@@ -609,12 +602,14 @@ export const importUsersFromExcel = async (req, res, next) => {
         // Create new user
         const newUserObj = {
           name,
-          email,
           password,
           role,
           clientType,
           isVerified: true
         };
+        if (email !== undefined) {
+          newUserObj.email = email;
+        }
         if (phone) {
           newUserObj.phone = phone;
         }

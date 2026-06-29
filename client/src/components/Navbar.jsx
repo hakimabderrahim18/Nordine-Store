@@ -337,7 +337,7 @@ export default function Navbar() {
               <div className="flex flex-col space-y-2 text-xs text-slate-500">
                 <div className="flex justify-between items-center">
                   <span>Email :</span>
-                  <span className="font-semibold text-slate-800">nounoutelecomtiaret@gmail.com</span>
+                  <span className="font-semibold text-slate-800">service@nounoutelecom.com</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span>WhatsApp :</span>
