@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+    <circle cx="50" cy="50" r="45" fill="#ffffff" stroke="#000000" stroke-width="4.5"/>
+    
+    <g fill="#ff0000" transform="translate(50,42) scale(0.55)">
+      <path d="M0,0 C-10,-20 -20,-30 0,-50 C20,-30 10,-20 0,0 Z"/>
+      <path d="M0,0 C-22,-5 -32,-12 -25,-38 C-18,-26 -10,-18 0,0 Z" transform="rotate(28)"/>
+      <path d="M0,0 C-22,-5 -32,-12 -25,-38 C-18,-26 -10,-18 0,0 Z" transform="rotate(-28) scale(-1, 1)"/>
+      <path d="M0,0 C-22,-5 -32,-12 -25,-38 C-18,-26 -10,-18 0,0 Z" transform="rotate(56)"/>
+      <path d="M0,0 C-22,-5 -32,-12 -25,-38 C-18,-26 -10,-18 0,0 Z" transform="rotate(-56) scale(-1, 1)"/>
+      <path d="M0,0 C-22,-5 -32,-12 -25,-38 C-18,-26 -10,-18 0,0 Z" transform="rotate(84)"/>
+      <path d="M0,0 C-22,-5 -32,-12 -25,-38 C-18,-26 -10,-18 0,0 Z" transform="rotate(-84) scale(-1, 1)"/>
+    </g>
+    <text x="50" y="76" font-family="sans-serif" font-weight="900" font-size="7" fill="#000000" text-anchor="middle" letter-spacing="0.5">HUAWEI</text>
+  
+  </svg>

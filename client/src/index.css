@@ -1,0 +1,180 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-primary: #F7B500;
+  --color-brand-secondary: #FFF7D6;
+  --color-brand-accent: #FFE082;
+  --color-brand-bg: #FCFCFC;
+  --color-brand-card: #FFFFFF;
+  --color-brand-text: #1E293B;
+  --color-brand-border: #ECECEC;
+  --color-brand-muted: #64748B;
+  --color-brand-surface: #FFFFFF;
+  
+  --breakpoint-xs: 320px;
+  --breakpoint-sm: 480px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1440px;
+  
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-spin-slow: spin 20s linear infinite;
+  --animate-glow: glow 2s ease-in-out infinite alternate;
+  --animate-marquee: marquee 60s linear infinite;
+  --animate-shimmer: shimmer 1.5s infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-12px) rotate(2deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+@keyframes glow {
+  from { text-shadow: 0 0 4px rgba(247, 181, 0, 0.3), 0 0 8px rgba(247, 181, 0, 0.15); }
+  to { text-shadow: 0 0 10px rgba(247, 181, 0, 0.7), 0 0 20px rgba(247, 181, 0, 0.3); }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Custom Scrollbar — Light Theme */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F1F5F9;
+}
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* Lenis Smooth Scroll Setup */
+html.lenis, html.lenis body {
+  height: auto;
+}
+.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis-stopped {
+  overflow: hidden;
+}
+.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+/* Glassmorphism — Light Theme */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(236, 236, 236, 0.6);
+}
+
+.glass-panel-dark {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(236, 236, 236, 0.8);
+}
+
+/* Premium Gold Text Gradient */
+.gold-text-gradient {
+  background: linear-gradient(135deg, #FFE885 0%, #F7B500 50%, #B45309 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gold-bg-gradient {
+  background: linear-gradient(135deg, #FFE885 0%, #F7B500 50%, #D97706 100%);
+}
+
+.luxury-card-hover {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.luxury-card-hover:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px -10px rgba(247, 181, 0, 0.12);
+}
+
+/* Loader Screen — Light */
+.loader-bg {
+  background: linear-gradient(135deg, #FFFFFF 0%, #FFF7D6 100%);
+}
+
+/* Global Body — Light Theme */
+body {
+  background-color: var(--color-brand-bg);
+  color: var(--color-brand-text);
+  font-family: 'Plus Jakarta Sans', 'Sora', 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Input color scheme */
+input, select, textarea {
+  color-scheme: light;
+}
+
+/* Container Queries for Product Grids */
+.product-grid-container {
+  container-type: inline-size;
+  width: 100%;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: clamp(1rem, 2.5cqi, 1.5rem);
+}
+
+@container (min-width: 320px) {
+  .product-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@container (min-width: 768px) {
+  .product-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@container (min-width: 1024px) {
+  .product-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@container (min-width: 1440px) {
+  .product-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+/* Fluid spacing and sizing */
+.fluid-h1 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+}
+
+.fluid-h2 {
+  font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+}
+
+.fluid-p {
+  font-size: clamp(0.85rem, 1.5vw, 1.05rem);
+}

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+    <circle cx="50" cy="50" r="45" fill="#ffffff" stroke="#000000" stroke-width="4.5"/>
+    
+    <rect x="22" y="32" width="56" height="22" rx="4" fill="#ffc800"/>
+    <text x="50" y="47" font-family="sans-serif" font-size="10.5" font-weight="900" fill="#000000" text-anchor="middle">realme</text>
+    <text x="50" y="76" font-family="sans-serif" font-weight="900" font-size="7" fill="#000000" text-anchor="middle" letter-spacing="1">REALME</text>
+  
+  </svg>
