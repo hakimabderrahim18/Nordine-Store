@@ -77,7 +77,14 @@ export const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email }).select('+password');
+    const cleanIdentifier = email ? email.toString().trim() : '';
+
+    const user = await User.findOne({
+      $or: [
+        { email: cleanIdentifier.toLowerCase() },
+        { phone: cleanIdentifier }
+      ]
+    }).select('+password');
     if (user && (await user.comparePassword(password))) {
       res.json({
         success: true,
@@ -510,6 +517,14 @@ export const importUsersFromExcel = async (req, res, next) => {
       let clientType = row[clientTypeKey]?.toString().trim().toLowerCase() || 'retail';
       const referenceVal = row[refKey]?.toString().trim();
 
+      // Extract phone number from contact column
+      const contactKey = Object.keys(row).find(k => /contact|téléphone|tel|phone/i.test(k));
+      const contactVal = row[contactKey]?.toString().trim();
+      let phone = '';
+      if (contactVal) {
+        phone = contactVal.replace(/\s+/g, '').replace(/[^0-9]/g, '');
+      }
+
       // If email is present, clean it. Otherwise generate from phone contact or client code
       const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
       if (email) {
@@ -521,18 +536,18 @@ export const importUsersFromExcel = async (req, res, next) => {
       }
 
       if (!email) {
-        const contactKey = Object.keys(row).find(k => /contact|téléphone|tel|phone/i.test(k));
-        const contactVal = row[contactKey]?.toString().trim();
-        let cleanContact = '';
-        if (contactVal) {
-          cleanContact = contactVal.replace(/[^a-zA-Z0-9]/g, '');
-        }
-        
-        if (cleanContact) {
-          email = `${cleanContact.toLowerCase()}@nordinestore.dz`;
+        if (phone) {
+          email = `${phone.toLowerCase()}@nordinestore.dz`;
         } else if (referenceVal) {
           const cleanRef = referenceVal.replace(/[^a-zA-Z0-9]/g, '');
           email = cleanRef ? `${cleanRef.toLowerCase()}@nordinestore.dz` : '';
+        }
+      }
+
+      if (!phone && email && email.endsWith('@nordinestore.dz')) {
+        const parts = email.split('@');
+        if (/^\d+$/.test(parts[0])) {
+          phone = parts[0];
         }
       }
 
@@ -582,6 +597,9 @@ export const importUsersFromExcel = async (req, res, next) => {
         existingUser.email = email;
         existingUser.role = role;
         existingUser.clientType = clientType;
+        if (phone) {
+          existingUser.phone = phone;
+        }
         if (password && password !== '123456') {
           existingUser.password = password;
         }
@@ -597,6 +615,9 @@ export const importUsersFromExcel = async (req, res, next) => {
           clientType,
           isVerified: true
         };
+        if (phone) {
+          newUserObj.phone = phone;
+        }
         if (isValidObjectId) {
           newUserObj._id = referenceVal;
         }
@@ -629,14 +650,30 @@ export const exportUsersToExcel = async (req, res, next) => {
     const users = await User.find({});
     
     // Convert to a simple JSON format for Excel
-    const data = users.map(user => ({
-      ID: user._id.toString(),
-      Nom: user.name,
-      Email: user.email,
-      Rôle: user.role,
-      "Type de Client": user.clientType || 'retail',
-      "Date de Création": user.createdAt ? new Date(user.createdAt).toLocaleDateString('fr-FR') : 'N/A'
-    }));
+    const data = users.map(user => {
+      let identifier = user.phone || '';
+      if (!identifier && user.email && user.email.endsWith('@nordinestore.dz')) {
+        const parts = user.email.split('@');
+        if (/^\d+$/.test(parts[0])) {
+          identifier = parts[0];
+        }
+      }
+      if (!identifier) {
+        identifier = user.email;
+      }
+
+      return {
+        ID: user._id.toString(),
+        Nom: user.name,
+        Identifiant: identifier,
+        "Mot de passe": '123456',
+        Email: user.email,
+        Téléphone: user.phone || 'N/A',
+        Rôle: user.role,
+        "Type de Client": user.clientType || 'retail',
+        "Date de Création": user.createdAt ? new Date(user.createdAt).toLocaleDateString('fr-FR') : 'N/A'
+      };
+    });
 
     // Create a new workbook and worksheet
     const worksheet = XLSX.utils.json_to_sheet(data);

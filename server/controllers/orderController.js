@@ -16,7 +16,7 @@ const emitToAdmins = (req, event, data) => {
 
 const emitToUser = (req, userId, event, data) => {
   const io = req.app.get('socketio');
-  if (io) {
+  if (io && userId) {
     io.to(userId.toString()).emit(event, data);
   }
 };
@@ -282,17 +282,19 @@ export const updateOrderDeliveryStatus = async (req, res, next) => {
     const updatedOrder = await order.save();
 
     // Create notification for client
-    await Notification.create({
-      user: order.user,
-      title: `Order Status: ${status}`,
-      message: `Your order #${order._id.toString().substring(18).toUpperCase()} status has been updated to ${status}.`,
-      type: 'order'
-    });
+    if (order.user) {
+      await Notification.create({
+        user: order.user,
+        title: `Order Status: ${status}`,
+        message: `Your order #${order._id.toString().substring(18).toUpperCase()} status has been updated to ${status}.`,
+        type: 'order'
+      });
 
-    emitToUser(req, order.user, 'orderUpdate', {
-      orderId: order._id,
-      status: order.deliveryStatus
-    });
+      emitToUser(req, order.user, 'orderUpdate', {
+        orderId: order._id,
+        status: order.deliveryStatus
+      });
+    }
 
     res.json({ success: true, order: updatedOrder });
   } catch (error) {

@@ -55,14 +55,14 @@ export default function Login() {
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Email field */}
           <div className="flex flex-col space-y-2">
-            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Adresse Email</label>
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Identifiant (Email ou Téléphone)</label>
             <div className="relative">
               <input
-                type="email"
+                type="text"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="tech@example.com"
+                placeholder="0554559860 ou email@exemple.com"
                 className="w-full bg-slate-50 border border-slate-100 text-slate-800 text-xs rounded-[16px] pl-10 pr-4 py-3.5 focus:outline-none focus:border-brand-primary"
               />
               <Mail size={14} className="absolute left-3.5 top-4 text-slate-400" />

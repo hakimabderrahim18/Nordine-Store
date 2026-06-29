@@ -27,7 +27,8 @@ npm install -g pm2
 
 # 4. Installation de MongoDB (Version 7.0 Community)
 echo "Installation de MongoDB 7.0..."
-curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | gpg --dearmor -o /usr/share/keyrings/mongodb-server-7.0.gpg
+rm -f /usr/share/keyrings/mongodb-server-7.0.gpg
+curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | gpg --batch --yes --dearmor -o /usr/share/keyrings/mongodb-server-7.0.gpg
 echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-7.0.list
 
 apt-get update
