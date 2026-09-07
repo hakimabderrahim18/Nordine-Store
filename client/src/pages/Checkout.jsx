@@ -1,19 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { useLocation, useNavigate, Link, Navigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
 import { ShoppingBag, Phone, MapPin, User, Tag, ArrowRight, Loader } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { fetchCart, clearUserCart, clearGuestCart } from '../store/cartSlice';
 import { orderService, couponService, yalidineService, getImageUrl } from '../services/api';
+import { useTranslation } from '../context/LanguageContext';
 
 export default function Checkout() {
+  const { t, language } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
 
   const { items } = useSelector((state) => state.cart);
   const { user, isAuthenticated } = useSelector((state) => state.auth);
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login?redirect=/checkout" replace />;
+  }
 
   // Form states
   const [lastName, setLastName] = useState('');
@@ -241,10 +247,10 @@ export default function Checkout() {
         <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
           <ShoppingBag className="text-slate-400" size={24} />
         </div>
-        <h2 className="text-xl font-black text-slate-800 uppercase tracking-wide">Votre panier est vide</h2>
-        <p className="text-xs text-slate-500 mt-2 max-w-sm">Ajoutez des articles à votre panier pour finaliser votre commande.</p>
+        <h2 className="text-xl font-black text-slate-800 uppercase tracking-wide">{t('cart_empty')}</h2>
+        <p className="text-xs text-slate-500 mt-2 max-w-sm">{language === 'ar' ? 'أضف منتجات إلى سلتك لإتمام عملية الشراء.' : 'Ajoutez des articles à votre panier pour finaliser votre commande.'}</p>
         <Link to="/shop" className="mt-6 bg-brand-secondary text-brand-primary font-black text-xs uppercase tracking-wider px-6 py-3 rounded-[12px] hover:scale-102 transition-transform">
-          Découvrir nos produits
+          {t('cart_explore')}
         </Link>
       </div>
     );
@@ -253,8 +259,8 @@ export default function Checkout() {
   return (
     <div className="pt-28 max-w-7xl mx-auto px-4 md:px-6 min-h-screen bg-brand-bg pb-24 text-left">
       <div className="mb-8">
-        <h1 className="text-2xl font-black text-slate-800 tracking-tight uppercase">Finaliser la Commande</h1>
-        <p className="text-xs text-slate-500 mt-1">Remplissez vos informations pour valider votre achat. Paiement Cash à la Livraison.</p>
+        <h1 className="text-2xl font-black text-slate-800 tracking-tight uppercase">{t('checkout_title')}</h1>
+        <p className="text-xs text-slate-500 mt-1">{t('checkout_subtitle')}</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
@@ -268,7 +274,7 @@ export default function Checkout() {
           >
             <h2 className="text-base font-black text-slate-800 tracking-wide uppercase flex items-center gap-2 pb-4 border-b border-slate-100">
               <User size={18} className="text-brand-primary" />
-              Informations de l'Acheteur
+              {t('checkout_form')}
             </h2>
 
             <form onSubmit={handleSubmitOrder} className="space-y-6">
@@ -353,7 +359,7 @@ export default function Checkout() {
                           }}
                           className="w-full bg-slate-50 border border-slate-200 text-slate-800 text-xs rounded-[14px] pl-10 pr-8 py-3.5 focus:outline-none focus:border-brand-primary focus:bg-white transition-all font-semibold appearance-none"
                         >
-                          <option value="">Sélectionner une wilaya</option>
+                          <option value="">{language === 'ar' ? 'اختر الولاية' : 'Sélectionner une wilaya'}</option>
                           {wilayasList.map(w => (
                             <option key={w.id} value={w.id}>{w.id} - {w.name}</option>
                           ))}
@@ -364,7 +370,7 @@ export default function Checkout() {
                     {/* Commune */}
                     <div className="flex flex-col space-y-1.5">
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-                        Commune (Destination)
+                        {language === 'ar' ? 'البلدية (وجهة التسليم)' : 'Commune (Destination)'}
                       </label>
                       <div className="relative">
                         <MapPin size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 z-10" />
@@ -382,10 +388,10 @@ export default function Checkout() {
                         >
                           <option value="">
                             {!selectedWilayaId 
-                              ? "Veuillez d'abord choisir une wilaya" 
+                              ? (language === 'ar' ? 'يرجى اختيار الولاية أولاً' : "Veuillez d'abord choisir une wilaya") 
                               : loadingCommunes 
-                              ? 'Chargement des communes...' 
-                              : 'Sélectionner une commune'}
+                              ? (language === 'ar' ? 'جاري تحميل البلديات...' : 'Chargement des communes...') 
+                              : (language === 'ar' ? 'اختر البلدية' : 'Sélectionner une commune')}
                           </option>
                           {communesList.map(c => (
                             <option key={c.id} value={c.id}>{c.name}</option>
@@ -399,7 +405,7 @@ export default function Checkout() {
                 {/* Type de livraison selector */}
                 <div className="flex flex-col space-y-1.5 md:col-span-2">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-                    Type de Livraison *
+                    {t('checkout_delivery_type')} *
                   </label>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div
@@ -410,8 +416,8 @@ export default function Checkout() {
                           : 'border-slate-200 bg-slate-50 hover:border-slate-300'
                       }`}
                     >
-                      <span className="text-xs font-black text-slate-800">À Domicile</span>
-                      <span className="text-[9px] text-slate-500 font-bold uppercase mt-0.5">Livraison à votre adresse</span>
+                      <span className="text-xs font-black text-slate-800">{t('delivery_home')}</span>
+                      <span className="text-[9px] text-slate-500 font-bold uppercase mt-0.5">{language === 'ar' ? 'التسليم إلى باب منزلك' : 'Livraison à votre adresse'}</span>
                     </div>
 
                     <div
@@ -422,8 +428,8 @@ export default function Checkout() {
                           : 'border-slate-200 bg-slate-50 hover:border-slate-300'
                       }`}
                     >
-                      <span className="text-xs font-black text-slate-800">StopDesk</span>
-                      <span className="text-[9px] text-slate-500 font-bold uppercase mt-0.5">Récupérer au bureau</span>
+                      <span className="text-xs font-black text-slate-800">{t('delivery_stop')}</span>
+                      <span className="text-[9px] text-slate-500 font-bold uppercase mt-0.5">{language === 'ar' ? 'الاستلام من مكتب الشحن' : 'Récupérer au bureau'}</span>
                     </div>
 
                     <div
@@ -434,8 +440,8 @@ export default function Checkout() {
                           : 'border-slate-200 bg-slate-50 hover:border-slate-300'
                       }`}
                     >
-                      <span className="text-xs font-black text-slate-800">Retrait au Magasin</span>
-                      <span className="text-[9px] text-slate-500 font-bold uppercase mt-0.5">Gratuit - Récupérer à la boutique</span>
+                      <span className="text-xs font-black text-slate-800">{language === 'ar' ? 'الاستلام من المحل' : 'Retrait au Magasin'}</span>
+                      <span className="text-[9px] text-slate-500 font-bold uppercase mt-0.5">{language === 'ar' ? 'مجانًا - الاستلام من مقرنا' : 'Gratuit - Récupérer à la boutique'}</span>
                     </div>
                   </div>
                 </div>
@@ -444,10 +450,12 @@ export default function Checkout() {
               {/* Mode de paiement info banner */}
               <div className="bg-amber-50/50 border border-amber-100 rounded-[18px] p-4.5 text-xs text-amber-800 space-y-1">
                 <span className="font-black uppercase tracking-wider text-[10px] text-amber-700 flex items-center gap-1.5">
-                  Mode de Paiement : Paiement à la Livraison (COD)
+                  {t('payment_method')} : {t('payment_cod')}
                 </span>
                 <p className="font-semibold leading-relaxed">
-                  Le paiement s'effectue en espèces lors de la réception de votre commande à domicile ou au point relais.
+                  {language === 'ar' 
+                    ? 'يتم الدفع نقداً عند استلام طلبيتك الفنية في المنزل أو في مكتب الشحن.' 
+                    : 'Le paiement s\'effectue en espèces lors de la réception de votre commande à domicile ou au point relais.'}
                 </p>
               </div>
 
@@ -461,11 +469,11 @@ export default function Checkout() {
                   {isSubmitting ? (
                     <>
                       <Loader size={14} className="animate-spin" />
-                      Traitement en cours...
+                      {language === 'ar' ? 'جاري معالجة الطلب...' : 'Traitement en cours...'}
                     </>
                   ) : (
                     <>
-                      Confirmer la Commande
+                      {t('btn_order')}
                       <ArrowRight size={14} />
                     </>
                   )}
@@ -480,7 +488,7 @@ export default function Checkout() {
           <div className="bg-white border border-slate-100 p-5 rounded-[24px] shadow-[0_4px_25px_-5px_rgba(17,24,39,0.02)] space-y-4">
             <h3 className="font-black text-slate-800 text-xs tracking-wider uppercase border-b border-slate-50 pb-3 flex items-center gap-2">
               <ShoppingBag size={14} className="text-brand-primary" />
-              Résumé de la Commande
+              {t('cart_summary')}
             </h3>
 
             {/* Cart Items list */}
@@ -499,7 +507,7 @@ export default function Checkout() {
                     <div className="flex-1 min-w-0">
                       <span className="font-bold text-slate-800 block truncate uppercase tracking-wide">{item.product?.name}</span>
                       <div className="flex flex-wrap gap-x-2 text-[9px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">
-                        <span>Qté: {item.quantity}</span>
+                        <span>{language === 'ar' ? 'الكمية' : 'Qté'}: {item.quantity}</span>
                         {item.variant && Object.entries(item.variant).map(([key, val]) => (
                           <span key={key} className="text-brand-primary font-extrabold">{key}: {val}</span>
                         ))}
@@ -512,22 +520,22 @@ export default function Checkout() {
             </div>
 
             {/* Math Totals */}
-            <div className="border-t border-slate-50 pt-4 space-y-2.5 text-xs text-slate-500 font-semibold">
+            <div className="border-t border-slate-50 pt-4 space-y-2.5 text-xs text-slate-550 font-semibold">
               <div className="flex justify-between">
-                <span>Sous-total</span>
+                <span>{t('cart_subtotal')}</span>
                 <span className="font-bold text-slate-800">{subtotal.toLocaleString()} DA</span>
               </div>
 
               <div className="flex justify-between">
-                <span>Frais de Livraison</span>
+                <span>{language === 'ar' ? 'تكلفة التوصيل' : 'Frais de Livraison'}</span>
                 <span className="font-bold text-slate-800">
-                  {shippingPrice === 0 ? 'GRATUIT' : `${shippingPrice.toLocaleString()} DA`}
+                  {shippingPrice === 0 ? (language === 'ar' ? 'مجانًا' : 'GRATUIT') : `${shippingPrice.toLocaleString()} DA`}
                 </span>
               </div>
             </div>
 
             <div className="border-t border-slate-50 pt-3 flex justify-between items-baseline">
-              <span className="text-xs font-black text-slate-855 uppercase tracking-wide">Total</span>
+              <span className="text-xs font-black text-slate-855 uppercase tracking-wide">{t('cart_total')}</span>
               <span className="text-lg font-black text-slate-900">{totalPrice.toLocaleString()} DA</span>
             </div>
           </div>

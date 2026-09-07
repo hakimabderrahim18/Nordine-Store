@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 import { Heart, ShoppingBag, Star } from 'lucide-react';
@@ -7,8 +7,11 @@ import toast from 'react-hot-toast';
 import { toggleWishlist } from '../store/wishlistSlice';
 import { addCartItem, addGuestItem } from '../store/cartSlice';
 import { getImageUrl } from '../services/api';
+import { useTranslation } from '../context/LanguageContext';
 
 export default function ProductCard({ product }) {
+  const { t, language } = useTranslation();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const wishlistItems = useSelector((state) => state.wishlist.products);
@@ -40,11 +43,15 @@ export default function ProductCard({ product }) {
     e.preventDefault();
     e.stopPropagation();
     if (!isAuthenticated) {
-      toast.error('Veuillez vous connecter pour gérer vos favoris');
+      toast.error(language === 'ar' ? 'يرجى تسجيل الدخول أولاً لإضافة المنتجات إلى المفضلة' : 'Veuillez vous connecter pour gérer vos favoris');
       return;
     }
     dispatch(toggleWishlist(product._id));
-    toast.success(isFavorited ? 'Retiré des favoris' : 'Ajouté aux favoris');
+    toast.success(
+      isFavorited
+        ? (language === 'ar' ? 'تمت الإزالة من المفضلة' : 'Retiré des favoris')
+        : (language === 'ar' ? 'تمت الإضافة للمفضلة' : 'Ajouté aux favoris')
+    );
   };
 
   const handleAddToCart = (e) => {
@@ -59,13 +66,13 @@ export default function ProductCard({ product }) {
     }
 
     if (!isAuthenticated) {
-      dispatch(addGuestItem({ product, quantity: 1, variant: defaultVariant }));
-      toast.success('Ajouté au panier en tant qu\'invité !');
+      toast.error(language === 'ar' ? 'يرجى تسجيل الدخول أولاً لعرض الأسعار والطلب' : 'Veuillez vous connecter pour voir les prix et commander');
+      navigate('/login');
       return;
     }
 
     dispatch(addCartItem({ productId: product._id, quantity: 1, variant: defaultVariant }));
-    toast.success('Ajouté au panier !');
+    toast.success(t('added_to_cart'));
   };
 
   return (
@@ -105,7 +112,7 @@ export default function ProductCard({ product }) {
         {product.stock === 0 && (
           <div className="absolute inset-0 bg-white/80 backdrop-blur-[1px] flex items-center justify-center">
             <span className="text-[9px] font-black text-red-500 tracking-wider uppercase border border-red-500 px-2.5 py-1 rounded">
-              Rupture de Stock
+              {t('out_of_stock')}
             </span>
           </div>
         )}
@@ -132,7 +139,11 @@ export default function ProductCard({ product }) {
         {/* Pricing & Add to Cart button */}
         <div className="flex items-end justify-between pt-3 border-t border-gray-200 mt-2">
           <div className="flex flex-col text-left">
-            {(() => {
+            {!isAuthenticated ? (
+              <span className="text-[10px] font-black text-brand-primary uppercase tracking-wide">
+                {language === 'ar' ? 'سجل لرؤية السعر' : 'Se connecter pour voir le prix'}
+              </span>
+            ) : (() => {
               let price = product.discountPrice || product.price;
               let isB2B = false;
               if (user) {
@@ -149,22 +160,22 @@ export default function ProductCard({ product }) {
               return (
                 <div className="flex flex-col">
                   <div className="flex items-baseline space-x-1">
-                    <span className="text-base font-black text-slate-800">{price.toLocaleString()} DA</span>
+                    <span className="text-base font-black text-slate-800 ltr-text">{price.toLocaleString()} DA</span>
                     {(hasDiscount || isB2B) && (
-                      <span className="text-[10px] text-slate-500 line-through">
+                      <span className="text-[10px] text-slate-500 line-through ltr-text">
                         {product.price.toLocaleString()} DA
                       </span>
                     )}
                   </div>
                   {isB2B && (
                     <span className="text-[8px] font-black text-brand-primary uppercase tracking-wider mt-0.5">
-                      Tarif {user.clientType}
+                      {t('b2b_active')} {user.clientType === 'demi-gros' ? t('b2b_demi') : t('b2b_super')}
                     </span>
                   )}
                 </div>
               );
             })()}
-            <span className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">SKU: {product.sku}</span>
+            <span className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">{t('sku')}: <span className="ltr-text">{product.sku}</span></span>
           </div>
 
           <button

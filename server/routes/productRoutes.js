@@ -1,6 +1,7 @@
 import express from 'express';
 import {
   getProducts,
+  getDevices,
   getProductById,
   createProduct,
   updateProduct,
@@ -17,6 +18,7 @@ import { uploadImages, uploadExcel } from '../middlewares/uploadMiddleware.js';
 
 const router = express.Router();
 
+router.get('/devices', getDevices);
 router.post('/import', protect, admin, uploadExcel, importProducts);
 router.get('/export', protect, admin, exportProducts);
 router.post('/bulk-delete', protect, admin, bulkDeleteProducts);

@@ -1,8 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Phone, MapPin, Instagram, ShieldCheck, Facebook, Send } from 'lucide-react';
+import { Mail, Phone, MapPin, Instagram, ShieldCheck, Facebook } from 'lucide-react';
+import { useTranslation } from '../context/LanguageContext';
 
 export default function Footer() {
+  const { t, language } = useTranslation();
+
   return (
     <footer className="relative mt-24 bg-gray-50 text-slate-500 overflow-hidden border-t border-gray-200">
       {/* Background Animated Glows */}
@@ -19,7 +22,7 @@ export default function Footer() {
             </span>
           </Link>
           <p className="text-xs leading-relaxed text-slate-500 text-left">
-            Le dépôt de matériel haut de gamme fournissant des écrans de rechange mobiles, des batteries, des circuits et des accessoires de qualité supérieure.
+            {t('footer_desc')}
           </p>
           <div className="flex space-x-3 pt-2">
             <a href="https://www.facebook.com/share/1UAZUrx7Fh/" target="_blank" rel="noreferrer" className="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center text-slate-400 hover:border-brand-primary hover:text-brand-primary transition-all duration-300">
@@ -36,21 +39,21 @@ export default function Footer() {
 
         {/* Sitemap / Quick Links */}
         <div className="text-left">
-          <h4 className="text-slate-800 font-bold text-xs tracking-wider uppercase mb-5">Liens Rapides</h4>
+          <h4 className="text-slate-800 font-bold text-xs tracking-wider uppercase mb-5">{t('footer_quick_links')}</h4>
           <ul className="space-y-2.5 text-xs">
-            <li><Link to="/shop" className="hover:text-brand-primary transition-colors">Parcourir les produits</Link></li>
-            <li><Link to="/about" className="hover:text-brand-primary transition-colors">Notre Standard</Link></li>
-            <li><Link to="/contact" className="hover:text-brand-primary transition-colors">Support Technique</Link></li>
-            <li><Link to="/faq" className="hover:text-brand-primary transition-colors">Aide & FAQ</Link></li>
+            <li><Link to="/shop" className="hover:text-brand-primary transition-colors">{t('filter_category_all')}</Link></li>
+            <li><Link to="/about" className="hover:text-brand-primary transition-colors">{t('nav_apropos')}</Link></li>
+            <li><Link to="/contact" className="hover:text-brand-primary transition-colors">{t('btn_consulting')}</Link></li>
+            <li><Link to="/faq" className="hover:text-brand-primary transition-colors">{t('nav_faq')}</Link></li>
           </ul>
         </div>
 
         {/* Customer Care */}
         <div className="text-left">
-          <h4 className="text-slate-800 font-bold text-xs tracking-wider uppercase mb-5">Support & Politique</h4>
+          <h4 className="text-slate-800 font-bold text-xs tracking-wider uppercase mb-5">{t('footer_support')}</h4>
           <ul className="space-y-2.5 text-xs">
-            <li><Link to="/profile" className="hover:text-brand-primary transition-colors">Mon Profil</Link></li>
-            <li><Link to="/orders" className="hover:text-brand-primary transition-colors">Suivi de Commande</Link></li>
+            <li><Link to="/profile" className="hover:text-brand-primary transition-colors">{t('menu_profil')}</Link></li>
+            <li><Link to="/orders" className="hover:text-brand-primary transition-colors">{t('menu_commandes')}</Link></li>
             <li><a href="#return-policy" className="hover:text-brand-primary transition-colors">Politique de Retour</a></li>
             <li><a href="#warranty" className="hover:text-brand-primary transition-colors">Garantie à Vie</a></li>
           </ul>
@@ -58,7 +61,7 @@ export default function Footer() {
 
         {/* Contact info */}
         <div className="flex flex-col space-y-3.5 text-left">
-          <h4 className="text-slate-800 font-bold text-xs tracking-wider uppercase mb-1.5">Siège Social</h4>
+          <h4 className="text-slate-800 font-bold text-xs tracking-wider uppercase mb-1.5">{t('contact_location')}</h4>
           <a
             href="https://maps.app.goo.gl/4NvyMuBrLTtcVBnP6"
             target="_blank"
@@ -66,14 +69,14 @@ export default function Footer() {
             className="flex items-start space-x-2.5 text-xs text-slate-500 hover:text-brand-primary transition-colors"
           >
             <MapPin size={15} className="text-brand-primary mt-0.5 flex-shrink-0" />
-            <span>15 Rue Emir Abd El Kader, Tiaret, Algérie</span>
+            <span>{t('footer_address')}</span>
           </a>
           <a
             href="tel:0550082685"
             className="flex items-center space-x-2.5 text-xs text-slate-500 hover:text-brand-primary transition-colors"
           >
             <Phone size={15} className="text-brand-primary flex-shrink-0" />
-            <span>0550 08 26 85</span>
+            <span className="ltr-text">0550 08 26 85</span>
           </a>
           <a
             href="mailto:service@nounoutelecom.com"
@@ -87,10 +90,10 @@ export default function Footer() {
 
       {/* Copy and badges */}
       <div className="max-w-7xl mx-auto px-6 py-6 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between text-[10px] text-slate-400 relative z-10 gap-4">
-        <p>© 2026 Nounou Telecom. Tous droits réservés. Destiné aux techniciens certifiés.</p>
+        <p>{t('footer_copy')}</p>
         <div className="flex items-center space-x-2 text-slate-500 bg-white px-3 py-1.5 rounded-full border border-gray-200">
           <ShieldCheck size={13} className="text-brand-primary" />
-          <span>Commande Sécurisée SSL 256-bit</span>
+          <span>{language === 'ar' ? 'طلب آمن بتشفير SSL 256-bit' : 'Commande Sécurisée SSL 256-bit'}</span>
         </div>
       </div>
     </footer>

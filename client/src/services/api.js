@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  baseURL: import.meta.env.VITE_API_URL || '/api',
 });
 
 // Request interceptor for API calls
@@ -14,6 +14,23 @@ API.interceptors.request.use(
     return config;
   },
   (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Response interceptor for API calls to handle expired tokens
+API.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      if (!window.location.pathname.startsWith('/login')) {
+        window.location.href = '/login?expired=true';
+      }
+    }
     return Promise.reject(error);
   }
 );
@@ -66,6 +83,10 @@ export const authService = {
 export const productService = {
   getProducts: async (params = {}) => {
     const response = await API.get('/products', { params });
+    return response.data;
+  },
+  getDevices: async () => {
+    const response = await API.get('/products/devices');
     return response.data;
   },
   getProductById: async (id) => {
@@ -361,16 +382,58 @@ export const yalidineService = {
   }
 };
 
+// Carousel Services
+export const carouselService = {
+  getImages: async () => {
+    const response = await API.get('/carousel');
+    return response.data;
+  },
+  addImage: async (formData) => {
+    const response = await API.post('/carousel', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    return response.data;
+  },
+  deleteImage: async (id) => {
+    const response = await API.delete(`/carousel/${id}`);
+    return response.data;
+  }
+};
+
+// Contact Services
+export const contactService = {
+  submitContactForm: async (formData) => {
+    const response = await API.post('/contact', formData);
+    return response.data;
+  }
+};
+
+// Helper to resolve technical category code to a clean readable display name
+export const getCategoryDisplayName = (name) => {
+  const upper = (name || '').toUpperCase();
+  if (upper === 'BAT') return 'Batteries';
+  if (upper === 'ACC') return 'Accessoires';
+  if (upper === 'POCH') return 'Pochettes';
+  if (upper === 'T GLASS') return 'Verre Trempé';
+  if (upper === 'GLASS') return 'Vitres / Tactiles';
+  if (upper === 'PIECE') return 'Pièces Détachées';
+  if (upper === 'MATERIEL') return 'Matériel & Outillage';
+  return name;
+};
+
 // Helper to resolve image paths to backend URL
 export const getImageUrl = (imagePath) => {
   if (!imagePath) return 'https://via.placeholder.com/300';
   if (imagePath.startsWith('http')) return imagePath;
   
-  const backendUrl = import.meta.env.VITE_API_URL 
-    ? import.meta.env.VITE_API_URL.replace('/api', '') 
-    : 'http://localhost:5000';
-    
-  return `${backendUrl}${imagePath}`;
+  if (import.meta.env.VITE_API_URL) {
+    const backendUrl = import.meta.env.VITE_API_URL.replace('/api', '');
+    return `${backendUrl}${imagePath.startsWith('/') ? '' : '/'}${imagePath}`;
+  }
+
+  return imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
 };
 
 export default API;

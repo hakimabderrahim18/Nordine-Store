@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Star, ShieldCheck, Truck, RefreshCw, Heart, Plus, Minus, Send, User } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { addCartItem, addGuestItem } from '../store/cartSlice';
 import { toggleWishlist } from '../store/wishlistSlice';
 import { productService, getImageUrl } from '../services/api';
+import { useTranslation } from '../context/LanguageContext';
 
 export default function ProductDetails() {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { t, language } = useTranslation();
 
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const wishlistItems = useSelector((state) => state.wishlist.products);
@@ -37,6 +40,51 @@ export default function ProductDetails() {
   const [recentlyViewed, setRecentlyViewed] = useState([]);
 
   const isFavorited = wishlistItems.some(p => p._id === id || p === id);
+
+  // Inject Schema.org JSON-LD Structured Data for Google Indexing & Google Images
+  useEffect(() => {
+    if (product) {
+      document.title = `${product.name} | Nounou Telecom`;
+
+      const jsonLdData = {
+        '@context': 'https://schema.org/',
+        '@type': 'Product',
+        name: product.name,
+        image: product.images?.map(img => getImageUrl(img)) || [],
+        description: product.description || product.name,
+        sku: product.sku || product._id,
+        brand: {
+          '@type': 'Brand',
+          name: product.brand?.name || 'Nounou Telecom'
+        },
+        offers: {
+          '@type': 'Offer',
+          url: window.location.href,
+          priceCurrency: 'DZD',
+          price: product.discountPrice || product.priceDetail || product.price || 0,
+          availability: product.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+          seller: {
+            '@type': 'Organization',
+            name: 'Nounou Telecom'
+          }
+        }
+      };
+
+      let script = document.getElementById('product-jsonld');
+      if (!script) {
+        script = document.createElement('script');
+        script.id = 'product-jsonld';
+        script.type = 'application/ld+json';
+        document.head.appendChild(script);
+      }
+      script.text = JSON.stringify(jsonLdData);
+
+      return () => {
+        const existing = document.getElementById('product-jsonld');
+        if (existing) existing.remove();
+      };
+    }
+  }, [product]);
 
   // Fetch Product details & reviews
   useEffect(() => {
@@ -112,8 +160,8 @@ export default function ProductDetails() {
 
   const handleAddToCart = () => {
     if (!isAuthenticated) {
-      dispatch(addGuestItem({ product, quantity, variant: selectedVariants }));
-      toast.success('Ajouté au panier en tant qu\'invité !');
+      toast.error(language === 'ar' ? 'يرجى تسجيل الدخول أولاً لعرض الأسعار والطلب' : 'Veuillez vous connecter pour voir les prix et commander');
+      navigate('/login');
       return;
     }
     dispatch(addCartItem({ productId: product._id, quantity, variant: selectedVariants }));
@@ -238,7 +286,7 @@ export default function ProductDetails() {
               <span className="text-[9px] font-black uppercase tracking-widest bg-brand-primary/10 text-brand-primary px-3 py-1 rounded-full">
                 {product.brand?.name}
               </span>
-              <span className="text-[10px] font-bold text-slate-400">SKU: {product.sku}</span>
+              <span className="text-[10px] font-bold text-slate-400">SKU: <span className="ltr-text">{product.sku}</span></span>
             </div>
 
             <h1 className="text-xl md:text-2xl lg:text-3xl font-black text-slate-800 leading-tight uppercase">
@@ -262,7 +310,19 @@ export default function ProductDetails() {
 
             {/* Price display */}
             <div className="flex flex-col text-left space-y-1.5 pt-2">
-              {(() => {
+              {!isAuthenticated ? (
+                <div className="bg-amber-50/50 border border-amber-100 rounded-[18px] p-4.5 text-slate-800 space-y-1.5 max-w-md">
+                  <span className="font-black uppercase tracking-wider text-[10px] text-amber-700 flex items-center gap-1.5">
+                    {language === 'ar' ? 'محتوى محمي للمحترفين' : 'Prix réservé aux membres'}
+                  </span>
+                  <p className="text-xs font-semibold leading-relaxed">
+                    {language === 'ar' ? 'يرجى تسجيل الدخول أو إنشاء حساب لعرض الأسعار وطلب المنتجات.' : 'Veuillez vous connecter ou créer un compte approuvé pour afficher les prix et commander.'}
+                  </p>
+                  <Link to="/login" className="inline-block mt-2 bg-brand-primary text-slate-900 text-xs font-black uppercase tracking-wider px-5 py-2.5 rounded-[12px]">
+                    {language === 'ar' ? 'تسجيل الدخول' : 'Se connecter'}
+                  </Link>
+                </div>
+              ) : (() => {
                 let price = product.discountPrice || product.price;
                 let isB2B = false;
                 if (user) {
@@ -278,9 +338,9 @@ export default function ProductDetails() {
 
                 return (
                   <div className="flex items-center space-x-3">
-                    <span className="text-2xl md:text-3xl font-black text-slate-900">{price.toLocaleString()} DA</span>
+                    <span className="text-2xl md:text-3xl font-black text-slate-900 ltr-text">{price.toLocaleString()} DA</span>
                     {(hasDiscount || isB2B) && (
-                      <span className="text-sm text-slate-400 line-through">
+                      <span className="text-sm text-slate-400 line-through ltr-text">
                         {product.price.toLocaleString()} DA
                       </span>
                     )}
@@ -294,7 +354,7 @@ export default function ProductDetails() {
               })()}
             </div>
 
-            <p className="text-xs text-slate-500 leading-relaxed pt-2">
+            <p className="text-xs text-slate-500 leading-relaxed pt-2 whitespace-pre-line">
               {product.description}
             </p>
 
@@ -410,7 +470,7 @@ export default function ProductDetails() {
         {/* Tab content renderer */}
         <div>
           {activeTab === 'description' && (
-            <div className="text-xs text-slate-500 leading-relaxed space-y-4">
+            <div className="text-xs text-slate-500 leading-relaxed space-y-4 whitespace-pre-line">
               <p>{product.longDescription || product.description}</p>
             </div>
           )}
@@ -551,7 +611,13 @@ export default function ProductDetails() {
                   <img src={getImageUrl(item.images?.[0])} alt="" className="max-h-full object-contain group-hover:scale-105 transition-transform duration-300" />
                 </div>
                 <h4 className="text-xs font-bold text-slate-800 truncate uppercase tracking-wide">{item.name}</h4>
-                <span className="text-xs font-black text-slate-900">{item.price.toLocaleString()} DA</span>
+                {isAuthenticated ? (
+                  <span className="text-xs font-black text-slate-900">{item.price.toLocaleString()} DA</span>
+                ) : (
+                  <span className="text-[10px] font-black text-brand-primary uppercase tracking-wide">
+                    {language === 'ar' ? 'سجل لرؤية السعر' : 'Se connecter'}
+                  </span>
+                )}
               </Link>
             ))}
           </div>

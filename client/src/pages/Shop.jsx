@@ -1,21 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, SlidersHorizontal, RefreshCw, X, ChevronLeft, ChevronRight, ArrowUpDown } from 'lucide-react';
+import { Search, SlidersHorizontal, RefreshCw, X, ChevronLeft, ChevronRight, ArrowUpDown, MessageCircle, Smartphone, Sparkles } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
-import { productService, categoryService, brandService } from '../services/api';
+import { productService, categoryService, brandService, getCategoryDisplayName } from '../services/api';
+import { useTranslation } from '../context/LanguageContext';
+import { useSelector } from 'react-redux';
 
 export default function Shop() {
+  const { t, language } = useTranslation();
+  const { isAuthenticated } = useSelector((state) => state.auth);
   const [searchParams, setSearchParams] = useSearchParams();
 
   // State lists
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [brands, setBrands] = useState([]);
+  const [devicesData, setDevicesData] = useState({ brands: [], popularPhones: [] });
   const [loading, setLoading] = useState(true);
 
   // Filters State (initialized from URL search parameters)
   const [keyword, setKeyword] = useState(searchParams.get('keyword') || '');
+  const [selectedModel, setSelectedModel] = useState(searchParams.get('model') || '');
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
   const [selectedBrand, setSelectedBrand] = useState(searchParams.get('brand') || '');
   const [minPrice, setMinPrice] = useState(searchParams.get('minPrice') || '');
@@ -30,7 +36,7 @@ export default function Shop() {
 
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
-  // Load Categories & Brands once on mount
+  // Load Categories, Brands & Devices once on mount
   useEffect(() => {
     const loadFiltersData = async () => {
       try {
@@ -38,6 +44,13 @@ export default function Shop() {
         const brandRes = await brandService.getBrands();
         if (catRes.success) setCategories(catRes.categories);
         if (brandRes.success) setBrands(brandRes.brands);
+
+        try {
+          const devRes = await productService.getDevices();
+          if (devRes.success) setDevicesData(devRes);
+        } catch (dErr) {
+          console.error('Error loading devices data:', dErr);
+        }
       } catch (err) {
         console.error('Error loading filters data:', err);
       }
@@ -47,7 +60,10 @@ export default function Shop() {
 
   // Sync state values with URL search parameters
   useEffect(() => {
-    setKeyword(searchParams.get('keyword') || '');
+    const rawKw = searchParams.get('keyword') || '';
+    const cleanKw = (rawKw === 'undefined' || rawKw === 'null') ? '' : rawKw;
+    setKeyword(cleanKw);
+    setSelectedModel(searchParams.get('model') || '');
     setSelectedCategory(searchParams.get('category') || '');
     setSelectedBrand(searchParams.get('brand') || '');
     setMinPrice(searchParams.get('minPrice') || '');
@@ -57,13 +73,29 @@ export default function Shop() {
     setPage(Number(searchParams.get('page')) || 1);
   }, [searchParams]);
 
+  // Live debounced keyword search on typing in Shop page
+  useEffect(() => {
+    const rawKw = searchParams.get('keyword') || '';
+    const currentUrlKeyword = (rawKw === 'undefined' || rawKw === 'null') ? '' : rawKw;
+    if (keyword.trim() !== currentUrlKeyword) {
+      const timer = setTimeout(() => {
+        applyFilters({ keyword: keyword.trim() });
+      }, 350);
+      return () => clearTimeout(timer);
+    }
+  }, [keyword]);
+
   // Load products when filters/params change
   useEffect(() => {
     const fetchFilteredProducts = async () => {
       setLoading(true);
       try {
+        const rawKw = searchParams.get('keyword') || '';
+        const cleanKw = (rawKw === 'undefined' || rawKw === 'null') ? '' : rawKw;
+
         const params = {
-          keyword: searchParams.get('keyword') || undefined,
+          keyword: cleanKw || undefined,
+          model: searchParams.get('model') || undefined,
           category: searchParams.get('category') || undefined,
           brand: searchParams.get('brand') || undefined,
           minPrice: searchParams.get('minPrice') || undefined,
@@ -94,7 +126,8 @@ export default function Shop() {
   const applyFilters = (newParams = {}) => {
     const current = {};
     
-    if (keyword) current.keyword = keyword;
+    if (keyword && keyword.trim()) current.keyword = keyword.trim();
+    if (selectedModel) current.model = selectedModel;
     if (selectedCategory) current.category = selectedCategory;
     if (selectedBrand) current.brand = selectedBrand;
     if (minPrice) current.minPrice = minPrice;
@@ -103,13 +136,22 @@ export default function Shop() {
     if (sort !== 'newest') current.sort = sort;
     current.page = '1';
 
-    const finalParams = { ...current, ...newParams };
+    const merged = { ...current, ...newParams };
+    const finalParams = {};
+    Object.keys(merged).forEach((key) => {
+      const val = merged[key];
+      if (val !== undefined && val !== null && val !== '' && val !== 'undefined' && val !== 'null') {
+        finalParams[key] = val;
+      }
+    });
+
     setSearchParams(finalParams);
     setMobileFiltersOpen(false);
   };
 
   const clearFilters = () => {
     setKeyword('');
+    setSelectedModel('');
     setSelectedCategory('');
     setSelectedBrand('');
     setMinPrice('');
@@ -129,8 +171,8 @@ export default function Shop() {
     <div className="pt-28 max-w-7xl mx-auto px-6 min-h-screen bg-brand-bg pb-24">
       {/* Top Banner Header */}
       <div className="flex flex-col space-y-1 mb-8 text-left">
-        <span className="text-xs font-black uppercase tracking-widest text-brand-primary">Dépôt Hardware</span>
-        <h1 className="text-2xl md:text-3xl font-black text-slate-800 uppercase">CATALOGUE DES COMPOSANTS</h1>
+        <span className="text-xs font-black uppercase tracking-widest text-brand-primary">{t('shop_badge')}</span>
+        <h1 className="text-2xl md:text-3xl font-black text-slate-800 uppercase">{t('shop_title')}</h1>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -139,52 +181,99 @@ export default function Shop() {
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <h3 className="font-black text-slate-800 text-xs tracking-wider uppercase flex items-center">
               <SlidersHorizontal size={13} className="mr-2 text-brand-primary" />
-              Filtres
+              {t('filter_title')}
             </h3>
             <button onClick={clearFilters} className="text-[10px] font-black text-slate-400 hover:text-brand-primary flex items-center gap-1 uppercase transition-colors">
-              <RefreshCw size={10} /> Réinitialiser
+              <RefreshCw size={10} /> {language === 'ar' ? 'إعادة تعيين' : 'Réinitialiser'}
             </button>
           </div>
 
           {/* Search keyword input */}
           <div className="flex flex-col space-y-1.5">
-            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Rechercher</label>
+            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{t('filter_keyword')}</label>
             <div className="relative">
               <input
                 type="text"
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
-                placeholder="Référence, Mot-clé..."
+                placeholder={t('search_placeholder')}
                 className="w-full bg-slate-50 border border-slate-100 text-slate-805 text-xs rounded-[12px] pl-10 pr-4 py-3 focus:outline-none focus:border-brand-primary/50"
               />
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
             </div>
           </div>
 
+          {/* Phone Model Filter */}
+          <div className="flex flex-col space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                <Smartphone size={11} className="text-amber-500" />
+                <span>{language === 'ar' ? 'موديل الهاتف' : 'Modèle de Téléphone'}</span>
+              </label>
+              {selectedModel && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedModel('');
+                    applyFilters({ model: '' });
+                  }}
+                  className="text-[10px] font-bold text-amber-600 hover:text-amber-700 hover:underline cursor-pointer"
+                >
+                  {language === 'ar' ? 'مسح' : 'effacer'}
+                </button>
+              )}
+            </div>
+            <select
+              value={selectedModel}
+              onChange={(e) => {
+                setSelectedModel(e.target.value);
+                applyFilters({ model: e.target.value });
+              }}
+              className="w-full bg-amber-500/5 border border-amber-500/20 text-slate-900 font-bold text-xs rounded-[12px] px-4 py-3 focus:outline-none focus:border-amber-500 cursor-pointer shadow-sm"
+            >
+              <option value="">{language === 'ar' ? '📱 جميع الهواتف والموديلات' : '📱 Tous les modèles de téléphones'}</option>
+              {devicesData.brands?.map((b) => (
+                <optgroup key={b.slug} label={`--- ${b.name} (${b.totalProducts} pièces) ---`}>
+                  {b.models.map((m) => (
+                    <option key={m.name} value={m.name}>
+                      {m.name} ({m.count})
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+          </div>
+
           {/* Category Filter */}
           <div className="flex flex-col space-y-1.5">
-            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Catégories</label>
+            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{t('filter_category')}</label>
             <select
               value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
+              onChange={(e) => {
+                setSelectedCategory(e.target.value);
+                applyFilters({ category: e.target.value });
+              }}
               className="w-full bg-slate-50 border border-slate-100 text-slate-800 text-xs rounded-[12px] px-4 py-3 focus:outline-none focus:border-brand-primary/50 cursor-pointer"
             >
-              <option value="">Toutes les catégories</option>
+              <option value="">{t('filter_category_all')}</option>
               {categories.map((cat) => (
-                <option key={cat._id} value={cat._id}>{cat.name}</option>
+                <option key={cat._id} value={cat._id}>{getCategoryDisplayName(cat.name)}</option>
               ))}
             </select>
           </div>
 
           {/* Brand filter */}
           <div className="flex flex-col space-y-1.5">
-            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Marques</label>
+            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{t('filter_brand')}</label>
             <select
               value={selectedBrand}
-              onChange={(e) => setSelectedBrand(e.target.value)}
+              onChange={(e) => {
+                setSelectedBrand(e.target.value);
+                applyFilters({ brand: e.target.value });
+              }}
               className="w-full bg-slate-50 border border-slate-100 text-slate-800 text-xs rounded-[12px] px-4 py-3 focus:outline-none focus:border-brand-primary/50 cursor-pointer"
             >
-              <option value="">Toutes les marques</option>
+              <option value="">{t('filter_brand_all')}</option>
               {brands.map((brand) => (
                 <option key={brand._id} value={brand._id}>{brand.name}</option>
               ))}
@@ -192,29 +281,31 @@ export default function Shop() {
           </div>
 
           {/* Price Range */}
-          <div className="flex flex-col space-y-1.5">
-            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Limite de Prix (DA)</label>
-            <div className="grid grid-cols-2 gap-2">
-              <input
-                type="number"
-                placeholder="Min"
-                value={minPrice}
-                onChange={(e) => setMinPrice(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-100 text-slate-800 text-xs rounded-[12px] px-4 py-3 focus:outline-none focus:border-brand-primary/50"
-              />
-              <input
-                type="number"
-                placeholder="Max"
-                value={maxPrice}
-                onChange={(e) => setMaxPrice(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-100 text-slate-800 text-xs rounded-[12px] px-4 py-3 focus:outline-none focus:border-brand-primary/50"
-              />
+          {isAuthenticated && (
+            <div className="flex flex-col space-y-1.5">
+              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{t('filter_price')}</label>
+              <div className="grid grid-cols-2 gap-2">
+                <input
+                  type="number"
+                  placeholder={t('filter_min')}
+                  value={minPrice}
+                  onChange={(e) => setMinPrice(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-100 text-slate-800 text-xs rounded-[12px] px-4 py-3 focus:outline-none focus:border-brand-primary/50"
+                />
+                <input
+                  type="number"
+                  placeholder={t('filter_max')}
+                  value={maxPrice}
+                  onChange={(e) => setMaxPrice(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-100 text-slate-800 text-xs rounded-[12px] px-4 py-3 focus:outline-none focus:border-brand-primary/50"
+                />
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Stock filter switch */}
           <div className="flex items-center justify-between pt-2">
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Disponible uniquement</span>
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t('filter_stock')}</span>
             <input
               type="checkbox"
               checked={inStock}
@@ -228,16 +319,55 @@ export default function Shop() {
             onClick={() => applyFilters()}
             className="w-full bg-gray-50 text-brand-primary border border-brand-primary/20 font-black text-xs uppercase tracking-wider py-3.5 rounded-[14px] hover:bg-brand-primary hover:text-brand-secondary transition-colors duration-300 shadow-sm cursor-pointer"
           >
-            Appliquer les Filtres
+            {language === 'ar' ? 'تطبيق الفلاتر' : 'Appliquer les Filtres'}
           </button>
         </aside>
 
         {/* MAIN PRODUCTS GRID & SEARCH CONTROLS */}
         <main className="lg:col-span-3 space-y-6">
+          {/* Active Model Banner */}
+          {selectedModel && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-gradient-to-r from-amber-500/15 via-amber-500/5 to-white border border-amber-500/40 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm"
+            >
+              <div className="flex items-center space-x-3.5 rtl:space-x-reverse">
+                <div className="w-11 h-11 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-black shadow-md shadow-amber-500/20 flex-shrink-0">
+                  <Smartphone size={22} className="stroke-[2.5]" />
+                </div>
+                <div>
+                  <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                    <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-amber-200/80 text-amber-950">
+                      {language === 'ar' ? 'الهاتف المختار' : 'Smartphone Sélectionné'}
+                    </span>
+                    <span className="text-sm md:text-base font-black text-slate-900">{selectedModel}</span>
+                  </div>
+                  <p className="text-xs text-slate-500 font-semibold mt-0.5">
+                    {language === 'ar' 
+                      ? `تم العثور على (${totalProducts}) قطعة غيار وإكسسوار متوافق`
+                      : `Toutes les pièces détachées, écrans et batteries pour ce modèle (${totalProducts} produits)`}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => {
+                  setSelectedModel('');
+                  applyFilters({ model: '' });
+                }}
+                className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-red-50 text-slate-700 hover:text-red-600 border border-slate-200 hover:border-red-200 text-xs font-bold transition-all shadow-sm active:scale-95 cursor-pointer whitespace-nowrap"
+              >
+                <X size={14} />
+                <span>{language === 'ar' ? 'إلغاء فلتر الهاتف' : 'Tous les modèles'}</span>
+              </button>
+            </motion.div>
+          )}
+
           {/* Top sorting & mobile triggers bar */}
           <div className="bg-white p-4 rounded-[16px] border border-slate-100 shadow-[0_4px_20px_-4px_rgba(17,24,39,0.02)] flex items-center justify-between">
             <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">
-              <span className="font-bold text-slate-800">{totalProducts}</span> produits affichés
+              <span className="font-bold text-slate-800">{totalProducts}</span> {language === 'ar' ? 'منتجات معروضة' : 'produits affichés'}
             </p>
 
             <div className="flex items-center space-x-3">
@@ -252,10 +382,10 @@ export default function Shop() {
                   }}
                   className="bg-transparent border-none text-slate-800 font-bold focus:outline-none cursor-pointer"
                 >
-                  <option value="newest">Nouveautés</option>
-                  <option value="priceAsc">Prix : Croissant</option>
-                  <option value="priceDesc">Prix : Décroissant</option>
-                  <option value="rating">Mieux notés</option>
+                  <option value="newest">{t('sort_newest')}</option>
+                  {isAuthenticated && <option value="priceAsc">{t('sort_price_asc')}</option>}
+                  {isAuthenticated && <option value="priceDesc">{t('sort_price_desc')}</option>}
+                  <option value="rating">{t('sort_rating')}</option>
                 </select>
               </div>
 
@@ -290,13 +420,29 @@ export default function Shop() {
               </div>
             </div>
           ) : products.length === 0 ? (
-            <div className="bg-white rounded-[24px] border border-slate-100 p-12 text-center flex flex-col items-center justify-center space-y-4">
+            <div className="bg-white rounded-[24px] border border-slate-100 p-8 sm:p-12 text-center flex flex-col items-center justify-center space-y-4">
               <Search size={40} className="text-slate-350" />
-              <h3 className="font-bold text-slate-800 text-lg">Aucun produit trouvé</h3>
-              <p className="text-xs text-slate-500">Essayez d'ajuster vos filtres ou vos mots-clés.</p>
-              <button onClick={clearFilters} className="gold-bg-gradient text-slate-950 font-black text-xs uppercase tracking-wider px-6 py-3 rounded-[16px] cursor-pointer">
-                Réinitialiser les filtres
-              </button>
+              <h3 className="font-bold text-slate-800 text-lg">{t('no_products')}</h3>
+              <p className="text-xs text-slate-500 max-w-md">{t('no_products_desc')}</p>
+              
+              <div className="flex flex-col sm:flex-row items-center gap-3 pt-2 w-full sm:w-auto">
+                <a
+                  href={`https://api.whatsapp.com/send?phone=213550082685&text=${encodeURIComponent(
+                    language === 'ar'
+                      ? `مرحباً نونو تليكوم، أبحث عن القطعة/المنتج : "${keyword}". هل هو متوفر؟`
+                      : `Bonjour Nounou Telecom, je recherche la pièce/produit : "${keyword}". Est-il disponible ?`
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase tracking-wider px-6 py-3 rounded-[16px] flex items-center justify-center space-x-2 shadow-md transition-all active:scale-95 cursor-pointer w-full sm:w-auto"
+                >
+                  <MessageCircle size={16} />
+                  <span>{language === 'ar' ? 'طلب القطعة عبر واتساب (WhatsApp)' : 'Demander la pièce sur WhatsApp'}</span>
+                </a>
+                <button onClick={clearFilters} className="gold-bg-gradient text-slate-950 font-black text-xs uppercase tracking-wider px-6 py-3 rounded-[16px] cursor-pointer w-full sm:w-auto">
+                  {language === 'ar' ? 'إعادة تعيين الفلاتر' : 'Réinitialiser les filtres'}
+                </button>
+              </div>
             </div>
           ) : (
             <>
@@ -414,7 +560,7 @@ export default function Shop() {
               <div className="flex items-center justify-between pb-4 border-b border-slate-100">
                 <h3 className="font-black text-slate-800 text-xs tracking-wider uppercase flex items-center">
                   <SlidersHorizontal size={13} className="mr-2 text-brand-primary" />
-                  Filtres
+                  {t('filter_title')}
                 </h3>
                 <button onClick={() => setMobileFiltersOpen(false)} className="text-slate-500 hover:text-slate-900 transition-colors">
                   <X size={20} />
@@ -423,66 +569,110 @@ export default function Shop() {
 
               {/* Same filter inputs as desktop for mobile layout */}
               <div className="flex flex-col space-y-1.5">
-                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Rechercher</label>
+                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{t('filter_keyword')}</label>
                 <input
                   type="text"
                   value={keyword}
                   onChange={(e) => setKeyword(e.target.value)}
-                  placeholder="Référence, Mot-clé..."
+                  placeholder={t('search_placeholder')}
                   className="w-full bg-slate-50 border border-slate-100 text-slate-805 text-xs rounded-[12px] px-4 py-3 focus:outline-none"
                 />
               </div>
 
               <div className="flex flex-col space-y-1.5">
-                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Catégorie</label>
+                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{t('filter_category')}</label>
                 <select
                   value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  onChange={(e) => {
+                    setSelectedCategory(e.target.value);
+                    applyFilters({ category: e.target.value });
+                  }}
                   className="w-full bg-slate-50 border border-slate-100 text-slate-800 text-xs rounded-[12px] px-4 py-3"
                 >
-                  <option value="">Toutes les catégories</option>
+                  <option value="">{t('filter_category_all')}</option>
                   {categories.map((cat) => (
-                    <option key={cat._id} value={cat._id}>{cat.name}</option>
+                    <option key={cat._id} value={cat._id}>{getCategoryDisplayName(cat.name)}</option>
                   ))}
                 </select>
               </div>
 
               <div className="flex flex-col space-y-1.5">
-                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Marque</label>
+                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{t('filter_brand')}</label>
                 <select
                   value={selectedBrand}
-                  onChange={(e) => setSelectedBrand(e.target.value)}
+                  onChange={(e) => {
+                    setSelectedBrand(e.target.value);
+                    setSelectedModel('');
+                    applyFilters({ brand: e.target.value, model: '' });
+                  }}
                   className="w-full bg-slate-50 border border-slate-100 text-slate-800 text-xs rounded-[12px] px-4 py-3"
                 >
-                  <option value="">Toutes les marques</option>
+                  <option value="">{t('filter_brand_all')}</option>
                   {brands.map((brand) => (
                     <option key={brand._id} value={brand._id}>{brand.name}</option>
                   ))}
                 </select>
               </div>
 
+              {/* Phone Model Filter (Mobile) */}
               <div className="flex flex-col space-y-1.5">
-                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Prix (DA)</label>
-                <div className="grid grid-cols-2 gap-2">
-                  <input
-                    type="number"
-                    placeholder="Min"
-                    value={minPrice}
-                    onChange={(e) => setMinPrice(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-100 text-slate-800 text-xs rounded-[12px] px-3 py-2.5"
-                  />
-                  <input
-                    type="number"
-                    placeholder="Max"
-                    value={maxPrice}
-                    onChange={(e) => setMaxPrice(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-100 text-slate-800 text-xs rounded-[12px] px-3 py-2.5"
-                  />
-                </div>
+                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest flex items-center justify-between">
+                  <span>{language === 'ar' ? 'موديل الهاتف' : 'Modèle de Téléphone'}</span>
+                  {selectedModel && (
+                    <button
+                      onClick={() => {
+                        setSelectedModel('');
+                        applyFilters({ model: '' });
+                      }}
+                      className="text-[9px] text-amber-600 hover:underline lowercase font-bold"
+                    >
+                      {language === 'ar' ? 'إلغاء' : 'effacer'}
+                    </button>
+                  )}
+                </label>
+                <select
+                  value={selectedModel}
+                  onChange={(e) => {
+                    setSelectedModel(e.target.value);
+                    applyFilters({ model: e.target.value });
+                  }}
+                  className={`w-full bg-slate-50 border text-slate-800 text-xs rounded-[12px] px-4 py-3 transition-colors ${
+                    selectedModel ? 'border-amber-400 bg-amber-50/40 text-amber-900 font-bold' : 'border-slate-100'
+                  }`}
+                >
+                  <option value="">{language === 'ar' ? 'جميع الموديلات' : 'Tous les modèles'}</option>
+                  {availableModels.map((m) => (
+                    <option key={m.fullModel} value={m.fullModel}>
+                      {m.fullModel} ({m.count})
+                    </option>
+                  ))}
+                </select>
               </div>
 
+              {isAuthenticated && (
+                <div className="flex flex-col space-y-1.5">
+                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{t('filter_price')}</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <input
+                      type="number"
+                      placeholder={t('filter_min')}
+                      value={minPrice}
+                      onChange={(e) => setMinPrice(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-100 text-slate-800 text-xs rounded-[12px] px-3 py-2.5"
+                    />
+                    <input
+                      type="number"
+                      placeholder={t('filter_max')}
+                      value={maxPrice}
+                      onChange={(e) => setMaxPrice(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-100 text-slate-800 text-xs rounded-[12px] px-3 py-2.5"
+                    />
+                  </div>
+                </div>
+              )}
+
               <div className="flex items-center justify-between">
-                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Disponible uniquement</span>
+                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{t('filter_stock')}</span>
                 <input
                   type="checkbox"
                   checked={inStock}
@@ -496,13 +686,13 @@ export default function Shop() {
                   onClick={() => applyFilters()}
                   className="w-full bg-gray-50 text-brand-primary border border-brand-primary/20 font-black text-xs uppercase tracking-wider py-4 rounded-[14px] cursor-pointer"
                 >
-                  Appliquer les Filtres
+                  {language === 'ar' ? 'تطبيق الفلاتر' : 'Appliquer les Filtres'}
                 </button>
                 <button
                   onClick={clearFilters}
                   className="w-full bg-gray-100 text-slate-500 font-bold text-xs uppercase tracking-wider py-4 rounded-[14px] cursor-pointer"
                 >
-                  Tout effacer
+                  {language === 'ar' ? 'مسح الكل' : 'Tout effacer'}
                 </button>
               </div>
             </motion.div>

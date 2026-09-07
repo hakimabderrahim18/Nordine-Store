@@ -15,6 +15,28 @@ export default function Cart() {
 
 
 
+  if (!isAuthenticated) {
+    const isAr = localStorage.getItem('language') === 'ar';
+    return (
+      <div className="pt-32 min-h-screen bg-brand-bg flex flex-col items-center justify-center space-y-4 px-6 text-center">
+        <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+          <ShoppingBag size={24} className="text-slate-400" />
+        </div>
+        <h2 className="text-xl font-black text-slate-800 uppercase tracking-wide">
+          {isAr ? 'سلة التسوق مقفلة' : 'Votre panier est verrouillé'}
+        </h2>
+        <p className="text-xs text-slate-500 max-w-xs leading-relaxed">
+          {isAr 
+            ? 'يرجى تسجيل الدخول إلى حسابك المهني المعتمد لعرض سلة التسوق وإتمام الطلبات.' 
+            : 'Veuillez vous connecter à votre compte professionnel approuvé pour voir votre panier et commander.'}
+        </p>
+        <Link to="/login?redirect=/cart" className="mt-4 bg-brand-secondary text-brand-primary font-black text-xs uppercase tracking-wider px-8 py-4 rounded-[16px] shadow-sm hover:scale-102 transition-transform">
+          {isAr ? 'تسجيل الدخول' : 'Se connecter'}
+        </Link>
+      </div>
+    );
+  }
+
   useEffect(() => {
     if (isAuthenticated) {
       dispatch(fetchCart());

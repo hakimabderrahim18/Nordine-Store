@@ -2,8 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { FileText, Eye, Check, Trash2, Phone, MapPin, ShieldAlert, ShoppingBag, Truck, User, Tag, ExternalLink, X, Upload } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { orderService, getImageUrl } from '../../services/api';
+import { useTranslation } from '../../context/LanguageContext';
 
 export default function Orders() {
+  const { t, language } = useTranslation();
+  const isAr = language === 'ar';
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -201,44 +204,54 @@ export default function Orders() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-left">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-start">
         <div>
-          <h1 className="text-2xl font-black text-slate-800 tracking-wide uppercase">Expéditions de Commandes</h1>
-          <p className="text-xs text-slate-500">Suivez les factures entrantes, les colis des transporteurs et gérez les expéditions.</p>
+          <h1 className="text-2xl font-black text-slate-800 tracking-wide uppercase">
+            {t('admin_orders_title')}
+          </h1>
+          <p className="text-xs text-slate-500">
+            {isAr ? 'متابعة شحنات الطلبات، فواتير الشراء، ومراجعة حالة التسليم.' : 'Suivez les factures entrantes, les colis des transporteurs et gérez les expéditions.'}
+          </p>
         </div>
         <button
           onClick={handleExcelExport}
           className="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase tracking-wider px-5 py-3.5 rounded-[16px] flex items-center justify-center space-x-2 shadow-md hover:scale-103 active:scale-97 transition-all cursor-pointer w-full sm:w-auto"
         >
           <Upload size={15} className="rotate-180" />
-          <span>Exporter Commandes (Excel)</span>
+          <span>{isAr ? 'تصدير الطلبات (Excel)' : 'Exporter Commandes (Excel)'}</span>
         </button>
       </div>
 
       {/* Date, Client & Product Filter Panel */}
-      <div className="bg-white border border-slate-100 p-5 rounded-[24px] shadow-sm flex flex-wrap items-end gap-4 text-left">
+      <div className="bg-white border border-slate-100 p-5 rounded-[24px] shadow-sm flex flex-wrap items-end gap-4 text-start">
         <div className="flex flex-col space-y-1.5 flex-1 min-w-[180px]">
-          <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Rechercher Client / N° Commande</label>
+          <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider">
+            {isAr ? 'البحث عن زبون / رقم الطلب' : 'Rechercher Client / N° Commande'}
+          </label>
           <input
             type="text"
             value={clientSearch}
             onChange={(e) => setClientSearch(e.target.value)}
-            placeholder="Nom, Téléphone, ID..."
+            placeholder={isAr ? 'الاسم، رقم الهاتف، المعرف...' : 'Nom, Téléphone, ID...'}
             className="w-full bg-slate-50 border border-slate-200 text-slate-800 text-xs rounded-[12px] px-3.5 py-2.5 focus:outline-none focus:border-brand-primary font-semibold"
           />
         </div>
         <div className="flex flex-col space-y-1.5 flex-1 min-w-[180px]">
-          <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Rechercher Produit / SKU</label>
+          <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider">
+            {isAr ? 'البحث عن منتج / SKU' : 'Rechercher Produit / SKU'}
+          </label>
           <input
             type="text"
             value={productSearch}
             onChange={(e) => setProductSearch(e.target.value)}
-            placeholder="Désignation, Référence SKU..."
+            placeholder={isAr ? 'اسم المنتج، رمز SKU...' : 'Désignation, Référence SKU...'}
             className="w-full bg-slate-50 border border-slate-200 text-slate-800 text-xs rounded-[12px] px-3.5 py-2.5 focus:outline-none focus:border-brand-primary font-semibold"
           />
         </div>
         <div className="flex flex-col space-y-1.5 flex-1 min-w-[120px]">
-          <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Date de Début</label>
+          <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider">
+            {isAr ? 'تاريخ البداية' : 'Date de Début'}
+          </label>
           <input
             type="date"
             value={startDate}
@@ -247,7 +260,9 @@ export default function Orders() {
           />
         </div>
         <div className="flex flex-col space-y-1.5 flex-1 min-w-[120px]">
-          <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Date de Fin</label>
+          <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider">
+            {isAr ? 'تاريخ النهاية' : 'Date de Fin'}
+          </label>
           <input
             type="date"
             value={endDate}
@@ -263,9 +278,9 @@ export default function Orders() {
               setClientSearch('');
               setProductSearch('');
             }}
-            className="bg-red-50 text-red-650 font-black text-[10px] uppercase tracking-wider px-5 py-3.5 rounded-[12px] hover:bg-red-100 transition-colors"
+            className="bg-red-50 text-red-600 font-black text-[10px] uppercase tracking-wider px-5 py-3.5 rounded-[12px] hover:bg-red-100 transition-colors"
           >
-            Réinitialiser
+            {isAr ? 'إعادة ضبط' : 'Réinitialiser'}
           </button>
         )}
       </div>

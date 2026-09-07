@@ -2,8 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Plus, Edit2, Trash2, Search, X, Upload } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { productService, categoryService, brandService, getImageUrl } from '../../services/api';
+import { useTranslation } from '../../context/LanguageContext';
 
 function StockAvailabilityToggle({ product, onUpdate }) {
+  const { language } = useTranslation();
+  const isAr = language === 'ar';
   const [available, setAvailable] = useState(product.stock > 0);
   const [updating, setUpdating] = useState(false);
 
@@ -22,13 +25,13 @@ function StockAvailabilityToggle({ product, onUpdate }) {
         onUpdate(product._id, newStock);
         toast.success(
           nextState 
-            ? `${product.name} est disponible` 
-            : `${product.name} est en rupture de stock`,
+            ? (isAr ? `${product.name} أصبح متوفراً` : `${product.name} est disponible`)
+            : (isAr ? `${product.name} نفذ من المخزون` : `${product.name} est en rupture de stock`),
           { id: `stock-${product._id}` }
         );
       }
     } catch (err) {
-      toast.error('Échec de la mise à jour de la disponibilité du produit');
+      toast.error(isAr ? 'فشل تحديث حالة التوفر' : 'Échec de la mise à jour de la disponibilité du produit');
     } finally {
       setUpdating(false);
     }
@@ -45,12 +48,14 @@ function StockAvailabilityToggle({ product, onUpdate }) {
           : 'bg-red-50 text-red-600 hover:bg-red-100'
       }`}
     >
-      {updating ? 'Mise à jour...' : available ? 'Disponible' : 'Rupture'}
+      {updating ? (isAr ? 'جاري التحديث...' : 'Mise à jour...') : available ? (isAr ? 'متوفر' : 'Disponible') : (isAr ? 'نفذ' : 'Rupture')}
     </button>
   );
 }
 
 export default function Products() {
+  const { t, language } = useTranslation();
+  const isAr = language === 'ar';
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [brands, setBrands] = useState([]);
@@ -213,13 +218,14 @@ export default function Products() {
     const toastId = toast.loading('Génération du fichier d\'export...');
     try {
       const blob = await productService.exportProducts();
-      const url = window.URL.createObjectURL(new Blob([blob]));
+      const url = window.URL.createObjectURL(new Blob([blob], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', 'produits_export.xls');
+      link.setAttribute('download', `produits_export_${new Date().toISOString().split('T')[0]}.xlsx`);
       document.body.appendChild(link);
       link.click();
       link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
       toast.success('Fichier exporté avec succès !', { id: toastId });
     } catch (err) {
       toast.error('Erreur lors de l\'exportation', { id: toastId });
@@ -473,16 +479,20 @@ export default function Products() {
     <div className="space-y-6 text-left">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex flex-col">
-          <h1 className="text-2xl font-black text-slate-800 tracking-wide uppercase">Contrôles de l'inventaire</h1>
-          <p className="text-xs text-slate-500">Gérer les composants d'appareils, les niveaux de stock, les variantes et les prix.</p>
+          <h1 className="text-2xl font-black text-slate-800 tracking-wide uppercase">
+            {t('admin_page_inventory')}
+          </h1>
+          <p className="text-xs text-slate-500">
+            {isAr ? 'إدارة المكونات، قطع الغيار، فئات المخزون، والأسعار بالجملة والتجزئة.' : 'Gérer les composants d\'appareils, les niveaux de stock, les variantes et les prix.'}
+          </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <label className="bg-white border border-gray-300 text-slate-700 font-black text-xs uppercase tracking-wider px-6 py-4 rounded-[16px] flex items-center space-x-2 hover:bg-gray-50 transition-colors cursor-pointer select-none">
             <Upload size={14} />
-            <span>Importer Excel</span>
+            <span>{isAr ? 'استيراد Excel' : 'Importer Excel'}</span>
             <input
               type="file"
-              accept=".xls,.xlsx"
+              accept=".xls,.xlsx,.csv"
               className="hidden"
               onChange={handleImportExcel}
               disabled={importing}
@@ -493,14 +503,14 @@ export default function Products() {
             onClick={handleExportExcel}
             className="bg-white border border-gray-300 text-slate-700 font-black text-xs uppercase tracking-wider px-6 py-4 rounded-[16px] flex items-center space-x-2 hover:bg-gray-50 transition-colors cursor-pointer"
           >
-            <span>Exporter Excel</span>
+            <span>{isAr ? 'تصدير Excel' : 'Exporter Excel'}</span>
           </button>
           <button
             onClick={handleAddClick}
-            className="bg-brand-primary text-white font-black text-xs uppercase tracking-wider px-6 py-4 rounded-[16px] flex items-center space-x-2 hover:bg-amber-500 transition-colors"
+            className="bg-brand-primary text-slate-950 font-black text-xs uppercase tracking-wider px-6 py-4 rounded-[16px] flex items-center space-x-2 hover:bg-amber-500 transition-colors"
           >
             <Plus size={16} />
-            <span>Ajouter un composant</span>
+            <span>{t('admin_prod_add')}</span>
           </button>
         </div>
       </div>
@@ -510,12 +520,14 @@ export default function Products() {
         <div className="relative w-80">
           <input
             type="text"
-            placeholder="Rechercher par SKU ou description..."
+            placeholder={t('admin_prod_search')}
             value={keyword}
             onChange={(e) => { setKeyword(e.target.value); setPage(1); }}
-            className="w-full bg-slate-50 border border-slate-100 text-slate-800 text-xs rounded-[12px] pl-10 pr-4 py-2.5 focus:outline-none"
+            className={`w-full bg-slate-50 border border-slate-100 text-slate-800 text-xs rounded-[12px] py-2.5 focus:outline-none ${
+              isAr ? 'pr-10 pl-4' : 'pl-10 pr-4'
+            }`}
           />
-          <Search size={14} className="absolute left-3.5 top-3.5 text-slate-400" />
+          <Search size={14} className={`absolute top-3.5 text-slate-400 ${isAr ? 'right-3.5' : 'left-3.5'}`} />
         </div>
 
         {selectedProductIds.length > 0 && (
@@ -524,7 +536,7 @@ export default function Products() {
             className="bg-red-50 hover:bg-red-100 text-red-600 font-black text-xs uppercase tracking-wider px-4.5 py-2.5 rounded-[12px] flex items-center space-x-2 border border-red-200/60 hover:scale-102 active:scale-98 transition-all cursor-pointer"
           >
             <Trash2 size={14} />
-            <span>Supprimer la sélection ({selectedProductIds.length})</span>
+            <span>{isAr ? `حذف المحدد (${selectedProductIds.length})` : `Supprimer la sélection (${selectedProductIds.length})`}</span>
           </button>
         )}
       </div>
@@ -535,9 +547,9 @@ export default function Products() {
           <div className="w-10 h-10 border-4 border-slate-200 border-t-brand-primary rounded-full animate-spin" />
         </div>
       ) : (
-        <div className="bg-white border border-slate-100 rounded-[24px] shadow-sm overflow-hidden">
+        <div className="bg-white border border-slate-100 rounded-[24px] shadow-sm overflow-hidden text-start">
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-slate-500 text-xs">
+            <table className="w-full text-start border-collapse text-slate-500 text-xs">
               <thead className="bg-gray-50 text-slate-700 font-bold uppercase tracking-wider">
                 <tr>
                   <th className="py-4 px-6 w-12 text-center">
@@ -548,11 +560,11 @@ export default function Products() {
                       className="rounded border-gray-300 text-brand-primary focus:ring-brand-primary cursor-pointer w-4 h-4"
                     />
                   </th>
-                  <th className="py-4 px-6">SKU / Article</th>
-                  <th className="py-4 px-6">Fabricant</th>
-                  <th className="py-4 px-6">Disponibilité</th>
-                  <th className="py-4 px-6">Prix</th>
-                  <th className="py-4 px-6 text-center">Actions</th>
+                  <th className="py-4 px-6">{t('admin_prod_col_name')} / SKU</th>
+                  <th className="py-4 px-6">{t('admin_prod_col_brand')}</th>
+                  <th className="py-4 px-6">{t('admin_prod_col_stock')}</th>
+                  <th className="py-4 px-6">{t('admin_prod_col_price')}</th>
+                  <th className="py-4 px-6 text-center">{t('admin_prod_col_actions')}</th>
                 </tr>
               </thead>
               <tbody>

@@ -3,8 +3,12 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { DollarSign, FileText, ShoppingBag, ShieldAlert, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { orderService, productService } from '../../services/api';
+import { useTranslation } from '../../context/LanguageContext';
 
 export default function Dashboard() {
+  const { t, language } = useTranslation();
+  const isAr = language === 'ar';
+
   const [stats, setStats] = useState(null);
   const [lowStockProducts, setLowStockProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -28,7 +32,7 @@ export default function Dashboard() {
         setLowStockProducts(lowStock);
       }
     } catch (err) {
-      toast.error('Échec du chargement des statistiques');
+      toast.error(isAr ? 'فشل تحميل الإحصائيات' : 'Échec du chargement des statistiques');
     } finally {
       setLoading(false);
     }
@@ -37,7 +41,6 @@ export default function Dashboard() {
   useEffect(() => {
     fetchDashboardStats();
 
-    // Listen for real-time order updates to refresh dashboard stats automatically
     const handleNewOrder = () => {
       fetchDashboardStats();
     };
@@ -51,31 +54,37 @@ export default function Dashboard() {
 
   if (loading && !stats) {
     return (
-      <div className="h-full flex items-center justify-center">
+      <div className="h-full flex items-center justify-center py-20">
         <div className="w-10 h-10 border-4 border-slate-200 border-t-brand-primary rounded-full animate-spin" />
       </div>
     );
   }
 
-  // Cards list
+  // Cards list with Arabic translations
   const statCards = [
-    { label: 'Chiffre d\'Affaires', value: `${(stats?.totalRevenue || 0).toLocaleString()} DA`, icon: <DollarSign size={20} className="text-emerald-600" />, bg: 'bg-emerald-50' },
-    { label: 'Total Commandes', value: stats?.totalOrders || 0, icon: <FileText size={20} className="text-blue-600" />, bg: 'bg-blue-50' },
-    { label: 'Alerte Stock Bas', value: lowStockProducts.length, icon: <ShieldAlert size={20} className="text-red-600" />, bg: 'bg-red-50' }
+    { label: isAr ? 'إجمالي المبيعات' : 'Chiffre d\'Affaires', value: `${(stats?.totalRevenue || 0).toLocaleString()} DA`, icon: <DollarSign size={20} className="text-emerald-600" />, bg: 'bg-emerald-50' },
+    { label: isAr ? 'إجمالي الطلبات' : 'Total Commandes', value: stats?.totalOrders || 0, icon: <FileText size={20} className="text-blue-600" />, bg: 'bg-blue-50' },
+    { label: isAr ? 'تنبيهات نقص المخزون' : 'Alerte Stock Bas', value: lowStockProducts.length, icon: <ShieldAlert size={20} className="text-red-600" />, bg: 'bg-red-50' }
   ];
 
   return (
     <div className="space-y-8">
       {/* Admin header */}
-      <div className="flex flex-col space-y-1 text-left">
-        <h1 className="text-2xl font-black text-slate-800 tracking-wide uppercase">Tableau de bord</h1>
-        <p className="text-xs text-slate-500">Analyses des performances commerciales et aperçu de la logistique en temps réel.</p>
+      <div className="flex flex-col space-y-1 text-start">
+        <h1 className="text-2xl font-black text-slate-800 tracking-wide uppercase">
+          {isAr ? 'لوحة التحكم الرئيسية' : 'Tableau de bord'}
+        </h1>
+        <p className="text-xs text-slate-500">
+          {isAr ? 'تحليلات الأداء التجاري ونظرة عامة على المبيعات والمخزون في الوقت الفعلي.' : 'Analyses des performances commerciales et aperçu de la logistique en temps réel.'}
+        </p>
       </div>
 
       {/* Date Filter Panel */}
-      <div className="bg-white border border-slate-100 p-5 rounded-[24px] shadow-sm flex flex-wrap items-end gap-4 text-left">
+      <div className="bg-white border border-slate-100 p-5 rounded-[24px] shadow-sm flex flex-wrap items-end gap-4 text-start">
         <div className="flex flex-col space-y-1.5 flex-1 min-w-[150px]">
-          <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Date de Début</label>
+          <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider">
+            {isAr ? 'تاريخ البداية' : 'Date de Début'}
+          </label>
           <input
             type="date"
             value={startDate}
@@ -84,7 +93,9 @@ export default function Dashboard() {
           />
         </div>
         <div className="flex flex-col space-y-1.5 flex-1 min-w-[150px]">
-          <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Date de Fin</label>
+          <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider">
+            {isAr ? 'تاريخ النهاية' : 'Date de Fin'}
+          </label>
           <input
             type="date"
             value={endDate}
@@ -100,13 +111,13 @@ export default function Dashboard() {
             }}
             className="bg-red-50 text-red-600 font-black text-[10px] uppercase tracking-wider px-5 py-3.5 rounded-[12px] hover:bg-red-100 transition-colors"
           >
-            Réinitialiser
+            {isAr ? 'إعادة ضبط' : 'Réinitialiser'}
           </button>
         )}
       </div>
 
       {/* Summary cards grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-start">
         {statCards.map((card, idx) => (
           <div key={idx} className="bg-white border border-slate-100 p-6 rounded-[24px] shadow-sm flex items-center justify-between">
             <div className="flex flex-col space-y-1.5">
@@ -122,10 +133,12 @@ export default function Dashboard() {
 
       {/* Sales Charts grid */}
       {stats?.chartData && stats.chartData.length > 0 && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-left">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-start">
           {/* Main revenue graph */}
           <div className="lg:col-span-2 bg-white border border-slate-100 p-6 rounded-[28px] shadow-sm space-y-4">
-            <h3 className="text-xs font-black uppercase text-slate-500 tracking-wider">Répartition des Revenus</h3>
+            <h3 className="text-xs font-black uppercase text-slate-500 tracking-wider">
+              {isAr ? 'توزيع الإيرادات والمبيعات' : 'Répartition des Revenus'}
+            </h3>
             <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={stats.chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
@@ -138,7 +151,7 @@ export default function Dashboard() {
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
                   <XAxis dataKey="month" stroke="#94A3B8" fontSize={10} tickLine={false} />
                   <YAxis stroke="#94A3B8" fontSize={10} tickLine={false} />
-                  <Tooltip formatter={(value) => [`${Number(value).toLocaleString()} DA`, 'Revenus']} />
+                  <Tooltip formatter={(value) => [`${Number(value).toLocaleString()} DA`, isAr ? 'المبيعات' : 'Revenus']} />
                   <Area type="monotone" dataKey="sales" stroke="#FFC93C" strokeWidth={2} fillOpacity={1} fill="url(#colorSales)" />
                 </AreaChart>
               </ResponsiveContainer>
@@ -147,14 +160,16 @@ export default function Dashboard() {
 
           {/* Orders Volume graph */}
           <div className="bg-white border border-slate-100 p-6 rounded-[28px] shadow-sm space-y-4">
-            <h3 className="text-xs font-black uppercase text-slate-500 tracking-wider">Volume des Commandes</h3>
+            <h3 className="text-xs font-black uppercase text-slate-500 tracking-wider">
+              {isAr ? 'حجم الطلبات' : 'Volume des Commandes'}
+            </h3>
             <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={stats.chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
                   <XAxis dataKey="month" stroke="#94A3B8" fontSize={10} tickLine={false} />
                   <YAxis stroke="#94A3B8" fontSize={10} tickLine={false} />
-                  <Tooltip formatter={(value) => [value, 'Commandes']} />
+                  <Tooltip formatter={(value) => [value, isAr ? 'الطلبات' : 'Commandes']} />
                   <Bar dataKey="orders" fill="#111827" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
@@ -164,25 +179,29 @@ export default function Dashboard() {
       )}
 
       {/* Critical warnings and actions */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 text-left">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 text-start">
         {/* Low Stock Checklist */}
         <div className="bg-white border border-slate-100 p-6 rounded-[28px] shadow-sm space-y-4">
           <div className="flex items-center space-x-2 pb-2 border-b border-slate-50 text-red-600">
             <AlertTriangle size={16} />
-            <h3 className="text-xs font-black uppercase tracking-wider">Réapprovisionnement de Stock Critique</h3>
+            <h3 className="text-xs font-black uppercase tracking-wider">
+              {isAr ? 'تنبيهات نقص المخزون الحرج' : 'Réapprovisionnement de Stock Critique'}
+            </h3>
           </div>
           {lowStockProducts.length === 0 ? (
-            <p className="text-xs text-slate-500 py-6 text-center">Tous les niveaux de stock sont corrects.</p>
+            <p className="text-xs text-slate-500 py-6 text-center">
+              {isAr ? 'جميع المنتجات متوفرة بمخزون كافٍ.' : 'Tous les niveaux de stock sont corrects.'}
+            </p>
           ) : (
             <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
               {lowStockProducts.map(p => (
                 <div key={p._id} className="flex justify-between items-center p-3.5 bg-slate-50 border border-slate-100 rounded-[16px] text-xs">
                   <div className="flex flex-col pr-3">
                     <span className="font-bold text-slate-800">{p.name}</span>
-                    <span className="text-[10px] text-slate-500">Réf : {p.sku}</span>
+                    <span className="text-[10px] text-slate-500">SKU: {p.sku}</span>
                   </div>
                   <span className="font-black text-red-600 bg-red-50 border border-red-100 px-2.5 py-1 rounded-full whitespace-nowrap">
-                    Rupture de Stock
+                    {isAr ? 'نفذ من المخزون' : 'Rupture de Stock'}
                   </span>
                 </div>
               ))}
@@ -194,16 +213,24 @@ export default function Dashboard() {
         <div className="bg-white border border-slate-100 p-6 rounded-[28px] shadow-sm space-y-4">
           <div className="flex items-center space-x-2 pb-2 border-b border-slate-50 text-slate-800">
             <ShoppingBag size={16} className="text-brand-primary" />
-            <h3 className="text-xs font-black uppercase tracking-wider">Logistique de la Boutique</h3>
+            <h3 className="text-xs font-black uppercase tracking-wider">
+              {isAr ? 'إدارة المتجر واللوجستية' : 'Logistique de la Boutique'}
+            </h3>
           </div>
-          <div className="space-y-3 text-xs text-slate-505 leading-relaxed">
+          <div className="space-y-3 text-xs text-slate-600 leading-relaxed">
             <p>
-              Les livraisons sont expédiées quotidiennement. Les mises à jour de statut déclenchent les indicateurs de suivi des clients.
+              {isAr 
+                ? 'يتم شحن الشحنات يومياً. تؤدي تحديثات الحالة إلى تشغيل مؤشرات التتبع للزبائن تلقائياً.'
+                : 'Les livraisons sont expédiées quotidiennement. Les mises à jour de statut déclenchent les indicateurs de suivi des clients.'}
             </p>
-            <div className="p-4 bg-amber-505/5 border border-brand-primary/10 rounded-[20px] text-slate-700 flex flex-col space-y-2">
-              <span className="font-bold text-slate-800 text-xs uppercase tracking-wide">Note aux Administrateurs</span>
+            <div className="p-4 bg-amber-50 border border-brand-primary/20 rounded-[20px] text-slate-800 flex flex-col space-y-2">
+              <span className="font-bold text-slate-900 text-xs uppercase tracking-wide">
+                {isAr ? 'ملاحظة للمسؤولين' : 'Note aux Administrateurs'}
+              </span>
               <p className="text-[11px] leading-relaxed">
-                Gérez vos produits, commandes et codes promotionnels directement depuis les onglets correspondants.
+                {isAr
+                  ? 'يمكنك إدارة المنتجات، الطلبات، المستخدمين، والأكواد الترويجية مباشرة من علامات التبويب المخصصة في الشريط الجانبي.'
+                  : 'Gérez vos produits, commandes et codes promotionnels directement depuis les onglets correspondants.'}
               </p>
             </div>
           </div>

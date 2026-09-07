@@ -1,29 +1,226 @@
-import React from 'react';
-import { MessageSquare } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MessageSquare, Phone, X, Instagram, Send, Sparkles, Smartphone, ChevronRight, Wrench } from 'lucide-react';
+import { useTranslation } from '../context/LanguageContext';
 
 export default function WhatsAppButton() {
-  const phoneNumber = '213550082685';
-  const whatsappUrl = `https://wa.me/${phoneNumber}`;
+  const { t, language, toggleLanguage } = useTranslation();
+  const [isOpen, setIsOpen] = useState(false);
+  const [showPhones, setShowPhones] = useState(false);
+  const widgetRef = useRef(null);
+
+  const phoneNumbers = [
+    { label: language === 'ar' ? 'خدمة العملاء 1' : 'Service Client 1', number: '0550082685' },
+    { label: language === 'ar' ? 'خدمة العملاء 2' : 'Service Client 2', number: '0550793379' },
+    { label: language === 'ar' ? 'الدعم الفني 1' : 'Service Technique 1', number: '0662816569' },
+    { label: language === 'ar' ? 'الدعم الفني 2' : 'Service Technique 2', number: '0795773324' }
+  ];
+
+  // Close widget when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (widgetRef.current && !widgetRef.current.contains(event.target)) {
+        setIsOpen(false);
+        setShowPhones(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
-    <a
-      href={whatsappUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="fixed bottom-6 right-6 z-40 bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:bg-[#20ba5a] hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center group"
-      title="Discuter sur WhatsApp"
-    >
-      {/* Pulse rings */}
-      <span className="absolute inset-0 rounded-full bg-[#25D366]/40 animate-ping opacity-75 pointer-events-none" />
+    <div ref={widgetRef} className="fixed bottom-6 right-6 z-40 flex flex-col items-end space-y-3 font-semibold text-slate-800">
       
-      {/* Icon */}
-      <svg
-        className="w-6 h-6 fill-current"
-        viewBox="0 0 24 24"
-        xmlns="http://www.w3.org/2000/svg"
+      {/* SOCIAL OPTIONS PANEL */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            className="w-72 bg-white/95 backdrop-blur-md rounded-[24px] border border-slate-100 shadow-2xl p-5 space-y-4 text-left mr-1 select-none"
+          >
+            {/* Header info */}
+            <div className="border-b border-slate-50 pb-3 flex items-center justify-between">
+              <div>
+                <h4 className="text-xs font-black uppercase tracking-wider text-slate-800 flex items-center">
+                  <Sparkles size={12} className="mr-1.5 text-brand-primary" />
+                  {language === 'ar' ? 'الدعم وخدمة العملاء' : 'Service Support'}
+                </h4>
+                <p className="text-[9px] text-slate-400 font-semibold mt-0.5">{language === 'ar' ? 'اختر وسيلة الاتصال المناسبة لك :' : 'Choisissez votre moyen de contact :'}</p>
+              </div>
+              <button 
+                onClick={() => { setIsOpen(false); setShowPhones(false); }}
+                className="p-1 hover:bg-slate-50 rounded-full text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+              >
+                <X size={14} />
+              </button>
+            </div>
+
+            {/* Main channels */}
+            <div className="space-y-2">
+              {/* WhatsApp Link */}
+              <a
+                href="https://wa.me/213550082685"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between p-3 rounded-xl bg-emerald-50/50 hover:bg-emerald-50 border border-emerald-100/50 transition-colors group cursor-pointer"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-500 text-white flex items-center justify-center">
+                    <MessageSquare size={16} />
+                  </div>
+                  <div>
+                    <h5 className="text-[11px] font-black uppercase tracking-wider text-emerald-950">WhatsApp</h5>
+                    <p className="text-[9px] text-emerald-700/80 font-medium">{language === 'ar' ? 'محادثة فورية مباشرة' : 'Discuter instantanément'}</p>
+                  </div>
+                </div>
+                <ChevronRight size={14} className="text-emerald-400 group-hover:translate-x-0.5 transition-transform" />
+              </a>
+
+              {/* Telegram Link */}
+              <a
+                href="https://t.me/+213550082685"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between p-3 rounded-xl bg-sky-50/50 hover:bg-sky-50 border border-sky-100/50 transition-colors group cursor-pointer"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 rounded-lg bg-sky-500 text-white flex items-center justify-center">
+                    <Send size={14} className="mr-0.5" />
+                  </div>
+                  <div>
+                    <h5 className="text-[11px] font-black uppercase tracking-wider text-sky-950">Telegram</h5>
+                    <p className="text-[9px] text-sky-700/80 font-medium">{language === 'ar' ? 'القناة الرسمية والدعم' : 'Canal officiel & support'}</p>
+                  </div>
+                </div>
+                <ChevronRight size={14} className="text-sky-400 group-hover:translate-x-0.5 transition-transform" />
+              </a>
+
+              {/* Messenger Link */}
+              <a
+                href="https://m.me/100063990864388"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between p-3 rounded-xl bg-blue-50/50 hover:bg-blue-50 border border-blue-100/50 transition-colors group cursor-pointer"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center">
+                    <MessageSquare size={16} />
+                  </div>
+                  <div>
+                    <h5 className="text-[11px] font-black uppercase tracking-wider text-blue-950">Messenger</h5>
+                    <p className="text-[9px] text-blue-700/80 font-medium">{language === 'ar' ? 'مراسلة صفحة الفيسبوك' : 'Message Facebook'}</p>
+                  </div>
+                </div>
+                <ChevronRight size={14} className="text-blue-400 group-hover:translate-x-0.5 transition-transform" />
+              </a>
+
+              {/* Instagram Link */}
+              <a
+                href="https://www.instagram.com/nounoutelecomtiaret?igsh=ZGUzMzM3NWJiOQ=="
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between p-3 rounded-xl bg-pink-50/50 hover:bg-pink-50 border border-pink-100/50 transition-colors group cursor-pointer"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-yellow-500 via-pink-500 to-purple-600 text-white flex items-center justify-center">
+                    <Instagram size={15} />
+                  </div>
+                  <div>
+                    <h5 className="text-[11px] font-black uppercase tracking-wider text-pink-950">Instagram</h5>
+                    <p className="text-[9px] text-pink-700/80 font-medium">{language === 'ar' ? 'تابع آخر أخبارنا' : 'Suivre nos actualités'}</p>
+                  </div>
+                </div>
+                <ChevronRight size={14} className="text-pink-400 group-hover:translate-x-0.5 transition-transform" />
+              </a>
+
+              {/* Direct Calls Drawer Trigger */}
+              <button
+                onClick={() => setShowPhones(!showPhones)}
+                className="w-full flex items-center justify-between p-3 rounded-xl bg-amber-50/50 hover:bg-amber-50 border border-amber-100/50 transition-colors group cursor-pointer"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center">
+                    <Phone size={15} />
+                  </div>
+                  <div className="text-left">
+                    <h5 className="text-[11px] font-black uppercase tracking-wider text-amber-950">{language === 'ar' ? 'اتصال مباشر' : 'Appels Directs'}</h5>
+                    <p className="text-[9px] text-amber-700/80 font-medium">{language === 'ar' ? 'خطوطنا الأربعة الرسمية' : 'Nos 4 lignes officielles'}</p>
+                  </div>
+                </div>
+                <ChevronRight size={14} className={`text-amber-400 transition-transform ${showPhones ? 'rotate-90' : 'group-hover:translate-x-0.5'}`} />
+              </button>
+
+              {/* Collapsible Direct Calls Drawer */}
+              <AnimatePresence>
+                {showPhones && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="overflow-hidden bg-slate-50 border border-slate-100 rounded-xl mt-1.5 p-2 space-y-1"
+                  >
+                    {phoneNumbers.map((ph, idx) => (
+                      <a
+                        key={idx}
+                        href={`tel:${ph.number}`}
+                        className="flex items-center space-x-2.5 p-2 rounded-lg hover:bg-white hover:shadow-sm text-[10px] text-slate-700 transition-all font-semibold cursor-pointer"
+                      >
+                        <Smartphone size={11} className="text-slate-400 flex-shrink-0" />
+                        <div className="flex-grow text-left">
+                          <span className="block text-[8px] text-slate-400 font-bold uppercase leading-none mb-0.5">{ph.label}</span>
+                          <span className="font-bold text-slate-700">{ph.number}</span>
+                        </div>
+                      </a>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* FLOAT TRIGGER BUTTONS STACKED VERTICALLY */}
+      {/* Language Switcher */}
+      <button
+        onClick={toggleLanguage}
+        className="bg-slate-900/90 hover:bg-slate-950 text-brand-primary p-3.5 rounded-full shadow-2xl flex items-center justify-center transition-transform hover:scale-108 active:scale-95 border border-slate-800 backdrop-blur-sm cursor-pointer text-[10px] font-black w-12 h-12 select-none"
+        title={language === 'fr' ? 'Changer de langue (العربية)' : 'Changer de langue (FR)'}
       >
-        <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.455L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436.002 9.858-4.42 9.86-9.864.001-2.636-1.02-5.11-2.871-6.963C16.612 1.93 14.135.912 11.5.912c-5.438 0-9.861 4.417-9.863 9.861-.001 1.77.463 3.5 1.34 5.02L2.01 21.905l6.19-1.625.447.264zm10.297-7.14c-.266-.134-1.57-.775-1.814-.863-.243-.089-.42-.134-.595.134-.176.268-.68.864-.834 1.04-.155.178-.309.2-.575.067-.266-.134-1.126-.415-2.145-1.325-.793-.707-1.329-1.58-1.485-1.848-.155-.266-.016-.41.118-.543.12-.12.266-.312.4-.468.132-.156.176-.268.264-.446.089-.178.045-.335-.022-.469-.067-.134-.595-1.432-.814-1.962-.213-.515-.447-.446-.595-.446-.145-.004-.31-.004-.475-.004-.165 0-.433.063-.66.312-.226.249-.863.844-.863 2.057 0 1.213.882 2.383 1.003 2.55.122.167 1.737 2.653 4.207 3.717.587.253 1.047.404 1.405.518.59.188 1.128.161 1.553.097.473-.07 1.57-.642 1.792-1.261.221-.62.221-1.15.155-1.261-.067-.11-.243-.178-.509-.312z" />
-      </svg>
-    </a>
+        {language === 'fr' ? 'AR' : 'FR'}
+      </button>
+
+      {/* Consulting / Devis Link (takes to contact) */}
+      <Link
+        to="/contact"
+        className="bg-slate-900/90 hover:bg-slate-900 text-white p-4 rounded-full shadow-2xl flex items-center justify-center transition-transform hover:scale-105 active:scale-95 border border-slate-800 backdrop-blur-sm animate-bounce-subtle cursor-pointer group"
+        title="Consultation & Devis"
+      >
+        <Wrench size={20} className="text-brand-primary group-hover:rotate-45 transition-transform duration-300" />
+      </Link>
+
+      {/* Social Help Widget Trigger Bubble */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className={`p-4 rounded-full shadow-2xl transition-all duration-300 flex items-center justify-center relative cursor-pointer group ${
+          isOpen 
+            ? 'bg-slate-800 text-white rotate-90 scale-95' 
+            : 'gold-bg-gradient text-slate-950 hover:scale-110 active:scale-95'
+        }`}
+        title="Contactez-nous"
+      >
+        {/* Pulsing ring if closed */}
+        {!isOpen && (
+          <span className="absolute inset-0 rounded-full bg-brand-primary/40 animate-ping opacity-75 pointer-events-none" />
+        )}
+
+        {isOpen ? <X size={20} /> : <Phone size={20} />}
+      </button>
+
+    </div>
   );
 }

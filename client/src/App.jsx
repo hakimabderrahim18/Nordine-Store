@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import Lenis from 'lenis';
 import toast, { Toaster } from 'react-hot-toast';
 
 import Navbar from './components/Navbar';
@@ -32,6 +31,7 @@ import WhatsAppButton from './components/WhatsAppButton';
 import AdminProducts from './pages/admin/Products';
 import AdminOrders from './pages/admin/Orders';
 import AdminUsers from './pages/admin/Users';
+import AdminCarousel from './pages/admin/Carousel';
 
 import { fetchCart } from './store/cartSlice';
 import { fetchWishlist } from './store/wishlistSlice';
@@ -42,31 +42,6 @@ export default function App() {
   
   const { isAuthenticated } = useSelector((state) => state.auth);
   const [loadingComplete, setLoadingComplete] = useState(false);
-
-  // Initialize Lenis Smooth Scroll
-  useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: 'vertical',
-      gestureOrientation: 'vertical',
-      smoothWheel: true,
-      wheelMultiplier: 1,
-      touchMultiplier: 2,
-      infinite: false,
-    });
-
-    function raf(time) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-
-    requestAnimationFrame(raf);
-
-    return () => {
-      lenis.destroy();
-    };
-  }, []);
 
   // Sync Cart and Wishlist if authenticated
   useEffect(() => {
@@ -121,6 +96,7 @@ export default function App() {
                 <Route path="products" element={<AdminProducts />} />
                 <Route path="orders" element={<AdminOrders />} />
                 <Route path="users" element={<AdminUsers />} />
+                <Route path="carousel" element={<AdminCarousel />} />
               </Route>
             </Routes>
           </div>

@@ -2,8 +2,11 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Phone, Mail, MapPin, Clock, Send, ShieldCheck, HeartHandshake } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { contactService } from '../services/api';
+import { useTranslation } from '../context/LanguageContext';
 
 export default function Contact() {
+  const { t, language } = useTranslation();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -16,26 +19,30 @@ export default function Contact() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) {
-      toast.error('Veuillez remplir tous les champs obligatoires.');
+      toast.error(language === 'ar' ? 'يرجى ملء جميع الحقول المطلوبة.' : 'Veuillez remplir tous les champs obligatoires.');
       return;
     }
     
     setSubmitting(true);
-    
-    // Simulate API request
-    setTimeout(() => {
-      toast.success('Votre message a été envoyé avec succès ! Notre équipe vous répondra sous 24h.');
-      setFormData({
-        name: '',
-        email: '',
-        subject: 'support',
-        message: ''
-      });
+    try {
+      const res = await contactService.submitContactForm(formData);
+      if (res.success) {
+        toast.success(language === 'ar' ? t('form_success') : res.message);
+        setFormData({
+          name: '',
+          email: '',
+          subject: 'support',
+          message: ''
+        });
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || (language === 'ar' ? 'حدث خطأ أثناء إرسال الرسالة.' : 'Erreur lors de l\'envoi du message.'));
+    } finally {
       setSubmitting(false);
-    }, 1200);
+    }
   };
 
   return (
@@ -44,12 +51,12 @@ export default function Contact() {
         
         {/* Page Header */}
         <section className="text-center max-w-3xl mx-auto space-y-4">
-          <span className="text-xs font-black uppercase tracking-widest text-brand-primary">Support & Ventes</span>
+          <span className="text-xs font-black uppercase tracking-widest text-brand-primary">{language === 'ar' ? 'الدعم والمبيعات' : 'Support & Ventes'}</span>
           <h1 className="text-3xl md:text-5xl font-black text-slate-800 uppercase tracking-tight">
-            CONTACTEZ LE DIAGNOSTIC LAB
+            {t('contact_title')}
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 font-semibold leading-relaxed">
-            Une question technique sur un écran ? Besoin d'adapter votre grille tarifaire B2B ou de soumettre une réclamation de garantie ? Envoyez-nous un message ou appelez directement notre atelier.
+            {t('contact_subtitle')}
           </p>
         </section>
 
@@ -59,8 +66,8 @@ export default function Contact() {
           {/* Left Column: Info cards */}
           <section className="lg:col-span-5 space-y-6">
             <div className="space-y-1">
-              <span className="text-xs font-black uppercase tracking-wider text-brand-primary">Nos Coordonnées</span>
-              <h2 className="text-xl md:text-2xl font-black text-slate-800 uppercase">INFORMATIONS DE CONTACT</h2>
+              <span className="text-xs font-black uppercase tracking-wider text-brand-primary">{language === 'ar' ? 'بيانات الاتصال بنا' : 'Nos Coordonnées'}</span>
+              <h2 className="text-xl md:text-2xl font-black text-slate-800 uppercase">{language === 'ar' ? 'معلومات الاتصال المباشرة' : 'INFORMATIONS DE CONTACT'}</h2>
             </div>
 
             <div className="space-y-4">
@@ -69,9 +76,14 @@ export default function Contact() {
                 <div className="p-3 bg-gray-50 border border-gray-200 text-brand-primary rounded-[14px] flex-shrink-0">
                   <Phone size={18} />
                 </div>
-                <div className="space-y-1">
-                  <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider">Téléphone & WhatsApp</h4>
-                  <p className="text-xs font-semibold text-slate-600">0550 08 26 85</p>
+                <div className="space-y-1 text-left">
+                  <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider">{t('contact_phone')}</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1">
+                    <p className="text-xs font-semibold text-slate-600"><a href="tel:0550082685" className="hover:text-brand-primary ltr-text">0550 08 26 85</a></p>
+                    <p className="text-xs font-semibold text-slate-600"><a href="tel:0550793379" className="hover:text-brand-primary ltr-text">0550 79 33 79</a></p>
+                    <p className="text-xs font-semibold text-slate-600"><a href="tel:0662816569" className="hover:text-brand-primary ltr-text">0662 81 65 69</a></p>
+                    <p className="text-xs font-semibold text-slate-600"><a href="tel:0795773324" className="hover:text-brand-primary ltr-text">0795 77 33 24</a></p>
+                  </div>
                 </div>
               </div>
 
@@ -81,7 +93,7 @@ export default function Contact() {
                   <Mail size={18} />
                 </div>
                 <div className="space-y-1">
-                  <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider">Adresse E-mail</h4>
+                  <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider">{t('contact_email')}</h4>
                   <p className="text-xs font-semibold text-slate-600">service@nounoutelecom.com</p>
                 </div>
               </div>
@@ -91,10 +103,10 @@ export default function Contact() {
                 <div className="p-3 bg-gray-50 border border-gray-200 text-brand-primary rounded-[14px] flex-shrink-0">
                   <MapPin size={18} />
                 </div>
-                <div className="space-y-1 text-left">
-                  <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider">Localisation du Siège</h4>
-                  <p className="text-xs font-semibold text-slate-600">15 Rue Emir Abd El Kader</p>
-                  <p className="text-xs font-semibold text-slate-500">Tiaret, Algérie</p>
+                <div className="space-y-1 text-start">
+                  <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider">{t('contact_location')}</h4>
+                  <p className="text-xs font-semibold text-slate-600">{t('contact_address')}</p>
+                  <p className="text-xs font-semibold text-slate-500">{t('contact_country')}</p>
                 </div>
               </div>
 
@@ -104,9 +116,9 @@ export default function Contact() {
                   <Clock size={18} />
                 </div>
                 <div className="space-y-1">
-                  <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider">Heures d'Ouverture</h4>
-                  <p className="text-xs font-semibold text-slate-600">Samedi – Jeudi : 08:30 – 17:30</p>
-                  <p className="text-xs font-semibold text-slate-500">Vendredi : Fermé</p>
+                  <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider">{t('contact_hours')}</h4>
+                  <p className="text-xs font-semibold text-slate-600">{language === 'ar' ? 'السبت – الخميس : 09:00 – 20:00' : 'Samedi – Jeudi : 09:00 – 20:00'}</p>
+                  <p className="text-xs font-semibold text-slate-500">{language === 'ar' ? 'الجمعة : مغلق' : 'Vendredi : Fermé'}</p>
                 </div>
               </div>
             </div>
@@ -119,8 +131,8 @@ export default function Contact() {
                   <MapPin size={22} className="animate-bounce" />
                 </div>
                 <div>
-                  <h5 className="text-xs font-black text-slate-800 uppercase tracking-wider">Tiaret, ALGÉRIE</h5>
-                  <p className="text-[10px] text-slate-500 font-semibold mt-0.5">Retrouvez notre point de dépôt de pièces détachées sur la carte</p>
+                  <h5 className="text-xs font-black text-slate-800 uppercase tracking-wider">{language === 'ar' ? 'تيارت، الجزائر' : 'Tiaret, ALGÉRIE'}</h5>
+                  <p className="text-[10px] text-slate-500 font-semibold mt-0.5">{language === 'ar' ? 'تفضل بزيارة نقطة استلام وبيع قطع الغيار الخاصة بنا' : 'Retrouvez notre point de dépôt de pièces détachées sur la carte'}</p>
                 </div>
                 <a
                   href="https://maps.app.goo.gl/4NvyMuBrLTtcVBnP6"
@@ -128,7 +140,7 @@ export default function Contact() {
                   rel="noopener noreferrer"
                   className="inline-flex gold-bg-gradient text-slate-950 font-black text-[10px] uppercase tracking-wider px-5 py-3 rounded-[12px] hover:scale-103 active:scale-97 transition-transform cursor-pointer"
                 >
-                  Ouvrir dans Google Maps
+                  {language === 'ar' ? 'فتح في خرائط جوجل' : 'Ouvrir dans Google Maps'}
                 </a>
               </div>
             </div>
@@ -138,8 +150,8 @@ export default function Contact() {
           {/* Right Column: Form */}
           <section className="lg:col-span-7 bg-brand-card border border-gray-200 rounded-[32px] p-8 md:p-10 space-y-6">
             <div className="space-y-1">
-              <span className="text-xs font-black uppercase tracking-wider text-brand-primary">Des questions ?</span>
-              <h2 className="text-xl md:text-2xl font-black text-slate-800 uppercase">ENVOYER UN MESSAGE</h2>
+              <span className="text-xs font-black uppercase tracking-wider text-brand-primary">{language === 'ar' ? 'هل لديك أي استفسار؟' : 'Des questions ?'}</span>
+              <h2 className="text-xl md:text-2xl font-black text-slate-800 uppercase">{t('contact_form_title')}</h2>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-5 text-left">
@@ -147,7 +159,7 @@ export default function Contact() {
                 {/* Name */}
                 <div className="space-y-2">
                   <label htmlFor="name" className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                    Nom Complet *
+                    {t('form_name')} *
                   </label>
                   <input
                     type="text"
@@ -155,7 +167,7 @@ export default function Contact() {
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    placeholder="Votre nom ou atelier"
+                    placeholder={language === 'ar' ? 'الاسم بالكامل أو اسم المحل' : 'Votre nom ou atelier'}
                     className="w-full bg-gray-50 border border-gray-200 text-slate-800 rounded-[16px] px-5 py-3.5 text-xs focus:outline-none focus:border-brand-primary font-medium"
                     required
                   />
@@ -163,7 +175,7 @@ export default function Contact() {
                 {/* Email */}
                 <div className="space-y-2">
                   <label htmlFor="email" className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                    Adresse E-mail *
+                    {t('form_email')} *
                   </label>
                   <input
                     type="email"
@@ -181,7 +193,7 @@ export default function Contact() {
               {/* Subject dropdown */}
               <div className="space-y-2">
                 <label htmlFor="subject" className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                  Objet de la demande
+                  {language === 'ar' ? 'موضوع الرسالة' : 'Objet de la demande'}
                 </label>
                 <select
                   id="subject"
@@ -190,18 +202,18 @@ export default function Contact() {
                   onChange={handleChange}
                   className="w-full bg-gray-50 border border-gray-200 text-slate-600 rounded-[16px] px-5 py-3.5 text-xs focus:outline-none focus:border-brand-primary font-bold uppercase tracking-wider cursor-pointer"
                 >
-                  <option value="support">Support Technique / Qualité</option>
-                  <option value="wholesale">Compte Grossiste & Tarifs B2B</option>
-                  <option value="orders">Commandes & Suivi de Livraison</option>
-                  <option value="warranty">Service Après-Vente & Garanties</option>
-                  <option value="other">Autre demande</option>
+                  <option value="support">{language === 'ar' ? 'الدعم الفني / الجودة' : 'Support Technique / Qualité'}</option>
+                  <option value="wholesale">{language === 'ar' ? 'حساب الجملة وأسعار الوكلاء B2B' : 'Compte Grossiste & Tarifs B2B'}</option>
+                  <option value="orders">{language === 'ar' ? 'الطلبات ومتابعة الشحن والتسليم' : 'Commandes & Suivi de Livraison'}</option>
+                  <option value="warranty">{language === 'ar' ? 'خدمة ما بعد البيع والضمان' : 'Service Après-Vente & Garanties'}</option>
+                  <option value="other">{language === 'ar' ? 'طلب آخر' : 'Autre demande'}</option>
                 </select>
               </div>
 
               {/* Message */}
               <div className="space-y-2">
                 <label htmlFor="message" className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                  Votre Message *
+                  {t('form_message')} *
                 </label>
                 <textarea
                   id="message"
@@ -209,7 +221,7 @@ export default function Contact() {
                   value={formData.message}
                   onChange={handleChange}
                   rows={6}
-                  placeholder="Décrivez votre besoin technique ou commercial..."
+                  placeholder={language === 'ar' ? 'يرجى كتابة تفاصيل طلبك الفني أو التجاري هنا...' : 'Décrivez votre besoin technique ou commercial...'}
                   className="w-full bg-gray-50 border border-gray-200 text-slate-800 rounded-[16px] px-5 py-3.5 text-xs focus:outline-none focus:border-brand-primary font-medium resize-none"
                   required
                 />
@@ -222,11 +234,11 @@ export default function Contact() {
                 className="w-full gold-bg-gradient text-slate-950 font-black text-xs uppercase tracking-wider py-4 rounded-[16px] flex items-center justify-center space-x-2 shadow-lg shadow-brand-primary/15 hover:opacity-90 active:scale-98 transition-all cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
               >
                 {submitting ? (
-                  <span className="inline-block animate-pulse">Envoi en cours...</span>
+                  <span className="inline-block animate-pulse">{language === 'ar' ? 'جاري الإرسال...' : 'Envoi en cours...'}</span>
                 ) : (
                   <>
                     <Send size={13} className="fill-slate-950 text-slate-950" />
-                    <span>Envoyer le Message</span>
+                    <span>{t('btn_send')}</span>
                   </>
                 )}
               </button>
@@ -236,11 +248,11 @@ export default function Contact() {
             <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200/60 text-slate-500">
               <div className="flex items-center space-x-2">
                 <ShieldCheck size={16} className="text-brand-primary flex-shrink-0" />
-                <span className="text-[10px] font-bold uppercase tracking-wider">Données Sécurisées</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider">{language === 'ar' ? 'اتصال آمن ومحمي' : 'Données Sécurisées'}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <HeartHandshake size={16} className="text-brand-primary flex-shrink-0" />
-                <span className="text-[10px] font-bold uppercase tracking-wider">Réponse sous 24h</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider">{language === 'ar' ? 'الرد خلال 24 ساعة' : 'Réponse sous 24h'}</span>
               </div>
             </div>
 

@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingCart, Heart, User, LogOut, LayoutDashboard, UserCheck } from 'lucide-react';
+import { ShoppingCart, Heart, User, LogOut, LayoutDashboard, UserCheck, Search } from 'lucide-react';
 import { logout } from '../store/authSlice';
 import { resetCart } from '../store/cartSlice';
 import { resetWishlist } from '../store/wishlistSlice';
+import { useTranslation } from '../context/LanguageContext';
+import SearchAutocomplete from './SearchAutocomplete';
 
 export default function Navbar() {
+  const { t, language, toggleLanguage } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
@@ -49,11 +52,11 @@ export default function Navbar() {
   };
 
   const navLinks = [
-    { label: 'Accueil', path: '/' },
-    { label: 'Boutique', path: '/shop' },
-    { label: 'À propos', path: '/about' },
-    { label: 'FAQ', path: '/faq' },
-    { label: 'Contact', path: '/contact' }
+    { label: t('nav_accueil'), path: '/' },
+    { label: t('nav_boutique'), path: '/shop' },
+    { label: t('nav_apropos'), path: '/about' },
+    { label: t('nav_faq'), path: '/faq' },
+    { label: t('nav_contact'), path: '/contact' }
   ];
 
   return (
@@ -65,17 +68,17 @@ export default function Navbar() {
             : 'top-6 py-4.5 bg-white/75 border border-gray-200/50 shadow-sm backdrop-blur-sm'
         }`}
       >
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-1.5 sm:gap-4">
           {/* Brand Logo */}
-          <Link to="/" className="flex items-center space-x-1.5 sm:space-x-2 select-none group">
-            <img src="/01.svg" alt="Nounou Telecom Logo" className="h-7 sm:h-9 w-auto object-contain" />
-            <span className="font-black text-xs sm:text-sm md:text-base tracking-[0.12em] sm:tracking-[0.15em] text-slate-800 whitespace-nowrap">
-              NOUNOU<span className="text-brand-primary"> TELECOM</span>
+          <Link to="/" className="flex items-center space-x-1 sm:space-x-2 select-none group flex-shrink-0">
+            <img src="/01.svg" alt="Nounou Telecom Logo" className="h-6 sm:h-9 w-auto object-contain" />
+            <span className="font-black text-[11px] sm:text-sm md:text-base tracking-[0.1em] sm:tracking-[0.15em] text-slate-800 whitespace-nowrap">
+              NOUNOU<span className="text-brand-primary hidden sm:inline"> TELECOM</span>
             </span>
           </Link>
 
           {/* Desktop Navigation Links */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden xl:flex items-center space-x-7">
             {navLinks.map((link) => {
               const isActive = location.pathname === link.path;
               return (
@@ -99,19 +102,20 @@ export default function Navbar() {
             })}
           </div>
 
-          {/* User Operations / Quick Actions */}
-          <div className="flex items-center space-x-4">
-            {/* Direct Admin Link for quick visibility */}
-            {isAuthenticated && user?.role === 'admin' && (
-              <Link
-                to="/admin"
-                className="hidden sm:flex items-center space-x-1.5 px-3 py-1.5 bg-brand-primary/10 border border-brand-primary/20 text-brand-primary hover:bg-brand-primary hover:text-slate-950 font-black text-[9px] uppercase tracking-wider rounded-full transition-all"
-              >
-                <LayoutDashboard size={12} />
-                <span>Espace Admin</span>
-              </Link>
-            )}
+          {/* Search Bar & Action Button Directly in Header (Mobile Phone & Desktop) */}
+          <div className="flex-1 max-w-[180px] xs:max-w-[240px] sm:max-w-xs md:max-w-sm mx-1">
+            <SearchAutocomplete isHeaderSearch />
+          </div>
 
+          {/* User Operations / Quick Actions */}
+          <div className="flex items-center space-x-1.5 sm:space-x-3 flex-shrink-0">
+            <Link
+              to="/contact"
+              className="hidden lg:flex bg-red-600 hover:bg-red-700 text-white font-black text-[9px] uppercase tracking-wider px-3.5 py-2 rounded-full items-center space-x-1.5 shadow-sm transition-all"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+              <span>{t('btn_indisponible')}</span>
+            </Link>
             {/* Wishlist Link */}
             <Link to="/wishlist" className="hidden sm:block relative p-2 text-slate-500 hover:text-brand-primary transition-colors">
               <Heart size={18} />
@@ -153,7 +157,7 @@ export default function Navbar() {
                         transition={{ duration: 0.2 }}
                       >
                         <div className="px-4 py-3 border-b border-gray-200">
-                          <p className="text-xs text-slate-500">Connecté en tant que</p>
+                          <p className="text-xs text-slate-500">{language === 'ar' ? 'تم تسجيل الدخول كـ' : 'Connecté en tant que'}</p>
                           <p className="text-sm font-semibold text-slate-800 truncate">{user?.name}</p>
                         </div>
 
@@ -164,7 +168,7 @@ export default function Navbar() {
                             className="flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-gray-100 hover:text-brand-primary transition-colors"
                           >
                             <LayoutDashboard size={15} className="mr-3 text-slate-500" />
-                            Tableau de bord Admin
+                            {t('menu_dashboard')}
                           </Link>
                         )}
 
@@ -174,7 +178,7 @@ export default function Navbar() {
                           className="flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-gray-100 hover:text-brand-primary transition-colors"
                         >
                           <UserCheck size={15} className="mr-3 text-slate-500" />
-                          Mon Profil
+                          {t('menu_profil')}
                         </Link>
 
                         <Link
@@ -183,7 +187,7 @@ export default function Navbar() {
                           className="flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-gray-100 hover:text-brand-primary transition-colors"
                         >
                           <ShoppingCart size={15} className="mr-3 text-slate-500" />
-                          Mes Commandes
+                          {t('menu_commandes')}
                         </Link>
 
                         <button
@@ -191,7 +195,7 @@ export default function Navbar() {
                           className="w-full flex items-center px-4 py-2 text-sm text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors border-t border-gray-200 mt-1 text-left cursor-pointer"
                         >
                           <LogOut size={15} className="mr-3" />
-                          Se déconnecter
+                          {t('menu_logout')}
                         </button>
                       </motion.div>
                     )}
@@ -235,6 +239,23 @@ export default function Navbar() {
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
           >
             <div className="flex flex-col space-y-6 pt-4">
+              {/* Mobile Search Bar & Button */}
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex flex-col space-y-3 pb-4 border-b border-gray-100"
+              >
+                <SearchAutocomplete isMobile onCloseMobileMenu={() => setMenuOpen(false)} />
+                <Link
+                  to="/contact"
+                  onClick={() => setMenuOpen(false)}
+                  className="w-full bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase tracking-wider py-3 rounded-[16px] flex items-center justify-center space-x-2 shadow-sm"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                  <span>{t('btn_indisponible')}</span>
+                </Link>
+              </motion.div>
+
               {isAuthenticated && user?.role === 'admin' && (
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
@@ -245,7 +266,7 @@ export default function Navbar() {
                     onClick={() => setMenuOpen(false)}
                     className="text-2xl font-black uppercase tracking-wider block text-brand-primary hover:text-amber-500 transition-colors"
                   >
-                    Tableau de bord Admin
+                    {t('menu_dashboard')}
                   </Link>
                 </motion.div>
               )}
@@ -279,7 +300,7 @@ export default function Navbar() {
                   onClick={() => setMenuOpen(false)}
                   className="flex items-center justify-between text-xl font-black uppercase tracking-wider text-slate-700 hover:text-brand-primary"
                 >
-                  <span>Mes Favoris</span>
+                  <span>{t('wishlist_title')}</span>
                   <div className="flex items-center space-x-2">
                     <Heart size={18} className="text-slate-500" />
                     {wishlistItems.length > 0 && (
@@ -297,7 +318,7 @@ export default function Navbar() {
                       onClick={() => setMenuOpen(false)}
                       className="flex items-center justify-between text-xl font-black uppercase tracking-wider text-slate-700 hover:text-brand-primary"
                     >
-                      <span>Mon Profil</span>
+                      <span>{t('menu_profil')}</span>
                       <UserCheck size={18} className="text-slate-500" />
                     </Link>
                     <Link
@@ -305,7 +326,7 @@ export default function Navbar() {
                       onClick={() => setMenuOpen(false)}
                       className="flex items-center justify-between text-xl font-black uppercase tracking-wider text-slate-700 hover:text-brand-primary"
                     >
-                      <span>Mes Commandes</span>
+                      <span>{t('menu_commandes')}</span>
                       <ShoppingCart size={18} className="text-slate-500" />
                     </Link>
                     <button
@@ -315,7 +336,7 @@ export default function Navbar() {
                       }}
                       className="w-full flex items-center justify-between text-xl font-black uppercase tracking-wider text-red-500 hover:text-red-600 text-left cursor-pointer"
                     >
-                      <span>Se déconnecter</span>
+                      <span>{t('menu_logout')}</span>
                       <LogOut size={18} />
                     </button>
                   </>
@@ -325,7 +346,7 @@ export default function Navbar() {
                     onClick={() => setMenuOpen(false)}
                     className="flex items-center justify-between text-xl font-black uppercase tracking-wider text-slate-700 hover:text-brand-primary"
                   >
-                    <span>Se connecter</span>
+                    <span>{t('menu_login')}</span>
                     <User size={18} className="text-slate-500" />
                   </Link>
                 )}

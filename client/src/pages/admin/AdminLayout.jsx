@@ -1,43 +1,47 @@
 import React, { useState } from 'react';
 import { Link, Outlet, useLocation, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { LayoutDashboard, Shield, Wrench, FileCheck, Home, Menu, X, User } from 'lucide-react';
+import { LayoutDashboard, Shield, Wrench, FileCheck, Home, Menu, X, User, Image } from 'lucide-react';
 import AdminNotifications from '../../components/AdminNotifications';
-
-const getPageTitle = (pathname) => {
-  if (pathname === '/admin') return 'Tableau de bord';
-  if (pathname.startsWith('/admin/products')) return 'Inventaire / Gestion de Stock';
-  if (pathname.startsWith('/admin/orders')) return 'Gestion des Commandes';
-  if (pathname.startsWith('/admin/users')) return 'Gestion des Utilisateurs';
-  return 'Administration';
-};
+import { useTranslation } from '../../context/LanguageContext';
 
 export default function AdminLayout() {
+  const { t, language } = useTranslation();
   const { user, isAuthenticated } = useSelector((state) => state.auth);
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const isAr = language === 'ar';
 
   // Route Guard: Verify Admin Role
   if (!isAuthenticated || user?.role !== 'admin') {
     return <Navigate to="/" replace />;
   }
 
-  const sidebarLinks = [
-    { label: 'Aperçu', path: '/admin', icon: <LayoutDashboard size={16} /> },
-    { label: 'Inventaire', path: '/admin/products', icon: <Wrench size={16} /> },
-    { label: 'Commandes', path: '/admin/orders', icon: <FileCheck size={16} /> },
-    { label: 'Comptes', path: '/admin/users', icon: <User size={16} /> }
-  ];
+  const getPageTitle = (pathname) => {
+    if (pathname === '/admin') return t('admin_page_overview');
+    if (pathname.startsWith('/admin/products')) return t('admin_page_inventory');
+    if (pathname.startsWith('/admin/orders')) return t('admin_page_orders');
+    if (pathname.startsWith('/admin/users')) return t('admin_page_users');
+    if (pathname.startsWith('/admin/carousel')) return t('admin_page_carousel');
+    return t('admin_title');
+  };
 
-  console.log("Admin Sidebar links rendered:", sidebarLinks);
+  const sidebarLinks = [
+    { label: t('admin_overview'), path: '/admin', icon: <LayoutDashboard size={16} /> },
+    { label: t('admin_inventory'), path: '/admin/products', icon: <Wrench size={16} /> },
+    { label: t('admin_orders'), path: '/admin/orders', icon: <FileCheck size={16} /> },
+    { label: t('admin_users'), path: '/admin/users', icon: <User size={16} /> },
+    { label: t('admin_carousel'), path: '/admin/carousel', icon: <Image size={16} /> }
+  ];
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col lg:flex-row">
       {/* MOBILE HEADER BAR */}
-      <header className="lg:hidden bg-white border-b border-gray-200 h-16 px-6 flex items-center justify-between sticky top-0 z-30 w-full text-left">
+      <header className="lg:hidden bg-white border-b border-gray-200 h-16 px-6 flex items-center justify-between sticky top-0 z-30 w-full text-start">
         <div className="flex items-center space-x-2 text-slate-800">
           <Shield className="text-brand-primary" />
-          <span className="font-black text-sm tracking-wider uppercase">ADMIN NOUNOU</span>
+          <span className="font-black text-sm tracking-wider uppercase">{t('admin_title')}</span>
         </div>
         <div className="flex items-center space-x-2">
           <AdminNotifications />
@@ -58,19 +62,19 @@ export default function AdminLayout() {
           onClick={() => setSidebarOpen(false)}
         />
         {/* Drawer container */}
-        <aside className="absolute top-0 left-0 bottom-0 w-64 bg-white p-6 flex flex-col justify-between shadow-2xl text-left z-10">
+        <aside className={`absolute top-0 bottom-0 w-64 bg-white p-6 flex flex-col justify-between shadow-2xl text-start z-10 ${isAr ? 'right-0' : 'left-0'}`}>
           <div className="space-y-8">
             <div className="flex items-center justify-between border-b border-gray-200 pb-6">
               <div className="flex items-center space-x-2 text-slate-800">
                 <Shield className="text-brand-primary" />
                 <div className="flex flex-col">
-                  <span className="font-black text-xs tracking-wider uppercase">ADMIN NOUNOU</span>
-                  <span className="text-[9px] text-slate-500 font-semibold uppercase">Gestion de Stock</span>
+                  <span className="font-black text-xs tracking-wider uppercase">{t('admin_title')}</span>
+                  <span className="text-[9px] text-slate-500 font-semibold uppercase">{t('admin_subtitle')}</span>
                 </div>
               </div>
               <button
                 onClick={() => setSidebarOpen(false)}
-                className="p-1 text-slate-400 hover:text-slate-655 cursor-pointer"
+                className="p-1 text-slate-400 hover:text-slate-650 cursor-pointer"
               >
                 <X size={20} />
               </button>
@@ -81,12 +85,12 @@ export default function AdminLayout() {
                 const isActive = location.pathname === link.path;
                 return (
                   <Link
-                    key={link.label}
+                    key={link.path}
                     to={link.path}
                     onClick={() => setSidebarOpen(false)}
                     className={`flex items-center space-x-3 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors duration-200 ${
                       isActive
-                        ? 'bg-brand-primary text-slate-955'
+                        ? 'bg-brand-primary text-slate-950 font-black shadow-sm'
                         : 'hover:bg-gray-100 hover:text-slate-800'
                     }`}
                   >
@@ -104,20 +108,20 @@ export default function AdminLayout() {
             className="flex items-center space-x-3 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-gray-100 hover:text-slate-800"
           >
             <Home size={16} />
-            <span>Quitter</span>
+            <span>{t('admin_quit')}</span>
           </Link>
         </aside>
       </div>
 
       {/* DESKTOP SIDEBAR NAVIGATION PANEL */}
-      <aside className="hidden lg:flex w-64 bg-white border-r border-gray-200 text-slate-500 p-6 flex-col justify-between flex-shrink-0 h-screen sticky top-0 text-left">
+      <aside className={`hidden lg:flex w-64 bg-white border-r border-gray-200 text-slate-500 p-6 flex-col justify-between flex-shrink-0 h-screen sticky top-0 text-start ${isAr ? 'border-l border-r-0' : 'border-r'}`}>
         <div className="space-y-8">
           {/* Admin Header */}
           <div className="flex items-center space-x-2 text-slate-800 border-b border-gray-200 pb-6">
             <Shield className="text-brand-primary" />
             <div className="flex flex-col">
-              <span className="font-black text-sm tracking-wider uppercase">ADMIN NOUNOU</span>
-              <span className="text-[10px] text-slate-500 font-semibold uppercase">Gestion de Stock</span>
+              <span className="font-black text-sm tracking-wider uppercase">{t('admin_title')}</span>
+              <span className="text-[10px] text-slate-500 font-semibold uppercase">{t('admin_subtitle')}</span>
             </div>
           </div>
 
@@ -127,11 +131,11 @@ export default function AdminLayout() {
               const isActive = location.pathname === link.path;
               return (
                 <Link
-                  key={link.label}
+                  key={link.path}
                   to={link.path}
                   className={`flex items-center space-x-3 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors duration-200 ${
                     isActive
-                      ? 'bg-brand-primary text-slate-955'
+                      ? 'bg-brand-primary text-slate-950 font-black shadow-sm'
                       : 'hover:bg-gray-100 hover:text-slate-800'
                   }`}
                 >
@@ -149,7 +153,7 @@ export default function AdminLayout() {
           className="flex items-center space-x-3 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-gray-100 hover:text-slate-800"
         >
           <Home size={16} />
-          <span>Quitter le tableau de bord</span>
+          <span>{t('admin_quit')}</span>
         </Link>
       </aside>
 
@@ -167,9 +171,9 @@ export default function AdminLayout() {
               <div className="w-8 h-8 rounded-xl bg-brand-primary/10 flex items-center justify-center font-black text-[11px] text-slate-900 border border-brand-primary/20 uppercase">
                 {user?.name?.charAt(0) || 'A'}
               </div>
-              <div className="flex flex-col text-left">
+              <div className="flex flex-col text-start">
                 <span className="text-xs font-bold text-slate-800 leading-tight">{user?.name}</span>
-                <span className="text-[9px] font-semibold text-slate-400 uppercase tracking-wide">Administrateur</span>
+                <span className="text-[9px] font-semibold text-slate-400 uppercase tracking-wide">{t('admin_role')}</span>
               </div>
             </div>
           </div>

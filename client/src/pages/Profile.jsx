@@ -5,8 +5,11 @@ import { User, Mail, ShoppingBag } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { updateProfile, getProfile } from '../store/authSlice';
 import { authService, orderService } from '../services/api';
+import { useTranslation } from '../context/LanguageContext';
 
 export default function Profile() {
+  const { t, language } = useTranslation();
+  const isAr = language === 'ar';
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
 
@@ -35,7 +38,7 @@ export default function Profile() {
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
     if (password && password !== confirmPassword) {
-      toast.error('Les mots de passe ne correspondent pas');
+      toast.error(isAr ? 'كلمتا السر غير متطابقتين' : 'Les mots de passe ne correspondent pas');
       return;
     }
 
@@ -45,11 +48,11 @@ export default function Profile() {
       if (password) data.password = password;
 
       await dispatch(updateProfile(data)).unwrap();
-      toast.success('Profil mis à jour avec succès');
+      toast.success(isAr ? 'تم تحديث الملف الشخصي بنجاح' : 'Profil mis à jour avec succès');
       setPassword('');
       setConfirmPassword('');
     } catch (err) {
-      toast.error(err || 'Échec de la mise à jour du profil');
+      toast.error(err || (isAr ? 'فشل تحديث الملف الشخصي' : 'Échec de la mise à jour du profil'));
     } finally {
       setProfileLoading(false);
     }
@@ -71,60 +74,82 @@ export default function Profile() {
     fetchOrders();
   }, []);
 
-  const handleDownloadInvoice = (orderId) => {
-    window.open(orderService.getInvoiceUrl(orderId), '_blank');
+  const getStatusLabel = (deliveryStatus) => {
+    switch (deliveryStatus) {
+      case 'pending': return t('order_status_pending');
+      case 'processing': return t('order_status_processing');
+      case 'shipped': return t('order_status_shipped');
+      case 'delivered': return t('order_status_delivered');
+      case 'cancelled': return t('order_status_cancelled');
+      default: return deliveryStatus;
+    }
   };
 
   return (
     <div className="pt-28 max-w-7xl mx-auto px-6 min-h-screen bg-brand-bg pb-24">
       {/* Title */}
-      <div className="flex flex-col space-y-2 mb-10">
-        <span className="text-xs font-black uppercase tracking-widest text-brand-primary">Espace Client</span>
-        <h1 className="text-3xl font-black text-slate-800">PROFIL DE L'UTILISATEUR</h1>
+      <div className="flex flex-col space-y-2 mb-10 text-start">
+        <span className="text-xs font-black uppercase tracking-widest text-brand-primary">
+          {t('profile_badge')}
+        </span>
+        <h1 className="text-3xl font-black text-slate-800">
+          {t('profile_title')}
+        </h1>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {/* LEFT COLUMN: Profile info forms */}
-        <div className="bg-white border border-slate-100 rounded-[32px] p-8 shadow-sm space-y-6 lg:col-span-1 h-fit">
+        <div className="bg-white border border-slate-100 rounded-[32px] p-8 shadow-sm space-y-6 lg:col-span-1 h-fit text-start">
           <h2 className="text-md font-black text-slate-800 tracking-wide uppercase flex items-center">
-            <User size={16} className="mr-2 text-brand-primary" /> Modifier mes informations
+            <User size={16} className={`text-brand-primary ${isAr ? 'ml-2' : 'mr-2'}`} />
+            <span>{t('profile_edit_title')}</span>
           </h2>
 
           <form onSubmit={handleProfileSubmit} className="space-y-4">
             <div className="flex flex-col space-y-1">
-              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Nom complet</label>
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                {t('profile_name_label')}
+              </label>
               <div className="relative">
                 <input
                   type="text"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-100 text-slate-800 text-xs rounded-[16px] pl-10 pr-4 py-3 focus:outline-none"
+                  className={`w-full bg-slate-50 border border-slate-100 text-slate-800 text-xs rounded-[16px] py-3 focus:outline-none ${
+                    isAr ? 'pr-10 pl-4' : 'pl-10 pr-4'
+                  }`}
                 />
-                <User size={14} className="absolute left-3.5 top-3.5 text-slate-400" />
+                <User size={14} className={`absolute top-3.5 text-slate-400 ${isAr ? 'right-3.5' : 'left-3.5'}`} />
               </div>
             </div>
 
             <div className="flex flex-col space-y-1">
-              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Adresse Email</label>
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                {t('profile_email_label')}
+              </label>
               <div className="relative">
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-100 text-slate-800 text-xs rounded-[16px] pl-10 pr-4 py-3 focus:outline-none"
+                  className={`w-full bg-slate-50 border border-slate-100 text-slate-800 text-xs rounded-[16px] py-3 focus:outline-none ${
+                    isAr ? 'pr-10 pl-4' : 'pl-10 pr-4'
+                  }`}
                 />
-                <Mail size={14} className="absolute left-3.5 top-3.5 text-slate-400" />
+                <Mail size={14} className={`absolute top-3.5 text-slate-400 ${isAr ? 'right-3.5' : 'left-3.5'}`} />
               </div>
             </div>
 
             <div className="flex flex-col space-y-1 border-t border-slate-50 pt-4">
-              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Nouveau mot de passe (Optionnel)</label>
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                {t('profile_new_password')}
+              </label>
               <input
                 type="password"
-                placeholder="Laisser vide pour conserver l'ancien"
+                placeholder={t('profile_password_placeholder')}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full bg-slate-50 border border-slate-100 text-slate-800 text-xs rounded-[16px] px-4 py-3 focus:outline-none"
@@ -132,10 +157,12 @@ export default function Profile() {
             </div>
 
             <div className="flex flex-col space-y-1">
-              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Confirmer le mot de passe</label>
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                {t('profile_confirm_password')}
+              </label>
               <input
                 type="password"
-                placeholder="Confirmer le nouveau mot de passe"
+                placeholder={t('profile_confirm_password')}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 className="w-full bg-slate-50 border border-slate-100 text-slate-800 text-xs rounded-[16px] px-4 py-3 focus:outline-none"
@@ -145,18 +172,19 @@ export default function Profile() {
             <button
               type="submit"
               disabled={profileLoading}
-              className="w-full gold-bg-gradient text-slate-950 font-black text-xs uppercase tracking-wider py-4 rounded-[16px] hover:scale-102 transition-transform duration-300 shadow-sm"
+              className="w-full gold-bg-gradient text-slate-950 font-black text-xs uppercase tracking-wider py-4 rounded-[16px] hover:scale-102 transition-transform duration-300 shadow-sm disabled:opacity-50"
             >
-              {profileLoading ? 'Enregistrement...' : 'Enregistrer les modifications'}
+              {profileLoading ? t('profile_btn_saving') : t('profile_btn_save')}
             </button>
           </form>
         </div>
 
         {/* RIGHT COLUMN: Order history */}
-        <div className="bg-white border border-slate-100 rounded-[32px] p-8 shadow-sm space-y-6 lg:col-span-2">
+        <div className="bg-white border border-slate-100 rounded-[32px] p-8 shadow-sm space-y-6 lg:col-span-2 text-start">
           <div className="flex justify-between items-center pb-2 border-b border-slate-50">
             <h2 className="text-md font-black text-slate-800 tracking-wide uppercase flex items-center">
-              <ShoppingBag size={16} className="mr-2 text-brand-primary" /> Historique des Commandes
+              <ShoppingBag size={16} className={`text-brand-primary ${isAr ? 'ml-2' : 'mr-2'}`} />
+              <span>{t('profile_orders_title')}</span>
             </h2>
           </div>
 
@@ -166,12 +194,14 @@ export default function Profile() {
             </div>
           ) : orders.length === 0 ? (
             <div className="text-center py-16 space-y-4">
-              <p className="text-xs text-slate-500 font-bold uppercase tracking-wide">Vous n'avez pas encore passé de commande.</p>
+              <p className="text-xs text-slate-500 font-bold uppercase tracking-wide">
+                {t('profile_orders_empty')}
+              </p>
               <Link
                 to="/shop"
                 className="inline-block bg-brand-primary hover:bg-brand-primary/90 text-slate-950 font-black text-[10px] uppercase tracking-wider px-5 py-3 rounded-[12px] shadow-sm transition-transform active:scale-97"
               >
-                Découvrir la boutique
+                {t('profile_orders_discover')}
               </Link>
             </div>
           ) : (
@@ -179,7 +209,7 @@ export default function Profile() {
               {orders.map((order) => {
                 const totalItems = order.orderItems.reduce((acc, item) => acc + item.quantity, 0);
                 const orderRef = order._id.substring(18).toUpperCase();
-                const orderDate = new Date(order.createdAt).toLocaleDateString('fr-FR', {
+                const orderDate = new Date(order.createdAt).toLocaleDateString(isAr ? 'ar-DZ' : 'fr-FR', {
                   day: 'numeric',
                   month: 'long',
                   year: 'numeric'
@@ -199,18 +229,16 @@ export default function Profile() {
                   >
                     <div className="flex flex-col space-y-1">
                       <div className="flex items-center space-x-2">
-                        <span className="text-xs font-black text-slate-800">Commande #{orderRef}</span>
+                        <span className="text-xs font-black text-slate-800">
+                          {t('profile_order_number')}{orderRef}
+                        </span>
                         <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${statusBg}`}>
-                          {order.deliveryStatus === 'pending' ? 'Reçue' :
-                           order.deliveryStatus === 'processing' ? 'En préparation' :
-                           order.deliveryStatus === 'shipped' ? 'Expédiée' :
-                           order.deliveryStatus === 'delivered' ? 'Livrée' :
-                           order.deliveryStatus === 'cancelled' ? 'Annulée' : order.deliveryStatus}
+                          {getStatusLabel(order.deliveryStatus)}
                         </span>
                       </div>
                       <span className="text-[10px] text-slate-500 font-semibold">{orderDate}</span>
-                      <span className="text-xs text-slate-500 font-bold mt-1">
-                        {totalItems} {totalItems > 1 ? 'articles' : 'article'} &bull; {order.totalPrice.toLocaleString()} DA
+                      <span className="text-xs text-slate-500 font-bold mt-1 ltr-text">
+                        {totalItems} {isAr ? (totalItems > 1 ? 'قطع' : 'قطعة') : (totalItems > 1 ? 'articles' : 'article')} &bull; {order.totalPrice.toLocaleString()} DA
                       </span>
                     </div>
 
@@ -219,7 +247,7 @@ export default function Profile() {
                         to={`/orders?id=${order._id}`}
                         className="bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold text-[10px] uppercase px-4 py-2.5 rounded-[10px] transition-colors"
                       >
-                        Suivre
+                        {t('profile_order_track')}
                       </Link>
                     </div>
                   </div>

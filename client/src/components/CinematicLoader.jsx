@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
+import { useTranslation } from '../context/LanguageContext';
 
 const CinematicLoader = ({ onComplete }) => {
+  const { language } = useTranslation();
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
@@ -46,12 +48,14 @@ const CinematicLoader = ({ onComplete }) => {
   }, [onComplete]);
 
   const titleText = "NOUNOU TELECOM";
+  const isAr = language === 'ar';
 
   return (
     <AnimatePresence>
       {visible && (
         <motion.div
-          className="fixed inset-0 z-50 flex flex-col items-center justify-center loader-bg overflow-hidden"
+          dir="ltr"
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center loader-bg overflow-hidden ltr-text"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, y: '-100vh', transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] } }}
         >
@@ -59,7 +63,7 @@ const CinematicLoader = ({ onComplete }) => {
           <div className="absolute w-[600px] h-[600px] rounded-full bg-brand-primary/5 blur-[150px] animate-pulse pointer-events-none" />
           <div className="absolute w-[300px] h-[300px] rounded-full bg-brand-accent/5 blur-[100px] animate-pulse pointer-events-none" style={{ animationDelay: '1.5s' }} />
 
-          <div className="relative flex flex-col items-center select-none">
+          <div className="relative flex flex-col items-center select-none" dir="ltr">
             {/* Minimalist Tech Logo Icon */}
             <motion.div 
               className="mb-8"
@@ -67,11 +71,11 @@ const CinematicLoader = ({ onComplete }) => {
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 1, ease: 'easeOut' }}
             >
-              <img src="/01.svg" alt="Nounou Telecom Logo" className="w-16 h-16 object-contain" />
+              <img src="/01.svg" alt="Nounou Telecom Logo" className="w-32 h-32 md:w-40 md:h-40 object-contain" />
             </motion.div>
 
-            {/* Split text */}
-            <h1 className="loader-title text-xl sm:text-3xl md:text-5xl font-black tracking-[0.2em] sm:tracking-[0.4em] text-slate-800 flex flex-wrap justify-center mb-6">
+            {/* Split text - LTR direction strictly forced */}
+            <h1 className="loader-title text-xl sm:text-3xl md:text-5xl font-black tracking-[0.2em] sm:tracking-[0.4em] text-slate-800 flex flex-row justify-center mb-6 ltr-text" dir="ltr">
               {titleText.split("").map((char, index) => (
                 <span key={index} className="loader-char inline-block">
                   {char === " " ? "\u00A0" : char}
@@ -80,11 +84,11 @@ const CinematicLoader = ({ onComplete }) => {
             </h1>
 
             <p className="text-slate-500 text-[9px] sm:text-xs tracking-[0.15em] sm:tracking-[0.3em] uppercase mb-12 opacity-80 text-center px-4">
-              Matériel de Haute Technologie
+              {isAr ? "قطع غيار وإلكترونيات عالية الجودة" : "Matériel de Haute Technologie"}
             </p>
 
             {/* Premium Progress Bar */}
-            <div className="w-48 sm:w-64 h-[2px] bg-gray-200 rounded-full overflow-hidden relative">
+            <div className="w-48 sm:w-64 h-[2px] bg-gray-200 rounded-full overflow-hidden relative" dir="ltr">
               <div className="loader-progress absolute left-0 top-0 bottom-0 w-0 bg-gradient-to-r from-brand-accent to-brand-primary" />
             </div>
           </div>

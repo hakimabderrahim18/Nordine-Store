@@ -61,21 +61,9 @@
   background: #94A3B8;
 }
 
-/* Lenis Smooth Scroll Setup */
-html.lenis, html.lenis body {
-  height: auto;
-}
-.lenis-smooth {
-  scroll-behavior: auto !important;
-}
-.lenis-smooth [data-lenis-prevent] {
-  overscroll-behavior: contain;
-}
-.lenis-stopped {
-  overflow: hidden;
-}
-.lenis-scrolling iframe {
-  pointer-events: none;
+/* Native Smooth Scroll Setup */
+html {
+  scroll-behavior: smooth;
 }
 
 /* Glassmorphism — Light Theme */
@@ -177,4 +165,11 @@ input, select, textarea {
 
 .fluid-p {
   font-size: clamp(0.85rem, 1.5vw, 1.05rem);
+}
+
+/* Helper class to force Left-To-Right direction on numbers/SKUs/phones, preserving order in RTL mode */
+.ltr-text {
+  direction: ltr !important;
+  unicode-bidi: embed !important;
+  display: inline-block;
 }

@@ -12,17 +12,39 @@ import sendEmail from '../utils/sendEmail.js';
 // @access  Public
 export const registerUser = async (req, res, next) => {
   try {
-    const { name, email, password, clientType } = req.body;
+    const { name, email, phone, password, clientType } = req.body;
 
-    const userExists = await User.findOne({ email });
+    const rawIdentifier = (email || phone || req.body.identifier || '').toString().trim();
+    if (!rawIdentifier) {
+      res.status(400);
+      throw new Error('L\'adresse email ou le numéro de téléphone est requis');
+    }
+
+    let userEmail;
+    let userPhone;
+
+    if (rawIdentifier.includes('@')) {
+      userEmail = rawIdentifier.toLowerCase();
+    } else {
+      userPhone = rawIdentifier;
+    }
+
+    const userExists = await User.findOne({
+      $or: [
+        ...(userEmail ? [{ email: userEmail }] : []),
+        ...(userPhone ? [{ phone: userPhone }] : [])
+      ]
+    });
+
     if (userExists) {
       res.status(400);
-      throw new Error('User already exists');
+      throw new Error('Un compte existe déjà avec cet email ou ce numéro de téléphone.');
     }
 
     const user = await User.create({
       name,
-      email,
+      email: userEmail || undefined,
+      phone: userPhone || undefined,
       password,
       clientType: clientType || 'retail'
     });
@@ -37,29 +59,26 @@ export const registerUser = async (req, res, next) => {
       user.verificationToken = verificationToken;
       await user.save();
 
-      // Send Welcome / Verification email (non-blocking)
-      const verifyUrl = `${process.env.CLIENT_URL || 'http://localhost:5173'}/verify-email?token=${verificationToken}`;
-      sendEmail({
-        email: user.email,
-        subject: 'Welcome to Nordine Store - Verify your email',
-        message: `Welcome to Nordine Store, ${user.name}! Please verify your account by clicking the link: ${verifyUrl}`,
-        html: `
-          <h1>Welcome, ${user.name}!</h1>
-          <p>Thank you for registering at Nordine Store, the premium mobile spare parts marketplace.</p>
-          <p>Please click the button below to verify your email address:</p>
-          <a href="${verifyUrl}" style="background-color: #FFC93C; color: #111827; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">Verify Email</a>
-          <p>If you did not request this, please ignore this email.</p>
-        `
-      }).catch(err => console.error('Verification email error:', err.message));
+      // Send Welcome / Verification email if user provided an email (non-blocking)
+      if (user.email) {
+        const verifyUrl = `${process.env.CLIENT_URL || 'http://localhost:5173'}/verify-email?token=${verificationToken}`;
+        sendEmail({
+          email: user.email,
+          subject: 'Welcome to Nordine Store - Verify your email',
+          message: `Welcome to Nordine Store, ${user.name}! Please verify your account by clicking the link: ${verifyUrl}`,
+          html: `
+            <h1>Welcome, ${user.name}!</h1>
+            <p>Thank you for registering at Nordine Store, the premium mobile spare parts marketplace.</p>
+            <p>Please click the button below to verify your email address:</p>
+            <a href="${verifyUrl}" style="background-color: #FFC93C; color: #111827; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">Verify Email</a>
+            <p>If you did not request this, please ignore this email.</p>
+          `
+        }).catch(err => console.error('Verification email error:', err.message));
+      }
 
       res.status(201).json({
         success: true,
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        clientType: user.clientType,
-        token: generateToken(user._id)
+        message: 'Votre inscription a été enregistrée avec succès. Votre compte est en attente d\'approbation par l\'administrateur.'
       });
     } else {
       res.status(400);
@@ -73,6 +92,7 @@ export const registerUser = async (req, res, next) => {
 // @desc    Auth user & get token
 // @route   POST /api/auth/login
 // @access  Public
+// @desc    Auth user & get token
 export const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -86,6 +106,10 @@ export const loginUser = async (req, res, next) => {
       ]
     }).select('+password');
     if (user && (await user.comparePassword(password))) {
+      if (!user.isVerified) {
+        res.status(403);
+        throw new Error('Votre compte est en attente d\'approbation par l\'administrateur. Vous recevrez un accès complet dès validation.');
+      }
       res.json({
         success: true,
         _id: user._id,
@@ -401,22 +425,47 @@ export const getAllUsers = async (req, res, next) => {
 // @access  Private/Admin
 export const createUser = async (req, res, next) => {
   try {
-    const { name, email, password, role, clientType } = req.body;
+    const { name, email, phone, password, role, clientType } = req.body;
 
-    const userExists = await User.findOne({ email });
+    const rawIdentifier = (email || phone || req.body.identifier || '').toString().trim();
+    if (!rawIdentifier) {
+      res.status(400);
+      throw new Error('L\'adresse email ou le numéro de téléphone est requis');
+    }
+
+    let userEmail;
+    let userPhone;
+
+    if (rawIdentifier.includes('@')) {
+      userEmail = rawIdentifier.toLowerCase();
+    } else {
+      userPhone = rawIdentifier;
+    }
+
+    const userExists = await User.findOne({
+      $or: [
+        ...(userEmail ? [{ email: userEmail }] : []),
+        ...(userPhone ? [{ phone: userPhone }] : [])
+      ]
+    });
+
     if (userExists) {
       res.status(400);
-      throw new Error('User already exists with this email');
+      throw new Error('Un utilisateur existe déjà avec cet email ou ce numéro de téléphone.');
     }
 
     const user = await User.create({
       name,
-      email,
+      email: userEmail || undefined,
+      phone: userPhone || undefined,
       password,
       role: role || 'client',
       clientType: clientType || 'retail',
       isVerified: true
     });
+
+    await Cart.create({ user: user._id, items: [] });
+    await Wishlist.create({ user: user._id, products: [] });
 
     res.status(201).json({ success: true, user });
   } catch (error) {
@@ -435,12 +484,16 @@ export const updateUser = async (req, res, next) => {
       throw new Error('User not found');
     }
 
-    const { name, email, role, clientType, password } = req.body;
+    const { name, email, role, clientType, password, isVerified } = req.body;
 
     user.name = name || user.name;
     user.email = email || user.email;
     user.role = role || user.role;
     user.clientType = clientType || user.clientType;
+
+    if (isVerified !== undefined) {
+      user.isVerified = isVerified;
+    }
 
     if (password && password.trim() !== '') {
       user.password = password;
@@ -525,23 +578,15 @@ export const importUsersFromExcel = async (req, res, next) => {
         phone = contactVal.replace(/\s+/g, '').replace(/[^0-9]/g, '');
       }
 
-      // If email is present, clean it. Otherwise do not generate one (let it be undefined)
+      // If email is present, validate and keep it. Otherwise do not generate one.
       const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
       if (email) {
-        email = email.replace(/\s+/g, '');
+        email = email.replace(/\s+/g, '').toLowerCase();
         if (!emailRegex.test(email)) {
-          const cleanEmailPart = email.replace(/[^a-zA-Z0-9]/g, '');
-          email = cleanEmailPart ? `${cleanEmailPart.toLowerCase()}@nordinestore.dz` : undefined;
+          email = undefined;
         }
       } else {
         email = undefined;
-      }
-
-      if (!phone && email && email.endsWith('@nordinestore.dz')) {
-        const parts = email.split('@');
-        if (/^\d+$/.test(parts[0])) {
-          phone = parts[0];
-        }
       }
 
       if (!name) {
@@ -647,14 +692,16 @@ export const exportUsersToExcel = async (req, res, next) => {
     // Convert to a simple JSON format for Excel
     const data = users.map(user => {
       let identifier = user.phone || '';
-      if (!identifier && user.email && user.email.endsWith('@nordinestore.dz')) {
-        const parts = user.email.split('@');
-        if (/^\d+$/.test(parts[0])) {
-          identifier = parts[0];
+      if (!identifier && user.email) {
+        if (user.email.endsWith('@nordinestore.dz')) {
+          const parts = user.email.split('@');
+          if (/^\d+$/.test(parts[0])) {
+            identifier = parts[0];
+          }
         }
-      }
-      if (!identifier) {
-        identifier = user.email;
+        if (!identifier) {
+          identifier = user.email;
+        }
       }
 
       return {
