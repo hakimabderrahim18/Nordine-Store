@@ -6,6 +6,7 @@ import ProductCard from '../components/ProductCard';
 import HeroParticles from '../components/HeroParticles';
 import SuggestedPhonesCarousel from '../components/SuggestedPhonesCarousel';
 import DeviceSelector from '../components/DeviceSelector';
+import SearchAutocomplete from '../components/SearchAutocomplete';
 import { productService, categoryService, brandService, carouselService, getImageUrl, getCategoryDisplayName } from '../services/api';
 import heroSideImg from '../assets/hero_side.png';
 import { useTranslation } from '../context/LanguageContext';
