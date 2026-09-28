@@ -64,25 +64,97 @@ mongoose.connect(MONGODB_URI)
     const categoryCache = {};
     const brandCache = {};
 
+    const parsePrice = (val) => {
+      if (val === undefined || val === null || val === '') return 0;
+      if (typeof val === 'number') return isNaN(val) ? 0 : val;
+      const cleanStr = val.toString().replace(/[\s\u00a0\u202f]/g, '').replace(',', '.');
+      const parsed = parseFloat(cleanStr);
+      return isNaN(parsed) ? 0 : parsed;
+    };
+
+    const KNOWN_BRANDS = [
+      'SAMSUNG', 'IPHONE', 'APPLE', 'OPPO', 'REALME', 'XIAOMI', 'REDMI', 'POCO',
+      'INFINIX', 'TECNO', 'ITEL', 'HUAWEI', 'HONOR', 'VIVO', 'ONEPLUS', 'NOKIA',
+      'CONDOR', 'LENOVO', 'MOTOROLA', 'LG', 'SONY', 'ASUS', 'ZTE', 'GOOGLE'
+    ];
+
+    const normalizeAfficheurName = (name) => {
+      if (!name || typeof name !== 'string') return name;
+      let s = name;
+      s = s.replace(/\b(AFFICHEUR\s+LCD|ECRAN\s+LCD|LCD|ECRAN)\b/gi, 'AFFICHEUR');
+      s = s.replace(/\b(AFFICHEUR\s+)+AFFICHEUR\b/gi, 'AFFICHEUR');
+      s = s.replace(/\s+/g, ' ').trim();
+      return s;
+    };
+
     for (const row of rows) {
-      const skuVal = getVal(row, ['Réf produit', 'Rf produit', 'sku', 'ref']);
-      if (!skuVal) continue;
+      const nameVal = getVal(row, ['Désignation', 'Designation', 'name', 'nom', 'article', 'description', 'titre', 'produit']);
+      if (!nameVal || !nameVal.toString().trim()) continue;
+      const name = normalizeAfficheurName(nameVal.toString().trim());
 
-      const sku = skuVal.toString().trim();
-      const nameVal = getVal(row, ['Désignation', 'Designation', 'name', 'nom']);
-      if (!nameVal) continue;
-      const name = nameVal.toString().trim();
+      const skuVal = getVal(row, ['Réf produit', 'Rf produit', 'sku', 'ref', 'reference', 'code', 'ref produit']);
+      let sku = skuVal ? skuVal.toString().trim() : '';
 
-      const priceDetail = Number(getVal(row, ['Prix 1 TTC', 'Prix 1', 'detail', 'price', 'priceDetail'], 0));
-      const priceDetailReparation = Number(getVal(row, ['Prix 2 TTC', 'Prix 2', 'detail reparation', 'priceDetailReparation'], 0));
-      const priceReparation = Number(getVal(row, ['Prix 5 TTC', 'Prix 5', 'reparation', 'priceReparation'], 0));
-      const priceDemiGros = Number(getVal(row, ['DEMI GROS TTC', 'DEMI GROS', 'demi gros', 'priceDemiGros'], 0));
-      const priceSuperGros = Number(getVal(row, ['SUPER GROS TTC', 'SUPER GROS', 'super gros', 'priceSuperGros'], 0));
-      const pricePromo = Number(getVal(row, ['Prix Promo TTC', 'promo', 'pricePromo'], 0));
-      const famille = getVal(row, ['Famille', 'category', 'famille'], 'PIECE').toString().trim();
-      const sousFamille = getVal(row, ['Sous famille', 'sous-famille', 'subcategory', 'sousFamille'], '').toString().trim();
-      const marqueStr = getVal(row, ['Marque', 'brand', 'marque'], '').toString().trim();
+      const priceDetail = parsePrice(getVal(row, ['Prix 1 TTC', 'Prix 1', 'Prix1 TTC', 'Prix1', 'detail', 'prix detail', 'price', 'priceDetail', 'prix']));
+      const priceDetailReparation = parsePrice(getVal(row, ['REPARATION TTC', 'REPARATION', 'Prix 2 TTC', 'Prix 2', 'Prix2 TTC', 'Prix2', 'detail reparation', 'priceDetailReparation', 'prix reparation']));
+      const priceReparation = parsePrice(getVal(row, ['Prix 5 TTC', 'Prix 5', 'Prix5 TTC', 'Prix5', 'reparation', 'priceReparation', 'reparateur']));
+      const priceDemiGros = parsePrice(getVal(row, ['DEMI GROS TTC', 'DEMI GROS', 'DEMIGROS TTC', 'demi gros', 'demigros', 'priceDemiGros', 'prix demi gros']));
+      const priceSuperGros = parsePrice(getVal(row, ['SUPER GROS TTC', 'SUPER GROS', 'SUPERGROS TTC', 'super gros', 'supergros', 'priceSuperGros', 'prix super gros']));
+      const pricePromo = parsePrice(getVal(row, ['Prix Promo TTC', 'Prix Promo', 'promo', 'prix promo', 'pricePromo', 'discountPrice']));
+      
+      let famille = getVal(row, ['Famille', 'category', 'famille', 'categorie'], '').toString().trim();
+      let sousFamille = getVal(row, ['Sous famille', 'sous-famille', 'subcategory', 'sousFamille'], '').toString().trim();
+      let marqueStr = getVal(row, ['Marque', 'brand', 'marque'], '').toString().trim();
       const imageVal = getVal(row, ['Image', 'image', 'images', 'photo', 'lien image'], '').toString().trim();
+
+      if (famille.toUpperCase() === 'ECRAN' || famille.toUpperCase() === 'LCD') {
+        famille = 'AFFICHEUR';
+      }
+
+      // Auto-detect brand if missing
+      if (!marqueStr || marqueStr === 'NaN' || marqueStr === 'nan' || marqueStr.toLowerCase() === 'generique') {
+        const upperName = name.toUpperCase();
+        for (const b of KNOWN_BRANDS) {
+          const regex = new RegExp(`\\b${b}\\b`, 'i');
+          if (regex.test(upperName)) {
+            marqueStr = b;
+            break;
+          }
+        }
+      }
+
+      // Auto-detect category if missing
+      if (!famille || famille === 'PIECE') {
+        const upperName = name.toUpperCase();
+        if (upperName.includes('BUZZER')) {
+          famille = 'BUZZER';
+        } else if (upperName.includes('AFFICHEUR') || upperName.includes('ECRAN') || upperName.includes('LCD') || upperName.includes('OLED') || upperName.includes('DISPLAY')) {
+          famille = 'AFFICHEUR';
+        } else if (upperName.includes('BATTERIE') || upperName.includes('BAT ')) {
+          famille = 'BATTERIE';
+        } else if (upperName.includes('CONNECTEUR') || upperName.includes('CHARGE') || upperName.includes('NAPPE')) {
+          famille = 'CONNECTEUR';
+        } else if (upperName.includes('VITRE') || upperName.includes('TACTILE') || upperName.includes('GLASS')) {
+          famille = 'GLASS';
+        } else if (upperName.includes('POCHETTE') || upperName.includes('COQUE') || upperName.includes('ETUI')) {
+          famille = 'POCHETTE';
+        } else if (upperName.includes('CAM') || upperName.includes('CAMERA')) {
+          famille = 'CAMERA';
+        } else if (upperName.includes('ECOUTEUR') || upperName.includes('HAUT-PARLEUR') || upperName.includes('HP')) {
+          famille = 'AUDIO';
+        } else {
+          famille = 'PIECE';
+        }
+      }
+
+      if (!sku) {
+        const baseSlug = name.toUpperCase()
+          .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+          .replace(/[^A-Z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '')
+          .substring(0, 35);
+        sku = baseSlug || `PROD-${Date.now().toString(36).toUpperCase()}`;
+      }
 
       // Resolve category
       let categoryId = null;

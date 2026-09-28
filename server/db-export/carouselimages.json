@@ -1,0 +1,209 @@
+[
+  {
+    "_id": "6a468bd2a90a5675acbd8e0a",
+    "image": "/uploads/image-1783008210815-544196246.jpeg",
+    "title": "",
+    "link": "",
+    "createdAt": "2026-07-02T16:03:30.832Z",
+    "updatedAt": "2026-07-02T16:03:30.832Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a468be3a90a5675acbd8e0e",
+    "image": "/uploads/image-1783008227302-950944797.jpeg",
+    "title": "",
+    "link": "",
+    "createdAt": "2026-07-02T16:03:47.304Z",
+    "updatedAt": "2026-07-02T16:03:47.304Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a4847f0870c5990bab4a70a",
+    "image": "/uploads/image-1783121904954-546592231.PNG",
+    "title": "",
+    "link": "",
+    "createdAt": "2026-07-03T23:38:24.982Z",
+    "updatedAt": "2026-07-03T23:38:24.982Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a484a89870c5990bab4a759",
+    "image": "/uploads/image-1783122569535-640154325.PNG",
+    "title": "",
+    "link": "",
+    "createdAt": "2026-07-03T23:49:29.549Z",
+    "updatedAt": "2026-07-03T23:49:29.549Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a484acd870c5990bab4a75d",
+    "image": "/uploads/image-1783122637364-292475995.PNG",
+    "title": "",
+    "link": "",
+    "createdAt": "2026-07-03T23:50:37.392Z",
+    "updatedAt": "2026-07-03T23:50:37.392Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a484d00870c5990bab4a7b1",
+    "image": "/uploads/image-1783123200417-673638455.PNG",
+    "title": "",
+    "link": "",
+    "createdAt": "2026-07-04T00:00:00.435Z",
+    "updatedAt": "2026-07-04T00:00:00.435Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a484db9870c5990bab4a7b5",
+    "image": "/uploads/image-1783123385840-120486752.PNG",
+    "title": "",
+    "link": "",
+    "createdAt": "2026-07-04T00:03:05.859Z",
+    "updatedAt": "2026-07-04T00:03:05.859Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a4982781faad898c6696ea9",
+    "image": "/uploads/image-1783202423987-341117057.PNG",
+    "title": "",
+    "link": "",
+    "createdAt": "2026-07-04T22:00:24.032Z",
+    "updatedAt": "2026-07-04T22:00:24.032Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a4982ee1faad898c6696ead",
+    "image": "/uploads/image-1783202542738-481854852.PNG",
+    "title": "",
+    "link": "",
+    "createdAt": "2026-07-04T22:02:22.754Z",
+    "updatedAt": "2026-07-04T22:02:22.754Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a54c8489153e2e8bcd5579c",
+    "image": "/uploads/image-1783941192052-35603395.PNG",
+    "title": "",
+    "link": "",
+    "createdAt": "2026-07-13T11:13:12.060Z",
+    "updatedAt": "2026-07-13T11:13:12.060Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a54c8549153e2e8bcd557a0",
+    "image": "/uploads/image-1783941204181-405773310.PNG",
+    "title": "",
+    "link": "",
+    "createdAt": "2026-07-13T11:13:24.190Z",
+    "updatedAt": "2026-07-13T11:13:24.190Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a8c8fe0c04eea092c85004a",
+    "image": "/uploads/image-1787596768723-562074172.png",
+    "title": "BAT OPPO A18 BLPB21",
+    "link": "",
+    "createdAt": "2026-08-24T18:39:28.773Z",
+    "updatedAt": "2026-08-24T18:39:28.773Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a8c91a6c04eea092c850055",
+    "image": "/uploads/image-1787597222893-518839947.png",
+    "title": "BAT OPPO A60 4G BLPA49",
+    "link": "",
+    "createdAt": "2026-08-24T18:47:02.984Z",
+    "updatedAt": "2026-08-24T18:47:02.984Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a96f59dc04eea092c8531ed",
+    "image": "/uploads/image-1788278173699-422087546.png",
+    "title": "",
+    "link": "",
+    "createdAt": "2026-09-01T15:56:13.747Z",
+    "updatedAt": "2026-09-01T15:56:13.747Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a9718aac04eea092c853304",
+    "image": "/uploads/image-1788287146043-607573311.png",
+    "title": "",
+    "link": "",
+    "createdAt": "2026-09-01T18:25:46.098Z",
+    "updatedAt": "2026-09-01T18:25:46.098Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a971997c04eea092c85331d",
+    "image": "/uploads/image-1788287383578-955527853.png",
+    "title": "BUZZER OPPO RENO 7 4G",
+    "link": "",
+    "createdAt": "2026-09-01T18:29:43.591Z",
+    "updatedAt": "2026-09-01T18:29:43.591Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a982695c04eea092c8535ad",
+    "image": "/uploads/image-1788356245700-915815310.png",
+    "title": "BUZZER SAMSUNG S24 FE",
+    "link": "",
+    "createdAt": "2026-09-02T13:37:25.780Z",
+    "updatedAt": "2026-09-02T13:37:25.780Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a986ef9275f064d505fd8e4",
+    "image": "/uploads/image-1788374776990-157298484.png",
+    "title": "BUZZER INFINIX SMART 7",
+    "link": "",
+    "createdAt": "2026-09-02T18:46:17.036Z",
+    "updatedAt": "2026-09-02T18:46:17.036Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a98721fb2551f0976dd48c0",
+    "image": "/uploads/image-1788375583350-735267887.png",
+    "title": "BUZZER OPPO A11K/A5S",
+    "link": "",
+    "createdAt": "2026-09-02T18:59:43.381Z",
+    "updatedAt": "2026-09-02T18:59:43.381Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a9dba3d85028ffcbf826abb",
+    "image": "/uploads/image-1788721725788-499141443.png",
+    "title": "BYZZER REDMI NOTE 14 PRO",
+    "link": "",
+    "createdAt": "2026-09-06T19:08:45.817Z",
+    "updatedAt": "2026-09-06T19:08:45.817Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a9ebabd85028ffcbf826f6d",
+    "image": "/uploads/image-1788787389118-458286489.png",
+    "title": "AFF SAM A03 CORE ",
+    "link": "",
+    "createdAt": "2026-09-07T13:23:09.136Z",
+    "updatedAt": "2026-09-07T13:23:09.136Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a9ef9e685028ffcbf827439",
+    "image": "/uploads/image-1788803558305-625689137.png",
+    "title": "AFFICHEUR OPPO F9 ",
+    "link": "",
+    "createdAt": "2026-09-07T17:52:38.325Z",
+    "updatedAt": "2026-09-07T17:52:38.325Z",
+    "__v": 0
+  },
+  {
+    "_id": "6aa679507a315935ef4a5bc2",
+    "image": "/uploads/image-1789294928857-825189650.png",
+    "title": "SIM TRAY SAM A26",
+    "link": "",
+    "createdAt": "2026-09-13T10:22:08.984Z",
+    "updatedAt": "2026-09-13T10:22:08.984Z",
+    "__v": 0
+  }
+]

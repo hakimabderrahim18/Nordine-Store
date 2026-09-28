@@ -10,8 +10,8 @@
       }
     ],
     "createdAt": "2026-06-26T19:17:02.499Z",
-    "updatedAt": "2026-06-28T02:07:07.623Z",
-    "__v": 7
+    "updatedAt": "2026-09-17T16:13:07.663Z",
+    "__v": 11
   },
   {
     "_id": "6a3ed02eb8ed3a547c863f19",
@@ -52,5 +52,744 @@
     "createdAt": "2026-06-28T15:14:29.420Z",
     "updatedAt": "2026-06-28T15:15:23.612Z",
     "__v": 1
+  },
+  {
+    "_id": "6a4692b9a90a5675acbd8e6a",
+    "user": "6a4692b9a90a5675acbd8e68",
+    "items": [],
+    "createdAt": "2026-07-02T16:32:57.714Z",
+    "updatedAt": "2026-07-02T16:35:33.070Z",
+    "__v": 2
+  },
+  {
+    "_id": "6a4e2fae52661a37151c1b3d",
+    "user": "6a4e2f3f52661a37151c1b25",
+    "items": [],
+    "createdAt": "2026-07-08T11:08:30.659Z",
+    "updatedAt": "2026-07-08T11:08:30.659Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a541ceb9153e2e8bcd5532d",
+    "user": "6a541ceb9153e2e8bcd5532b",
+    "items": [],
+    "createdAt": "2026-07-12T23:02:03.893Z",
+    "updatedAt": "2026-07-12T23:02:03.893Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a54c6ae9153e2e8bcd5570b",
+    "user": "6a54c6ad9153e2e8bcd55709",
+    "items": [],
+    "createdAt": "2026-07-13T11:06:22.111Z",
+    "updatedAt": "2026-07-13T11:06:22.111Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a58adaca5b75c5d3b76655b",
+    "user": "6a58adaca5b75c5d3b766559",
+    "items": [],
+    "createdAt": "2026-07-16T10:08:45.000Z",
+    "updatedAt": "2026-07-16T10:08:45.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a68e88aa5b75c5d3b7669d4",
+    "user": "6a68e88aa5b75c5d3b7669d2",
+    "items": [],
+    "createdAt": "2026-07-28T17:36:10.785Z",
+    "updatedAt": "2026-07-28T17:36:10.785Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a6f34bfa5b75c5d3b766fa7",
+    "user": "6a6f34bfa5b75c5d3b766fa5",
+    "items": [],
+    "createdAt": "2026-08-02T12:14:55.791Z",
+    "updatedAt": "2026-08-02T12:14:55.791Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a6f4a0da5b75c5d3b76701b",
+    "user": "6a6f4a0da5b75c5d3b767019",
+    "items": [],
+    "createdAt": "2026-08-02T13:45:49.473Z",
+    "updatedAt": "2026-08-02T13:45:49.473Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a6f7283a5b75c5d3b76711d",
+    "user": "6a6f7283a5b75c5d3b76711b",
+    "items": [],
+    "createdAt": "2026-08-02T16:38:27.136Z",
+    "updatedAt": "2026-08-02T16:38:27.136Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a70370ea5b75c5d3b76729b",
+    "user": "6a70370da5b75c5d3b767299",
+    "items": [],
+    "createdAt": "2026-08-03T06:37:02.194Z",
+    "updatedAt": "2026-08-03T06:37:02.194Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a722e50a5b75c5d3b767574",
+    "user": "6a722e50a5b75c5d3b767572",
+    "items": [
+      {
+        "product": "6a3ff068ef64c5384b51b1db",
+        "quantity": 1,
+        "variant": {}
+      }
+    ],
+    "createdAt": "2026-08-04T18:24:16.779Z",
+    "updatedAt": "2026-08-24T22:37:57.763Z",
+    "__v": 1
+  },
+  {
+    "_id": "6a79b1d1cc51473e89678e83",
+    "user": "6a79b1d1cc51473e89678e81",
+    "items": [],
+    "createdAt": "2026-08-10T11:11:13.488Z",
+    "updatedAt": "2026-08-10T11:11:13.488Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a7d9786cc51473e89679aad",
+    "user": "6a7d9785cc51473e89679aab",
+    "items": [],
+    "createdAt": "2026-08-13T10:08:06.055Z",
+    "updatedAt": "2026-08-13T10:08:06.055Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a7d99e1cc51473e89679b39",
+    "user": "6a7d99e1cc51473e89679b37",
+    "items": [],
+    "createdAt": "2026-08-13T10:18:09.622Z",
+    "updatedAt": "2026-09-04T16:17:30.977Z",
+    "__v": 25
+  },
+  {
+    "_id": "6a7d9c6dcc51473e89679bc6",
+    "user": "6a7d9c6dcc51473e89679bc4",
+    "items": [],
+    "createdAt": "2026-08-13T10:29:01.802Z",
+    "updatedAt": "2026-08-13T10:29:01.802Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a7daa15cc51473e89679e2a",
+    "user": "6a7daa15cc51473e89679e28",
+    "items": [],
+    "createdAt": "2026-08-13T11:27:17.563Z",
+    "updatedAt": "2026-08-13T11:27:17.563Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a7db4e8cc51473e89679f3d",
+    "user": "6a7db4e8cc51473e89679f3b",
+    "items": [],
+    "createdAt": "2026-08-13T12:13:28.691Z",
+    "updatedAt": "2026-08-13T12:13:28.691Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a7db667cc51473e89679fe2",
+    "user": "6a7db667cc51473e89679fe0",
+    "items": [
+      {
+        "product": "6a3ff068ef64c5384b51b289",
+        "quantity": 2,
+        "variant": {}
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b1b6",
+        "quantity": 1,
+        "variant": {}
+      }
+    ],
+    "createdAt": "2026-08-13T12:19:51.772Z",
+    "updatedAt": "2026-09-16T13:24:23.940Z",
+    "__v": 2
+  },
+  {
+    "_id": "6a7db67bcc51473e89679fea",
+    "user": "6a7db67acc51473e89679fe8",
+    "items": [],
+    "createdAt": "2026-08-13T12:20:11.097Z",
+    "updatedAt": "2026-08-13T12:20:11.097Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a7dbc59cc51473e8967a09a",
+    "user": "6a7dbc58cc51473e8967a098",
+    "items": [],
+    "createdAt": "2026-08-13T12:45:13.057Z",
+    "updatedAt": "2026-09-17T14:46:49.946Z",
+    "__v": 13
+  },
+  {
+    "_id": "6a7ddf17cc51473e8967a1c2",
+    "user": "6a7ddf17cc51473e8967a1c0",
+    "items": [
+      {
+        "product": "6a3ff067ef64c5384b51b04c",
+        "quantity": 1,
+        "variant": {}
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b229",
+        "quantity": 1,
+        "variant": {}
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b42f",
+        "quantity": 1,
+        "variant": {}
+      }
+    ],
+    "createdAt": "2026-08-13T15:13:27.407Z",
+    "updatedAt": "2026-08-31T14:18:11.272Z",
+    "__v": 5
+  },
+  {
+    "_id": "6a7de64ccc51473e8967a222",
+    "user": "6a7de64ccc51473e8967a220",
+    "items": [],
+    "createdAt": "2026-08-13T15:44:12.248Z",
+    "updatedAt": "2026-08-13T15:44:12.248Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a7e0dc0cc51473e8967a5b6",
+    "user": "6a7e0dc0cc51473e8967a5b4",
+    "items": [],
+    "createdAt": "2026-08-13T18:32:32.991Z",
+    "updatedAt": "2026-08-13T18:32:32.991Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a7e0e6acc51473e8967a5d0",
+    "user": "6a7e0e69cc51473e8967a5ce",
+    "items": [],
+    "createdAt": "2026-08-13T18:35:22.031Z",
+    "updatedAt": "2026-08-13T18:35:22.031Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a7e1f25cc51473e8967a76e",
+    "user": "6a7e1f25cc51473e8967a76c",
+    "items": [],
+    "createdAt": "2026-08-13T19:46:45.895Z",
+    "updatedAt": "2026-08-13T19:46:45.895Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a7e25a5cc51473e8967a77a",
+    "user": "6a7e25a4cc51473e8967a778",
+    "items": [],
+    "createdAt": "2026-08-13T20:14:29.054Z",
+    "updatedAt": "2026-08-13T20:14:29.054Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a7e2d12cc51473e8967a822",
+    "user": "6a7e2d12cc51473e8967a820",
+    "items": [],
+    "createdAt": "2026-08-13T20:46:10.638Z",
+    "updatedAt": "2026-08-13T20:46:10.638Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a7e383dcc51473e8967a893",
+    "user": "6a7e383dcc51473e8967a891",
+    "items": [],
+    "createdAt": "2026-08-13T21:33:49.741Z",
+    "updatedAt": "2026-08-13T21:33:49.741Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a7e477dcc51473e8967a96e",
+    "user": "6a7e477dcc51473e8967a96c",
+    "items": [],
+    "createdAt": "2026-08-13T22:38:53.706Z",
+    "updatedAt": "2026-08-13T22:38:53.706Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a7e7368cc51473e8967aa37",
+    "user": "6a7e7368cc51473e8967aa35",
+    "items": [],
+    "createdAt": "2026-08-14T01:46:16.913Z",
+    "updatedAt": "2026-08-14T01:46:16.913Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a7eb40dcc51473e8967aa6d",
+    "user": "6a7eb40dcc51473e8967aa6b",
+    "items": [],
+    "createdAt": "2026-08-14T06:22:05.648Z",
+    "updatedAt": "2026-08-14T06:22:05.648Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a7eca7ccc51473e8967ab85",
+    "user": "6a7eca7ccc51473e8967ab83",
+    "items": [],
+    "createdAt": "2026-08-14T07:57:48.188Z",
+    "updatedAt": "2026-08-14T07:57:48.188Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a7f0a24cc51473e8967acb6",
+    "user": "6a7f0a23cc51473e8967acb4",
+    "items": [],
+    "createdAt": "2026-08-14T12:29:24.057Z",
+    "updatedAt": "2026-08-14T12:29:24.057Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a7f8632cc51473e8967ae12",
+    "user": "6a7f8632cc51473e8967ae10",
+    "items": [],
+    "createdAt": "2026-08-14T21:18:42.408Z",
+    "updatedAt": "2026-08-14T21:18:42.408Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a8091eecc51473e8967b11f",
+    "user": "6a8091eecc51473e8967b11d",
+    "items": [],
+    "createdAt": "2026-08-15T16:21:02.901Z",
+    "updatedAt": "2026-08-15T16:21:02.901Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a8345a67431accc827f6463",
+    "user": "6a8345a67431accc827f6461",
+    "items": [],
+    "createdAt": "2026-08-17T17:32:22.814Z",
+    "updatedAt": "2026-08-17T17:32:22.814Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a84e7ff7431accc827f6698",
+    "user": "6a84e7ff7431accc827f6696",
+    "items": [],
+    "createdAt": "2026-08-18T23:17:19.560Z",
+    "updatedAt": "2026-08-18T23:17:19.560Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a85ce2e7431accc827f72b3",
+    "user": "6a85ce2e7431accc827f72b1",
+    "items": [],
+    "createdAt": "2026-08-19T15:39:26.806Z",
+    "updatedAt": "2026-09-16T01:49:59.706Z",
+    "__v": 4
+  },
+  {
+    "_id": "6a8611c47431accc827f75ff",
+    "user": "6a8611c47431accc827f75fd",
+    "items": [
+      {
+        "product": "6a3ff068ef64c5384b51b5b3",
+        "quantity": 1,
+        "variant": {}
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b591",
+        "quantity": 2,
+        "variant": {}
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b590",
+        "quantity": 1,
+        "variant": {}
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b593",
+        "quantity": 1,
+        "variant": {}
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b585",
+        "quantity": 1,
+        "variant": {}
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b583",
+        "quantity": 1,
+        "variant": {}
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b581",
+        "quantity": 1,
+        "variant": {}
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b56e",
+        "quantity": 1,
+        "variant": {}
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b568",
+        "quantity": 1,
+        "variant": {}
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b538",
+        "quantity": 1,
+        "variant": {}
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b4fc",
+        "quantity": 1,
+        "variant": {}
+      },
+      {
+        "product": "6a3ff067ef64c5384b51afd7",
+        "quantity": 1,
+        "variant": {}
+      },
+      {
+        "product": "6a3ff067ef64c5384b51afd9",
+        "quantity": 1,
+        "variant": {}
+      }
+    ],
+    "createdAt": "2026-08-19T20:27:48.155Z",
+    "updatedAt": "2026-09-24T14:58:55.401Z",
+    "__v": 29
+  },
+  {
+    "_id": "6a8611fd7431accc827f7609",
+    "user": "6a8611fd7431accc827f7607",
+    "items": [],
+    "createdAt": "2026-08-19T20:28:45.765Z",
+    "updatedAt": "2026-08-19T20:28:45.765Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a86d9ac7431accc827f7b20",
+    "user": "6a86d9ac7431accc827f7b1e",
+    "items": [],
+    "createdAt": "2026-08-20T10:40:44.967Z",
+    "updatedAt": "2026-08-20T10:40:44.967Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a86ddefc04eea092c84e957",
+    "user": "6a86ddefc04eea092c84e955",
+    "items": [],
+    "createdAt": "2026-08-20T10:58:55.771Z",
+    "updatedAt": "2026-08-20T10:58:55.771Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a86e839c04eea092c84eae9",
+    "user": "6a86e839c04eea092c84eae7",
+    "items": [],
+    "createdAt": "2026-08-20T11:42:49.567Z",
+    "updatedAt": "2026-08-20T11:42:49.567Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a8b14b3c04eea092c84fc0a",
+    "user": "6a8b14b3c04eea092c84fc08",
+    "items": [],
+    "createdAt": "2026-08-23T15:41:39.904Z",
+    "updatedAt": "2026-08-23T15:41:39.904Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a8cf31dc04eea092c8501a1",
+    "user": "6a8cf31dc04eea092c85019f",
+    "items": [],
+    "createdAt": "2026-08-25T01:42:53.172Z",
+    "updatedAt": "2026-08-25T01:42:53.172Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a8f1f28c04eea092c85190b",
+    "user": "6a8f1f28c04eea092c851909",
+    "items": [],
+    "createdAt": "2026-08-26T17:15:20.227Z",
+    "updatedAt": "2026-08-26T17:15:20.227Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a92c499c04eea092c852265",
+    "user": "6a92c498c04eea092c852263",
+    "items": [],
+    "createdAt": "2026-08-29T11:38:01.036Z",
+    "updatedAt": "2026-08-29T11:38:01.036Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a92f4a8c04eea092c85228e",
+    "user": "6a92f4a8c04eea092c85228c",
+    "items": [],
+    "createdAt": "2026-08-29T15:03:04.545Z",
+    "updatedAt": "2026-08-29T15:03:04.545Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a933438c04eea092c852321",
+    "user": "6a933438c04eea092c85231f",
+    "items": [],
+    "createdAt": "2026-08-29T19:34:16.968Z",
+    "updatedAt": "2026-08-29T19:34:16.968Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a941270c04eea092c8524fe",
+    "user": "6a941270c04eea092c8524fc",
+    "items": [],
+    "createdAt": "2026-08-30T11:22:24.850Z",
+    "updatedAt": "2026-08-30T11:22:24.850Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a942731c04eea092c8525a0",
+    "user": "6a942731c04eea092c85259e",
+    "items": [],
+    "createdAt": "2026-08-30T12:50:57.404Z",
+    "updatedAt": "2026-08-30T12:50:57.404Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a960f3bc04eea092c852e86",
+    "user": "6a960f3bc04eea092c852e84",
+    "items": [],
+    "createdAt": "2026-08-31T23:33:15.405Z",
+    "updatedAt": "2026-08-31T23:33:15.405Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a960fdac04eea092c852ebb",
+    "user": "6a960fdac04eea092c852eb9",
+    "items": [],
+    "createdAt": "2026-08-31T23:35:54.334Z",
+    "updatedAt": "2026-08-31T23:35:54.334Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a9683a0c04eea092c852fa1",
+    "user": "6a96839fc04eea092c852f9f",
+    "items": [],
+    "createdAt": "2026-09-01T07:49:52.026Z",
+    "updatedAt": "2026-09-01T07:49:52.026Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a976019c04eea092c8534c9",
+    "user": "6a976018c04eea092c8534c7",
+    "items": [],
+    "createdAt": "2026-09-01T23:30:33.050Z",
+    "updatedAt": "2026-09-01T23:30:33.050Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a98772ab2551f0976dd4ab3",
+    "user": "6a98772ab2551f0976dd4ab1",
+    "items": [],
+    "createdAt": "2026-09-02T19:21:14.650Z",
+    "updatedAt": "2026-09-02T19:21:14.650Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a98782bb2551f0976dd4af7",
+    "user": "6a98782ab2551f0976dd4af5",
+    "items": [],
+    "createdAt": "2026-09-02T19:25:31.205Z",
+    "updatedAt": "2026-09-02T19:25:31.205Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a98892bb2551f0976dd4b31",
+    "user": "6a98892bb2551f0976dd4b2f",
+    "items": [],
+    "createdAt": "2026-09-02T20:38:03.532Z",
+    "updatedAt": "2026-09-02T20:38:03.532Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a988976b2551f0976dd4b39",
+    "user": "6a988976b2551f0976dd4b37",
+    "items": [],
+    "createdAt": "2026-09-02T20:39:18.681Z",
+    "updatedAt": "2026-09-02T20:39:18.681Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a98a408b2551f0976dd4dad",
+    "user": "6a98a408b2551f0976dd4dab",
+    "items": [],
+    "createdAt": "2026-09-02T22:32:40.332Z",
+    "updatedAt": "2026-09-02T22:32:40.332Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a99836b85028ffcbf8250f6",
+    "user": "6a99836b85028ffcbf8250f4",
+    "items": [],
+    "createdAt": "2026-09-03T14:25:47.989Z",
+    "updatedAt": "2026-09-03T14:25:47.989Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a99925685028ffcbf8251da",
+    "user": "6a99925685028ffcbf8251d8",
+    "items": [],
+    "createdAt": "2026-09-03T15:29:26.131Z",
+    "updatedAt": "2026-09-03T15:29:26.131Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a9df5ba85028ffcbf826bb4",
+    "user": "6a9df5b985028ffcbf826bb2",
+    "items": [],
+    "createdAt": "2026-09-06T23:22:34.127Z",
+    "updatedAt": "2026-09-06T23:22:34.127Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a9df65585028ffcbf826bd0",
+    "user": "6a9df65585028ffcbf826bce",
+    "items": [],
+    "createdAt": "2026-09-06T23:25:09.738Z",
+    "updatedAt": "2026-09-06T23:25:09.738Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a9e8fa285028ffcbf826d4f",
+    "user": "6a9e8fa285028ffcbf826d4d",
+    "items": [],
+    "createdAt": "2026-09-07T10:19:14.749Z",
+    "updatedAt": "2026-09-07T10:19:14.749Z",
+    "__v": 0
+  },
+  {
+    "_id": "6aa05c5f9759c990ac1184cd",
+    "user": "6aa05c5e9759c990ac1184cb",
+    "items": [],
+    "createdAt": "2026-09-08T19:05:03.010Z",
+    "updatedAt": "2026-09-08T19:05:03.010Z",
+    "__v": 0
+  },
+  {
+    "_id": "6aa143a19759c990ac11871b",
+    "user": "6aa143a19759c990ac118719",
+    "items": [],
+    "createdAt": "2026-09-09T11:31:45.555Z",
+    "updatedAt": "2026-09-09T11:31:45.555Z",
+    "__v": 0
+  },
+  {
+    "_id": "6aa145ca9759c990ac11873c",
+    "user": "6aa145ca9759c990ac11873a",
+    "items": [],
+    "createdAt": "2026-09-09T11:40:58.917Z",
+    "updatedAt": "2026-09-09T11:40:58.917Z",
+    "__v": 0
+  },
+  {
+    "_id": "6aa528d67a315935ef4a35aa",
+    "user": "6aa528d67a315935ef4a35a8",
+    "items": [],
+    "createdAt": "2026-09-12T10:26:30.829Z",
+    "updatedAt": "2026-09-12T10:26:30.829Z",
+    "__v": 0
+  },
+  {
+    "_id": "6aa801807a315935ef4a79e7",
+    "user": "6aa801807a315935ef4a79e5",
+    "items": [],
+    "createdAt": "2026-09-14T14:15:28.131Z",
+    "updatedAt": "2026-09-14T14:15:28.131Z",
+    "__v": 0
+  },
+  {
+    "_id": "6aa91d097a315935ef4a7e78",
+    "user": "6aa91d097a315935ef4a7e76",
+    "items": [],
+    "createdAt": "2026-09-15T10:25:13.866Z",
+    "updatedAt": "2026-09-15T10:25:13.866Z",
+    "__v": 0
+  },
+  {
+    "_id": "6aa935f47a315935ef4a7f66",
+    "user": "6aa935f47a315935ef4a7f64",
+    "items": [],
+    "createdAt": "2026-09-15T12:11:32.804Z",
+    "updatedAt": "2026-09-15T12:11:32.804Z",
+    "__v": 0
+  },
+  {
+    "_id": "6aac193f7a315935ef4a9032",
+    "user": "6aac193f7a315935ef4a9030",
+    "items": [],
+    "createdAt": "2026-09-17T16:45:51.411Z",
+    "updatedAt": "2026-09-17T16:45:51.411Z",
+    "__v": 0
+  },
+  {
+    "_id": "6aac19d07a315935ef4a9099",
+    "user": "6aac19d07a315935ef4a9097",
+    "items": [],
+    "createdAt": "2026-09-17T16:48:16.496Z",
+    "updatedAt": "2026-09-17T16:48:16.496Z",
+    "__v": 0
+  },
+  {
+    "_id": "6aac68f77a315935ef4a93ca",
+    "user": "6aac68f77a315935ef4a93c8",
+    "items": [],
+    "createdAt": "2026-09-17T22:25:59.794Z",
+    "updatedAt": "2026-09-17T22:25:59.794Z",
+    "__v": 0
+  },
+  {
+    "_id": "6aac692c7a315935ef4a93d4",
+    "user": "6aac692c7a315935ef4a93d2",
+    "items": [],
+    "createdAt": "2026-09-17T22:26:52.633Z",
+    "updatedAt": "2026-09-17T22:26:52.633Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab066e67a315935ef4aa0c0",
+    "user": "6ab066e57a315935ef4aa0be",
+    "items": [],
+    "createdAt": "2026-09-20T23:06:14.005Z",
+    "updatedAt": "2026-09-21T12:00:35.671Z",
+    "__v": 15
+  },
+  {
+    "_id": "6ab13ab67a315935ef4aad71",
+    "user": "6ab13ab67a315935ef4aad6f",
+    "items": [],
+    "createdAt": "2026-09-21T14:09:58.487Z",
+    "updatedAt": "2026-09-21T14:09:58.487Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab3d1b97a315935ef4ab6e5",
+    "user": "6ab3d1b87a315935ef4ab6e3",
+    "items": [],
+    "createdAt": "2026-09-23T13:18:49.060Z",
+    "updatedAt": "2026-09-23T13:18:49.060Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab4e2f37a315935ef4abb32",
+    "user": "6ab4e2f37a315935ef4abb30",
+    "items": [],
+    "createdAt": "2026-09-24T08:44:35.254Z",
+    "updatedAt": "2026-09-24T08:44:35.254Z",
+    "__v": 0
   }
 ]

@@ -1,436 +1,282 @@
 [
   {
-    "_id": "6a3fedb9ec45a31277bda352",
-    "user": "6a3fed92ec45a31277bda2ff",
+    "_id": "6a9aef1a85028ffcbf825a45",
+    "user": "6a7d99e1cc51473e89679b37",
     "isGuest": false,
     "orderItems": [
       {
-        "product": "6a3feb7360391ddc6ea2d58c",
-        "name": "TOURNEVIS ELECTRIQUE 28PCS 882037",
-        "quantity": 3,
-        "price": 5800,
-        "image": "/uploads/repair_tool.png",
+        "product": "6a3ff068ef64c5384b51b2d2",
+        "name": "AFFICHEUR LCD SAM A10/M10 BLINDE",
+        "quantity": 2,
+        "price": 1600,
+        "image": "/uploads/screen.png",
         "variant": {},
-        "_id": "6a3fedb9ec45a31277bda353"
-      }
-    ],
-    "shippingAddress": {
-      "street": "À Domicile",
-      "city": "Alger",
-      "state": "Alger",
-      "postalCode": "00000",
-      "country": "Algeria",
-      "phone": "0797060052"
-    },
-    "paymentMethod": "COD",
-    "deliveryType": "À Domicile",
-    "itemsPrice": 17400,
-    "shippingPrice": 0,
-    "discountPrice": 0,
-    "totalPrice": 17400,
-    "isPaid": true,
-    "isDelivered": true,
-    "deliveryStatus": "delivered",
-    "couponUsed": null,
-    "createdAt": "2026-06-27T15:35:21.476Z",
-    "updatedAt": "2026-06-27T15:36:51.381Z",
-    "__v": 0,
-    "deliveredAt": "2026-06-27T15:36:51.379Z",
-    "paidAt": "2026-06-27T15:36:51.379Z",
-    "trackingNumber": ""
-  },
-  {
-    "_id": "6a40466234fc9efc36a60423",
-    "user": "6a3ff763ef9c9dcd2380cb16",
-    "isGuest": false,
-    "orderItems": [
+        "_id": "6a9aef1a85028ffcbf825a46"
+      },
       {
-        "product": "6a3ff978ef9c9dcd2380cdf9",
-        "name": "tet",
-        "quantity": 1,
-        "price": 12332,
-        "image": "/uploads/images-1782577528164-939883784.png",
+        "product": "6a3ff068ef64c5384b51b2d3",
+        "name": "AFFICHEUR LCD SAM A10S BLINDE",
+        "quantity": 2,
+        "price": 1700,
+        "image": "/uploads/screen.png",
         "variant": {},
-        "_id": "6a40466234fc9efc36a60424"
-      }
-    ],
-    "shippingAddress": {
-      "street": "Beni Messous - StopDesk",
-      "city": "Alger",
-      "state": "Alger",
-      "postalCode": "00000",
-      "country": "Algeria",
-      "phone": "152145258"
-    },
-    "paymentMethod": "COD",
-    "deliveryType": "StopDesk",
-    "itemsPrice": 12332,
-    "shippingPrice": 0,
-    "discountPrice": 0,
-    "totalPrice": 12332,
-    "isPaid": true,
-    "isDelivered": true,
-    "deliveryStatus": "delivered",
-    "couponUsed": null,
-    "createdAt": "2026-06-27T21:53:38.237Z",
-    "updatedAt": "2026-06-28T02:07:34.454Z",
-    "__v": 0,
-    "deliveredAt": "2026-06-28T02:07:34.452Z",
-    "paidAt": "2026-06-28T02:07:34.452Z",
-    "trackingNumber": ""
-  },
-  {
-    "_id": "6a40805d9677bb0e61edf5fa",
-    "isGuest": true,
-    "guestInfo": {
-      "name": "sa sa",
-      "phone": "0785878585",
-      "wilaya": "Sétif (Beni Aziz)"
-    },
-    "orderItems": [
+        "_id": "6a9aef1a85028ffcbf825a47"
+      },
       {
-        "product": "6a3ff978ef9c9dcd2380cdf9",
-        "name": "tet",
-        "quantity": 1,
-        "price": 11111,
-        "image": "/uploads/images-1782577528164-939883784.png",
-        "variant": {},
-        "_id": "6a40805d9677bb0e61edf5fb"
-      }
-    ],
-    "shippingAddress": {
-      "street": "Beni Aziz - StopDesk",
-      "city": "Sétif",
-      "state": "Sétif",
-      "postalCode": "00000",
-      "country": "Algeria",
-      "phone": "0785878585"
-    },
-    "paymentMethod": "COD",
-    "deliveryType": "StopDesk",
-    "itemsPrice": 11111,
-    "shippingPrice": 0,
-    "discountPrice": 0,
-    "totalPrice": 11111,
-    "isPaid": true,
-    "isDelivered": true,
-    "deliveryStatus": "delivered",
-    "couponUsed": null,
-    "createdAt": "2026-06-28T02:01:01.756Z",
-    "updatedAt": "2026-06-28T02:07:45.397Z",
-    "__v": 0,
-    "deliveredAt": "2026-06-28T02:07:45.396Z",
-    "paidAt": "2026-06-28T02:07:45.396Z",
-    "trackingNumber": ""
-  },
-  {
-    "_id": "6a40822af9d8fd29d5d3112c",
-    "isGuest": true,
-    "guestInfo": {
-      "name": "za za",
-      "phone": "046896589",
-      "wilaya": "Tiaret (Sougueur)"
-    },
-    "orderItems": [
-      {
-        "product": "6a3ff978ef9c9dcd2380cdf9",
-        "name": "tet",
+        "product": "6a3ff068ef64c5384b51b2b7",
+        "name": "LCD REDMI NOTE 8 PRO BLINDE",
         "quantity": 4,
-        "price": 11111,
-        "image": "/uploads/images-1782577528164-939883784.png",
+        "price": 1810,
+        "image": "/uploads/screen.png",
         "variant": {},
-        "_id": "6a40822af9d8fd29d5d3112d"
+        "_id": "6a9aef1a85028ffcbf825a48"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b2c2",
+        "name": "AFFICHEUR LCD SAM A02S/A03S/A04E BLINDE",
+        "quantity": 12,
+        "price": 1680,
+        "image": "/uploads/screen.png",
+        "variant": {},
+        "_id": "6a9aef1a85028ffcbf825a49"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b29b",
+        "name": "AFFICHEUR LCD REDMI A1 PLUS BLINDE",
+        "quantity": 2,
+        "price": 1650,
+        "image": "/uploads/screen.png",
+        "variant": {},
+        "_id": "6a9aef1a85028ffcbf825a4a"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b290",
+        "name": "AFFICHEUR LCD REDMI 8A BLINDE",
+        "quantity": 2,
+        "price": 1700,
+        "image": "/uploads/screen.png",
+        "variant": {},
+        "_id": "6a9aef1a85028ffcbf825a4b"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b266",
+        "name": "AFFICHEUR LCD REALME C11 2021 BLINDE",
+        "quantity": 4,
+        "price": 1750,
+        "image": "/uploads/images-1786226108468-839536832.PNG",
+        "variant": {},
+        "_id": "6a9aef1a85028ffcbf825a4c"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b237",
+        "name": "AFFICHEUR LCD OPPO A53/A54 4G/A53S/A33/REALME 7I BLINDE",
+        "quantity": 4,
+        "price": 1680,
+        "image": "/uploads/screen.png",
+        "variant": {},
+        "_id": "6a9aef1a85028ffcbf825a4d"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b1f8",
+        "name": "AFFICHEUR LCD INFINIX SMART 9/HOT 50 5G/HOT 50I/ITEL A80/POP 9/SPARK 30 BLINDE",
+        "quantity": 2,
+        "price": 1770,
+        "image": "/uploads/screen.png",
+        "variant": {},
+        "_id": "6a9aef1a85028ffcbf825a4e"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b373",
+        "name": "NAP CHARG OPPO A5 2020/A9 2020/A11X ORG",
+        "quantity": 4,
+        "price": 350,
+        "image": "/uploads/spare_part.png",
+        "variant": {},
+        "_id": "6a9aef1a85028ffcbf825a4f"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b356",
+        "name": "NAP CHARG INFINIX HOT 11 PLAY",
+        "quantity": 2,
+        "price": 300,
+        "image": "/uploads/spare_part.png",
+        "variant": {},
+        "_id": "6a9aef1a85028ffcbf825a50"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b371",
+        "name": "NAP CHARG OPPO A31 2020 ORG",
+        "quantity": 4,
+        "price": 350,
+        "image": "/uploads/spare_part.png",
+        "variant": {},
+        "_id": "6a9aef1a85028ffcbf825a51"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b276",
+        "name": "AFFICHEUR LCD REALME C55/OPPO A58 4G/A98 5G/RLM C67 5G/V50/RLM 11 5G",
+        "quantity": 10,
+        "price": 1550,
+        "image": "/uploads/screen.png",
+        "variant": {},
+        "_id": "6a9aef1a85028ffcbf825a52"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b355",
+        "name": "NAP CHARG INFINIX HOT 11",
+        "quantity": 4,
+        "price": 300,
+        "image": "/uploads/spare_part.png",
+        "variant": {},
+        "_id": "6a9aef1a85028ffcbf825a53"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b307",
+        "name": "AFFICHEUR SAM B310/B312/B315",
+        "quantity": 40,
+        "price": 230,
+        "image": "/uploads/screen.png",
+        "variant": {},
+        "_id": "6a9aef1a85028ffcbf825a54"
       }
     ],
     "shippingAddress": {
-      "street": "Sougueur - StopDesk",
+      "street": "Bougara - À Domicile",
       "city": "Tiaret",
       "state": "Tiaret",
       "postalCode": "00000",
       "country": "Algeria",
-      "phone": "046896589"
-    },
-    "paymentMethod": "COD",
-    "deliveryType": "StopDesk",
-    "itemsPrice": 44444,
-    "shippingPrice": 0,
-    "discountPrice": 0,
-    "totalPrice": 44444,
-    "isPaid": true,
-    "isDelivered": true,
-    "deliveryStatus": "delivered",
-    "couponUsed": null,
-    "createdAt": "2026-06-28T02:08:42.986Z",
-    "updatedAt": "2026-06-28T02:10:03.077Z",
-    "__v": 0,
-    "deliveredAt": "2026-06-28T02:10:03.076Z",
-    "paidAt": "2026-06-28T02:10:03.076Z",
-    "trackingNumber": ""
-  },
-  {
-    "_id": "6a40830ba151165b0f5c5623",
-    "user": "6a3ff763ef9c9dcd2380cb16",
-    "isGuest": false,
-    "orderItems": [
-      {
-        "product": "6a3ff978ef9c9dcd2380cdf9",
-        "name": "tet",
-        "quantity": 1,
-        "price": 12332,
-        "image": "/uploads/images-1782577528164-939883784.png",
-        "variant": {},
-        "_id": "6a40830ba151165b0f5c5624"
-      }
-    ],
-    "shippingAddress": {
-      "street": "Touggourt - StopDesk",
-      "city": "Touggourt",
-      "state": "Touggourt",
-      "postalCode": "00000",
-      "country": "Algeria",
-      "phone": "0787985858"
-    },
-    "paymentMethod": "COD",
-    "deliveryType": "StopDesk",
-    "itemsPrice": 12332,
-    "shippingPrice": 0,
-    "discountPrice": 0,
-    "totalPrice": 12332,
-    "isPaid": true,
-    "isDelivered": true,
-    "deliveryStatus": "delivered",
-    "couponUsed": null,
-    "createdAt": "2026-06-28T02:12:27.208Z",
-    "updatedAt": "2026-06-28T02:12:58.198Z",
-    "__v": 0,
-    "deliveredAt": "2026-06-28T02:12:58.198Z",
-    "paidAt": "2026-06-28T02:12:58.198Z",
-    "trackingNumber": ""
-  },
-  {
-    "_id": "6a40853dc6b99d4d1dd8b46f",
-    "user": "6a3fed92ec45a31277bda2ff",
-    "isGuest": false,
-    "orderItems": [
-      {
-        "product": "6a3ff068ef64c5384b51b5db",
-        "name": "WIRE 0.035",
-        "quantity": 1,
-        "price": 350,
-        "image": "/uploads/spare_part.png",
-        "variant": {},
-        "_id": "6a40853dc6b99d4d1dd8b470"
-      }
-    ],
-    "shippingAddress": {
-      "street": "Bouhlou - StopDesk",
-      "city": "Tlemcen",
-      "state": "Tlemcen",
-      "postalCode": "00000",
-      "country": "Algeria",
-      "phone": "1111111111111111"
-    },
-    "paymentMethod": "COD",
-    "deliveryType": "StopDesk",
-    "itemsPrice": 350,
-    "shippingPrice": 0,
-    "discountPrice": 0,
-    "totalPrice": 350,
-    "isPaid": true,
-    "isDelivered": true,
-    "deliveryStatus": "delivered",
-    "couponUsed": null,
-    "createdAt": "2026-06-28T02:21:49.873Z",
-    "updatedAt": "2026-06-28T02:22:23.314Z",
-    "__v": 0,
-    "deliveredAt": "2026-06-28T02:22:23.312Z",
-    "paidAt": "2026-06-28T02:22:23.312Z",
-    "trackingNumber": ""
-  },
-  {
-    "_id": "6a413a8b2ee174e334b6167d",
-    "user": "6a413a422ee174e334b61606",
-    "isGuest": false,
-    "orderItems": [
-      {
-        "product": "6a3ff068ef64c5384b51b5d8",
-        "name": "TRESS A DESOUDER WICK AT-2020",
-        "quantity": 10,
-        "price": 700,
-        "image": "/uploads/repair_tool.png",
-        "variant": {},
-        "_id": "6a413a8b2ee174e334b6167e"
-      }
-    ],
-    "shippingAddress": {
-      "street": "Tabelbala - StopDesk",
-      "city": "Béni Abbès",
-      "state": "Béni Abbès",
-      "postalCode": "00000",
-      "country": "Algeria",
-      "phone": "0784859695"
-    },
-    "paymentMethod": "COD",
-    "deliveryType": "StopDesk",
-    "itemsPrice": 7000,
-    "shippingPrice": 550,
-    "discountPrice": 0,
-    "totalPrice": 7550,
-    "isPaid": true,
-    "isDelivered": true,
-    "deliveryStatus": "delivered",
-    "couponUsed": null,
-    "createdAt": "2026-06-28T15:15:23.600Z",
-    "updatedAt": "2026-06-28T15:17:02.057Z",
-    "__v": 0,
-    "trackingNumber": "",
-    "deliveredAt": "2026-06-28T15:17:02.056Z",
-    "paidAt": "2026-06-28T15:17:02.056Z"
-  },
-  {
-    "_id": "6a423ca02ee174e334b61a27",
-    "user": "6a3fed92ec45a31277bda2ff",
-    "isGuest": false,
-    "orderItems": [
-      {
-        "product": "6a3ff068ef64c5384b51b5d8",
-        "name": "TRESS A DESOUDER WICK AT-2020",
-        "quantity": 1,
-        "price": 700,
-        "image": "/uploads/repair_tool.png",
-        "variant": {},
-        "_id": "6a423ca02ee174e334b61a28"
-      }
-    ],
-    "shippingAddress": {
-      "street": "El Fedjoudj - À Domicile",
-      "city": "Guelma",
-      "state": "Guelma",
-      "postalCode": "00000",
-      "country": "Algeria",
-      "phone": "07985698655"
+      "phone": "0794940877"
     },
     "paymentMethod": "COD",
     "deliveryType": "À Domicile",
-    "itemsPrice": 700,
-    "shippingPrice": 800,
+    "itemsPrice": 87260,
+    "shippingPrice": 0,
     "discountPrice": 0,
-    "totalPrice": 1500,
+    "totalPrice": 87260,
     "isPaid": true,
     "isDelivered": true,
     "deliveryStatus": "delivered",
     "couponUsed": null,
-    "createdAt": "2026-06-29T09:36:32.857Z",
-    "updatedAt": "2026-06-29T09:37:24.397Z",
+    "createdAt": "2026-09-04T16:17:30.864Z",
+    "updatedAt": "2026-09-05T12:07:22.729Z",
     "__v": 0,
-    "deliveredAt": "2026-06-29T09:37:24.396Z",
-    "paidAt": "2026-06-29T09:37:24.396Z",
-    "trackingNumber": ""
+    "trackingNumber": "",
+    "deliveredAt": "2026-09-05T12:07:22.725Z",
+    "paidAt": "2026-09-05T12:07:22.725Z"
   },
   {
-    "_id": "6a4247cdf2d7e0c9b52e7cd6",
-    "user": "6a3ff763ef9c9dcd2380cb16",
+    "_id": "6aabcdc97a315935ef4a8da3",
+    "user": "6a7dbc58cc51473e8967a098",
     "isGuest": false,
     "orderItems": [
       {
-        "product": "6a3ff068ef64c5384b51b5da",
-        "name": "UV LAMP L1 PRO",
-        "quantity": 1,
-        "price": 2900,
-        "image": "/uploads/spare_part.png",
+        "product": "6a3ff068ef64c5384b51b2c8",
+        "name": "AFFICHEUR LCD SAM A04 A045",
+        "quantity": 2,
+        "price": 1580,
+        "image": "/uploads/screen.png",
         "variant": {},
-        "_id": "6a4247cdf2d7e0c9b52e7cd7"
+        "_id": "6aabcdc97a315935ef4a8da4"
       },
       {
-        "product": "6a3ff068ef64c5384b51b5d8",
-        "name": "TRESS A DESOUDER WICK AT-2020",
-        "quantity": 1,
-        "price": 650,
-        "image": "/uploads/repair_tool.png",
+        "product": "6a3ff068ef64c5384b51b2ce",
+        "name": "AFFICHEUR LCD SAM A05S/M14 4G HD+ JT",
+        "quantity": 2,
+        "price": 2050,
+        "image": "/uploads/screen.png",
         "variant": {},
-        "_id": "6a4247cdf2d7e0c9b52e7cd8"
+        "_id": "6aabcdc97a315935ef4a8da5"
       },
       {
-        "product": "6a3ff068ef64c5384b51b5d9",
-        "name": "TRIPLETTE USB BST-P04 3X UNI",
-        "quantity": 1,
-        "price": 2800,
-        "image": "/uploads/spare_part.png",
+        "product": "6a3ff068ef64c5384b51b30b",
+        "name": "AFFICHEUR SAM J4 PLUS/J4 CORE/J6 PLUS",
+        "quantity": 2,
+        "price": 1450,
+        "image": "/uploads/screen.png",
         "variant": {},
-        "_id": "6a4247cdf2d7e0c9b52e7cd9"
+        "_id": "6aabcdc97a315935ef4a8da6"
       },
       {
-        "product": "6a3ff068ef64c5384b51b5d7",
-        "name": "TRES DESOUDER WICK AT-2015",
-        "quantity": 1,
-        "price": 550,
-        "image": "/uploads/repair_tool.png",
+        "product": "6a3ff068ef64c5384b51b2d8",
+        "name": "AFFICHEUR LCD SAM A13/M13/F13 A135F 5.7",
+        "quantity": 2,
+        "price": 1450,
+        "image": "/uploads/images-1786312442974-187730435.PNG",
         "variant": {},
-        "_id": "6a4247cdf2d7e0c9b52e7cda"
+        "_id": "6aabcdc97a315935ef4a8da7"
       },
       {
-        "product": "6a3ff068ef64c5384b51b5d2",
-        "name": "TAPIS UT-D251",
-        "quantity": 1,
-        "price": 900,
-        "image": "/uploads/spare_part.png",
+        "product": "6a3ff068ef64c5384b51b2d5",
+        "name": "AFFICHEUR LCD SAM A11/M11",
+        "quantity": 2,
+        "price": 1630,
+        "image": "/uploads/screen.png",
         "variant": {},
-        "_id": "6a4247cdf2d7e0c9b52e7cdb"
+        "_id": "6aabcdc97a315935ef4a8da8"
       },
       {
-        "product": "6a3ff068ef64c5384b51b5d1",
-        "name": "TAPIS TE-703",
-        "quantity": 1,
-        "price": 250,
-        "image": "/uploads/spare_part.png",
+        "product": "6a3ff068ef64c5384b51b243",
+        "name": "AFFICHEUR LCD OPPO F11 PRO",
+        "quantity": 2,
+        "price": 1950,
+        "image": "/uploads/images-1785880252150-903507174.PNG",
         "variant": {},
-        "_id": "6a4247cdf2d7e0c9b52e7cdc"
+        "_id": "6aabcdc97a315935ef4a8da9"
       },
       {
-        "product": "6a3ff068ef64c5384b51b5d3",
-        "name": "TEST CHARGE MECHANIC 6M",
-        "quantity": 1,
-        "price": 4900,
-        "image": "/uploads/connecteur.png",
+        "product": "6a3ff068ef64c5384b51b223",
+        "name": "AFFICHEUR LCD OPPO A15 HD+ JT",
+        "quantity": 3,
+        "price": 1790,
+        "image": "/uploads/screen.png",
         "variant": {},
-        "_id": "6a4247cdf2d7e0c9b52e7cdd"
-      }
-    ],
-    "shippingAddress": {
-      "street": "Gueltat Sidi Saad - StopDesk",
-      "city": "Laghouat",
-      "state": "Laghouat",
-      "postalCode": "00000",
-      "country": "Algeria",
-      "phone": "5478547854"
-    },
-    "paymentMethod": "COD",
-    "deliveryType": "StopDesk",
-    "itemsPrice": 12950,
-    "shippingPrice": 550,
-    "discountPrice": 0,
-    "totalPrice": 13500,
-    "isPaid": false,
-    "isDelivered": false,
-    "deliveryStatus": "pending",
-    "couponUsed": null,
-    "createdAt": "2026-06-29T10:24:13.637Z",
-    "updatedAt": "2026-06-29T10:24:13.637Z",
-    "__v": 0
-  },
-  {
-    "_id": "6a4249ad814a67767ac22d0f",
-    "user": "6a3ff763ef9c9dcd2380cb16",
-    "isGuest": false,
-    "orderItems": [
+        "_id": "6aabcdc97a315935ef4a8daa"
+      },
       {
-        "product": "6a3ff068ef64c5384b51b5d8",
-        "name": "TRESS A DESOUDER WICK AT-2020",
-        "quantity": 1,
-        "price": 650,
-        "image": "/uploads/repair_tool.png",
+        "product": "6a3ff068ef64c5384b51b26f",
+        "name": "AFFICHEUR LCD REALME C35",
+        "quantity": 2,
+        "price": 1680,
+        "image": "/uploads/screen.png",
         "variant": {},
-        "_id": "6a4249ad814a67767ac22d10"
+        "_id": "6aabcdc97a315935ef4a8dab"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b26c",
+        "name": "AFFICHEUR  LCD REALME C33/C30/C30S/NARZO 50I HD+ JT",
+        "quantity": 2,
+        "price": 1850,
+        "image": "/uploads/screen.png",
+        "variant": {},
+        "_id": "6aabcdc97a315935ef4a8dac"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b266",
+        "name": "AFFICHEUR LCD REALME C11 2021 BLINDE",
+        "quantity": 2,
+        "price": 1750,
+        "image": "/uploads/images-1786226108468-839536832.PNG",
+        "variant": {},
+        "_id": "6aabcdc97a315935ef4a8dad"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b1ec",
+        "name": "AFFICHEUR LCD INFINIX SMART 10",
+        "quantity": 2,
+        "price": 1680,
+        "image": "/uploads/screen.png",
+        "variant": {},
+        "_id": "6aabcdc97a315935ef4a8dae"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b1f8",
+        "name": "AFFICHEUR LCD INFINIX SMART 9/HOT 50 5G/HOT 50I/ITEL A80/POP 9/SPARK 30 BLINDE",
+        "quantity": 2,
+        "price": 1770,
+        "image": "/uploads/screen.png",
+        "variant": {},
+        "_id": "6aabcdc97a315935ef4a8daf"
       }
     ],
     "shippingAddress": {
@@ -439,20 +285,206 @@
       "state": "Tiaret",
       "postalCode": "00000",
       "country": "Algeria",
-      "phone": "0145201452"
+      "phone": "0770720973"
     },
     "paymentMethod": "COD",
     "deliveryType": "Retrait au Magasin",
-    "itemsPrice": 650,
+    "itemsPrice": 43050,
     "shippingPrice": 0,
     "discountPrice": 0,
-    "totalPrice": 650,
+    "totalPrice": 43050,
     "isPaid": false,
     "isDelivered": false,
-    "deliveryStatus": "pending",
+    "deliveryStatus": "processing",
     "couponUsed": null,
-    "createdAt": "2026-06-29T10:32:13.770Z",
-    "updatedAt": "2026-06-29T10:32:13.770Z",
+    "createdAt": "2026-09-17T11:23:53.139Z",
+    "updatedAt": "2026-09-17T16:01:55.972Z",
+    "__v": 0,
+    "trackingNumber": ""
+  },
+  {
+    "_id": "6aabfd597a315935ef4a8e74",
+    "user": "6a7dbc58cc51473e8967a098",
+    "isGuest": false,
+    "orderItems": [
+      {
+        "product": "6a3ff068ef64c5384b51b2cb",
+        "name": "AFFICHEUR LCD SAM A05 A055F",
+        "quantity": 3,
+        "price": 1580,
+        "image": "/uploads/screen.png",
+        "variant": {},
+        "_id": "6aabfd597a315935ef4a8e75"
+      }
+    ],
+    "shippingAddress": {
+      "street": "Retrait au Magasin (Boutique)",
+      "city": "Tiaret",
+      "state": "Tiaret",
+      "postalCode": "00000",
+      "country": "Algeria",
+      "phone": "0770720973"
+    },
+    "paymentMethod": "COD",
+    "deliveryType": "Retrait au Magasin",
+    "itemsPrice": 4740,
+    "shippingPrice": 0,
+    "discountPrice": 0,
+    "totalPrice": 4740,
+    "isPaid": false,
+    "isDelivered": false,
+    "deliveryStatus": "processing",
+    "couponUsed": null,
+    "createdAt": "2026-09-17T14:46:49.937Z",
+    "updatedAt": "2026-09-17T16:02:01.008Z",
     "__v": 0
+  },
+  {
+    "_id": "6ab11c637a315935ef4aacfa",
+    "user": "6ab066e57a315935ef4aa0be",
+    "isGuest": false,
+    "orderItems": [
+      {
+        "product": "6a3ff068ef64c5384b51b2d8",
+        "name": "AFFICHEUR LCD SAM A13/M13/F13 A135F 5.7",
+        "quantity": 5,
+        "price": 1450,
+        "image": "/uploads/images-1786312442974-187730435.PNG",
+        "variant": {},
+        "_id": "6ab11c637a315935ef4aacfb"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b1f8",
+        "name": "AFFICHEUR LCD INFINIX SMART 9/HOT 50 5G/HOT 50I/ITEL A80/POP 9/SPARK 30 BLINDE",
+        "quantity": 5,
+        "price": 1770,
+        "image": "/uploads/screen.png",
+        "variant": {},
+        "_id": "6ab11c637a315935ef4aacfc"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b272",
+        "name": "AFFICHEUR  LCD REALME C53/C51/NARZO N53/NOTE 50",
+        "quantity": 5,
+        "price": 1600,
+        "image": "/uploads/screen.png",
+        "variant": {},
+        "_id": "6ab11c637a315935ef4aacfd"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b238",
+        "name": "AFFICHEUR LCD OPPO A53/A54 4G/A55/A53S/A33/REALME 7I",
+        "quantity": 5,
+        "price": 1640,
+        "image": "/uploads/screen.png",
+        "variant": {},
+        "_id": "6ab11c637a315935ef4aacfe"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b2cb",
+        "name": "AFFICHEUR LCD SAM A05 A055F",
+        "quantity": 3,
+        "price": 1580,
+        "image": "/uploads/screen.png",
+        "variant": {},
+        "_id": "6ab11c637a315935ef4aacff"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b265",
+        "name": "AFFICHEUR  LCD REALME C11 2021/C21 2021 HD+ JT",
+        "quantity": 3,
+        "price": 1850,
+        "image": "/uploads/screen.png",
+        "variant": {},
+        "_id": "6ab11c637a315935ef4aad00"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b268",
+        "name": "AFFICHEUR  LCD REALME C21Y/C25 HD",
+        "quantity": 3,
+        "price": 1580,
+        "image": "/uploads/screen.png",
+        "variant": {},
+        "_id": "6ab11c637a315935ef4aad01"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b2c9",
+        "name": "AFFICHEUR LCD SAM A04E A02S A03S HD",
+        "quantity": 3,
+        "price": 1520,
+        "image": "/uploads/screen.png",
+        "variant": {},
+        "_id": "6ab11c637a315935ef4aad02"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b27b",
+        "name": "AFFICHEUR  LCD REALME C65/V60/OPPO A60/A3 PRO/A40M HD+ JT",
+        "quantity": 5,
+        "price": 1900,
+        "image": "/uploads/screen.png",
+        "variant": {},
+        "_id": "6ab11c637a315935ef4aad03"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b23c",
+        "name": "AFFICHEUR LCD OPPO A5S/A7/A11K/A12/RLM 3/RLM 3I",
+        "quantity": 3,
+        "price": 1400,
+        "image": "/uploads/screen.png",
+        "variant": {},
+        "_id": "6ab11c637a315935ef4aad04"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b3af",
+        "name": "NAP CHARGE REDMI 9A HIGH QUALITY",
+        "quantity": 5,
+        "price": 350,
+        "image": "/uploads/connecteur.png",
+        "variant": {},
+        "_id": "6ab11c637a315935ef4aad05"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b1f7",
+        "name": "AFFICHEUR LCD INFINIX SMART 8/HOT 40I/CON NOVA 70/70SE X6525 HD+ JT",
+        "quantity": 5,
+        "price": 1800,
+        "image": "/uploads/screen.png",
+        "variant": {},
+        "_id": "6ab11c637a315935ef4aad06"
+      },
+      {
+        "product": "6ab114fc7a315935ef4aab42",
+        "name": "AFFICHEUR INFINIX SMART 7/ITEL A50/A60/A70/A05S/A90/P40/S23/SPARK GO 20223/SPARK 10/10C/ZTE A34/A54 HD+ JT",
+        "quantity": 5,
+        "price": 1800,
+        "image": "/uploads/screen.png",
+        "variant": {},
+        "_id": "6ab11c637a315935ef4aad07"
+      }
+    ],
+    "shippingAddress": {
+      "street": "Dréan - StopDesk",
+      "city": "El Tarf",
+      "state": "El Tarf",
+      "postalCode": "00000",
+      "country": "Algeria",
+      "phone": "0540134359"
+    },
+    "paymentMethod": "COD",
+    "deliveryType": "StopDesk",
+    "itemsPrice": 85340,
+    "shippingPrice": 0,
+    "discountPrice": 0,
+    "totalPrice": 85340,
+    "isPaid": true,
+    "isDelivered": true,
+    "deliveryStatus": "delivered",
+    "couponUsed": null,
+    "createdAt": "2026-09-21T12:00:35.598Z",
+    "updatedAt": "2026-09-26T18:40:36.403Z",
+    "__v": 0,
+    "trackingNumber": "",
+    "deliveredAt": "2026-09-26T18:40:36.400Z",
+    "paidAt": "2026-09-26T18:40:36.400Z"
   }
 ]

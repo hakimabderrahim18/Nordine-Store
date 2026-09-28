@@ -155,22 +155,86 @@ export default function Home() {
               {t('hero_subtext')}
             </motion.p>
 
+            {/* DIRECT INSTANT SEARCH BAR FOR MOBILE & DESKTOP HERO */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.15 }}
+              className="w-full bg-white/95 backdrop-blur-md p-3 sm:p-4 rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-xl shadow-slate-200/50 space-y-2.5 text-start"
+            >
+              <div className="flex items-center justify-between px-1">
+                <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-amber-600 flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+                  {language === 'ar' ? 'البحث السريع عن قطع الغيار والموديلات' : 'Recherche Rapide Directe'}
+                </span>
+                <span className="text-[9px] font-bold text-slate-400">
+                  {language === 'ar' ? '+2000 قطعة متوفرة' : '+2000 pièces en stock'}
+                </span>
+              </div>
+
+              {/* Autocomplete Input */}
+              <SearchAutocomplete isMobile={true} />
+
+              {/* Quick Category Chips for Phone & Desktop */}
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-0.5 no-scrollbar select-none">
+                <Link
+                  to="/shop?keyword=afficheur"
+                  className="px-2.5 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200/80 text-[10px] font-black whitespace-nowrap flex items-center gap-1 transition-all active:scale-95 flex-shrink-0"
+                >
+                  <span>📱</span>
+                  <span>{language === 'ar' ? 'شاشات (Afficheurs)' : 'Afficheurs'}</span>
+                </Link>
+
+                <Link
+                  to="/shop?keyword=bat"
+                  className="px-2.5 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 text-[10px] font-bold whitespace-nowrap flex items-center gap-1 transition-all active:scale-95 flex-shrink-0"
+                >
+                  <span>🔋</span>
+                  <span>{language === 'ar' ? 'بطاريات' : 'Batteries'}</span>
+                </Link>
+
+                <Link
+                  to="/shop?keyword=buzzer"
+                  className="px-2.5 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 text-[10px] font-bold whitespace-nowrap flex items-center gap-1 transition-all active:scale-95 flex-shrink-0"
+                >
+                  <span>🔔</span>
+                  <span>{language === 'ar' ? 'بوزر' : 'Buzzers'}</span>
+                </Link>
+
+                <Link
+                  to="/shop?keyword=connecteur"
+                  className="px-2.5 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 text-[10px] font-bold whitespace-nowrap flex items-center gap-1 transition-all active:scale-95 flex-shrink-0"
+                >
+                  <span>🔌</span>
+                  <span>{language === 'ar' ? 'كونكتور' : 'Connecteurs'}</span>
+                </Link>
+
+                <Link
+                  to="/shop?keyword=glass"
+                  className="px-2.5 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 text-[10px] font-bold whitespace-nowrap flex items-center gap-1 transition-all active:scale-95 flex-shrink-0"
+                >
+                  <span>🛡️</span>
+                  <span>{language === 'ar' ? 'زجاج وتاتش' : 'Vitres / Glass'}</span>
+                </Link>
+              </div>
+            </motion.div>
+
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="flex flex-wrap gap-4 pt-2"
+              className="flex flex-wrap gap-3 pt-1"
             >
               <Link
                 to="/shop"
-                className="gold-bg-gradient text-slate-950 font-black text-xs uppercase tracking-wider px-6 py-4 rounded-[6px] flex items-center space-x-2 shadow-lg shadow-brand-primary/20 transition-transform active:scale-97 hover:opacity-90"
+                className="gold-bg-gradient text-slate-950 font-black text-xs uppercase tracking-wider px-6 py-3.5 rounded-xl flex items-center space-x-2 shadow-lg shadow-amber-500/20 transition-transform active:scale-97 hover:opacity-90"
               >
                 <ShoppingBag size={14} className="fill-slate-950 text-slate-950" />
                 <span>{t('btn_discover')}</span>
               </Link>
               <a
                 href="#categories"
-                className="bg-white border border-gray-300 hover:bg-gray-50 text-slate-700 font-black text-xs uppercase tracking-wider px-6 py-4 rounded-[6px] flex items-center space-x-2 transition-all active:scale-97"
+                className="bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-black text-xs uppercase tracking-wider px-5 py-3.5 rounded-xl flex items-center space-x-2 transition-all active:scale-97"
               >
                 <Package size={14} />
                 <span>{t('btn_categories')}</span>

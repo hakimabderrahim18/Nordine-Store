@@ -166,7 +166,7 @@ async function main() {
     }).on('error', (err) => {
       console.error('Erreur de connexion SSH:', err);
       process.exit(1);
-    }).connect(VPS_CONFIG);
+    }).connect({ ...VPS_CONFIG, readyTimeout: 45000 });
 
   } catch (err) {
     console.error('Erreur locale de préparation:', err);

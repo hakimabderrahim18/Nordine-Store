@@ -262,5 +262,181 @@
     "createdAt": "2026-06-29T10:32:13.796Z",
     "updatedAt": "2026-06-29T10:32:13.796Z",
     "__v": 0
+  },
+  {
+    "_id": "6a45312ea90a5675acbd8c23",
+    "user": null,
+    "title": "New Order Placed",
+    "message": "Order #BD8C1F has been placed by GUETTAA HADJER (11,661 DA)",
+    "type": "order",
+    "isRead": true,
+    "createdAt": "2026-07-01T15:24:30.958Z",
+    "updatedAt": "2026-07-03T11:21:54.301Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a9aef1b85028ffcbf825a66",
+    "user": null,
+    "title": "New Order Placed",
+    "message": "Order #825A45 has been placed by Nail (87,260 DA)",
+    "type": "order",
+    "isRead": true,
+    "createdAt": "2026-09-04T16:17:31.162Z",
+    "updatedAt": "2026-09-04T20:42:58.341Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a9aef1b85028ffcbf825a68",
+    "user": "6a7d99e1cc51473e89679b37",
+    "title": "Order Confirmation",
+    "message": "Your order #825A45 has been received.",
+    "type": "order",
+    "isRead": false,
+    "createdAt": "2026-09-04T16:17:31.165Z",
+    "updatedAt": "2026-09-04T16:17:31.165Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a9b2da985028ffcbf825dcf",
+    "user": "6a7d99e1cc51473e89679b37",
+    "title": "Order Status: processing",
+    "message": "Your order #825A45 status has been updated to processing.",
+    "type": "order",
+    "isRead": false,
+    "createdAt": "2026-09-04T20:44:25.403Z",
+    "updatedAt": "2026-09-04T20:44:25.403Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a9c05fa85028ffcbf8260b8",
+    "user": "6a7d99e1cc51473e89679b37",
+    "title": "Order Status: delivered",
+    "message": "Your order #825A45 status has been updated to delivered.",
+    "type": "order",
+    "isRead": false,
+    "createdAt": "2026-09-05T12:07:22.749Z",
+    "updatedAt": "2026-09-05T12:07:22.749Z",
+    "__v": 0
+  },
+  {
+    "_id": "6aabcdc97a315935ef4a8dbe",
+    "user": null,
+    "title": "New Order Placed",
+    "message": "Order #4A8DA3 has been placed by B PRO (43,050 DA)",
+    "type": "order",
+    "isRead": true,
+    "createdAt": "2026-09-17T11:23:53.316Z",
+    "updatedAt": "2026-09-17T16:02:18.766Z",
+    "__v": 0
+  },
+  {
+    "_id": "6aabcdc97a315935ef4a8dc0",
+    "user": "6a7dbc58cc51473e8967a098",
+    "title": "Order Confirmation",
+    "message": "Your order #4A8DA3 has been received.",
+    "type": "order",
+    "isRead": false,
+    "createdAt": "2026-09-17T11:23:53.326Z",
+    "updatedAt": "2026-09-17T11:23:53.326Z",
+    "__v": 0
+  },
+  {
+    "_id": "6aabfd597a315935ef4a8e79",
+    "user": null,
+    "title": "New Order Placed",
+    "message": "Order #4A8E74 has been placed by B PRO (4,740 DA)",
+    "type": "order",
+    "isRead": true,
+    "createdAt": "2026-09-17T14:46:49.952Z",
+    "updatedAt": "2026-09-17T16:02:16.853Z",
+    "__v": 0
+  },
+  {
+    "_id": "6aabfd597a315935ef4a8e7b",
+    "user": "6a7dbc58cc51473e8967a098",
+    "title": "Order Confirmation",
+    "message": "Your order #4A8E74 has been received.",
+    "type": "order",
+    "isRead": false,
+    "createdAt": "2026-09-17T14:46:49.956Z",
+    "updatedAt": "2026-09-17T14:46:49.956Z",
+    "__v": 0
+  },
+  {
+    "_id": "6aac0ef37a315935ef4a8f20",
+    "user": "6a7dbc58cc51473e8967a098",
+    "title": "Order Status: processing",
+    "message": "Your order #4A8DA3 status has been updated to processing.",
+    "type": "order",
+    "isRead": false,
+    "createdAt": "2026-09-17T16:01:55.981Z",
+    "updatedAt": "2026-09-17T16:01:55.981Z",
+    "__v": 0
+  },
+  {
+    "_id": "6aac0ef97a315935ef4a8f45",
+    "user": "6a7dbc58cc51473e8967a098",
+    "title": "Order Status: processing",
+    "message": "Your order #4A8E74 status has been updated to processing.",
+    "type": "order",
+    "isRead": false,
+    "createdAt": "2026-09-17T16:02:01.012Z",
+    "updatedAt": "2026-09-17T16:02:01.012Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab11c637a315935ef4aad17",
+    "user": null,
+    "title": "New Order Placed",
+    "message": "Order #4AACFA has been placed by Wassim yahiaoui (85,340 DA)",
+    "type": "order",
+    "isRead": true,
+    "createdAt": "2026-09-21T12:00:35.686Z",
+    "updatedAt": "2026-09-21T14:44:22.024Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab11c637a315935ef4aad19",
+    "user": "6ab066e57a315935ef4aa0be",
+    "title": "Order Confirmation",
+    "message": "Your order #4AACFA has been received.",
+    "type": "order",
+    "isRead": false,
+    "createdAt": "2026-09-21T12:00:35.690Z",
+    "updatedAt": "2026-09-21T12:00:35.690Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab140f77a315935ef4aae7d",
+    "user": "6ab066e57a315935ef4aa0be",
+    "title": "Order Status: processing",
+    "message": "Your order #4AACFA status has been updated to processing.",
+    "type": "order",
+    "isRead": false,
+    "createdAt": "2026-09-21T14:36:39.160Z",
+    "updatedAt": "2026-09-21T14:36:39.160Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab25c9f7a315935ef4ab2c6",
+    "user": "6ab066e57a315935ef4aa0be",
+    "title": "Order Status: shipped",
+    "message": "Your order #4AACFA status has been updated to shipped.",
+    "type": "order",
+    "isRead": false,
+    "createdAt": "2026-09-22T10:46:55.431Z",
+    "updatedAt": "2026-09-22T10:46:55.431Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab811a47a315935ef4ac8c5",
+    "user": "6ab066e57a315935ef4aa0be",
+    "title": "Order Status: delivered",
+    "message": "Your order #4AACFA status has been updated to delivered.",
+    "type": "order",
+    "isRead": false,
+    "createdAt": "2026-09-26T18:40:36.411Z",
+    "updatedAt": "2026-09-26T18:40:36.411Z",
+    "__v": 0
   }
 ]

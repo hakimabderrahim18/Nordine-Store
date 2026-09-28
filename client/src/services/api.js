@@ -413,11 +413,14 @@ export const contactService = {
 // Helper to resolve technical category code to a clean readable display name
 export const getCategoryDisplayName = (name) => {
   const upper = (name || '').toUpperCase();
-  if (upper === 'BAT') return 'Batteries';
+  if (upper === 'BAT' || upper === 'BATTERIE') return 'Batteries';
   if (upper === 'ACC') return 'Accessoires';
-  if (upper === 'POCH') return 'Pochettes';
+  if (upper === 'POCH' || upper === 'POCHETTE') return 'Pochettes';
   if (upper === 'T GLASS') return 'Verre Trempé';
-  if (upper === 'GLASS') return 'Vitres / Tactiles';
+  if (upper === 'GLASS' || upper === 'VITRE') return 'Vitres / Tactiles';
+  if (upper === 'ECRAN' || upper === 'LCD' || upper === 'AFFICHEUR' || upper === 'AFFICHEURS') return 'Afficheurs';
+  if (upper === 'BUZZER') return 'Buzzers';
+  if (upper === 'CONNECTEUR') return 'Connecteurs de Charge';
   if (upper === 'PIECE') return 'Pièces Détachées';
   if (upper === 'MATERIEL') return 'Matériel & Outillage';
   return name;

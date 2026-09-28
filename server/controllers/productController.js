@@ -149,12 +149,25 @@ export const getProductById = async (req, res, next) => {
   }
 };
 
+export const normalizeAfficheurName = (name) => {
+  if (!name || typeof name !== 'string') return name;
+  let s = name;
+  // Replace 'AFFICHEUR LCD', 'ECRAN LCD', 'LCD', 'ECRAN' with 'AFFICHEUR'
+  s = s.replace(/\b(AFFICHEUR\s+LCD|ECRAN\s+LCD|LCD|ECRAN)\b/gi, 'AFFICHEUR');
+  // Clean multiple consecutive duplicated words
+  s = s.replace(/\b(AFFICHEUR\s+)+AFFICHEUR\b/gi, 'AFFICHEUR');
+  // Clean whitespace
+  s = s.replace(/\s+/g, ' ').trim();
+  return s;
+};
+
 // @desc    Create a new product
 // @route   POST /api/products
 // @access  Private/Admin
 export const createProduct = async (req, res, next) => {
   try {
-    const { name, sku, price, discountPrice, demiGrosPrice, superGrosPrice, priceDetail, priceDetailReparation, priceReparation, priceDemiGros, priceSuperGros, pricePromo, description, longDescription, category, brand, stock, variants, specifications, isFeatured } = req.body;
+    const { name: rawName, sku, price, discountPrice, demiGrosPrice, superGrosPrice, priceDetail, priceDetailReparation, priceReparation, priceDemiGros, priceSuperGros, pricePromo, description, longDescription, category, brand, stock, variants, specifications, isFeatured } = req.body;
+    const name = normalizeAfficheurName(rawName);
 
     const productExists = await Product.findOne({ sku });
     if (productExists) {
@@ -232,7 +245,8 @@ export const updateProduct = async (req, res, next) => {
       throw new Error('Product not found');
     }
 
-    const { name, sku, price, discountPrice, demiGrosPrice, superGrosPrice, priceDetail, priceDetailReparation, priceReparation, priceDemiGros, priceSuperGros, pricePromo, description, longDescription, category, brand, stock, variants, specifications, isFeatured } = req.body;
+    const { name: rawName, sku, price, discountPrice, demiGrosPrice, superGrosPrice, priceDetail, priceDetailReparation, priceReparation, priceDemiGros, priceSuperGros, pricePromo, description, longDescription, category, brand, stock, variants, specifications, isFeatured } = req.body;
+    const name = rawName !== undefined ? normalizeAfficheurName(rawName) : undefined;
 
     // Handle image lists. If new images are uploaded, append or replace them
     let imageList = product.images || [];
@@ -453,7 +467,7 @@ export const importProducts = async (req, res, next) => {
     for (const row of rows) {
       const nameVal = getVal(row, ['Désignation', 'Designation', 'name', 'nom', 'article', 'description', 'titre', 'produit']);
       if (!nameVal || !nameVal.toString().trim()) continue; // Skip rows without name
-      const name = nameVal.toString().trim();
+      const name = normalizeAfficheurName(nameVal.toString().trim());
 
       const skuVal = getVal(row, ['Réf produit', 'Rf produit', 'sku', 'ref', 'reference', 'code', 'ref produit', 'référence']);
       let sku = skuVal ? skuVal.toString().trim() : '';
@@ -479,6 +493,11 @@ export const importProducts = async (req, res, next) => {
       let marqueStr = getVal(row, ['Marque', 'brand', 'marque'], '').toString().trim();
       const imageVal = getVal(row, ['Image', 'image', 'images', 'photo', 'lien image', 'photos'], '').toString().trim();
 
+      // Normalize famille for Afficheurs
+      if (famille.toUpperCase() === 'ECRAN' || famille.toUpperCase() === 'LCD') {
+        famille = 'AFFICHEUR';
+      }
+
       // Auto-detect brand if missing
       if (!marqueStr || marqueStr === 'NaN' || marqueStr === 'nan' || marqueStr.toLowerCase() === 'generique') {
         const upperName = name.toUpperCase();
@@ -496,8 +515,8 @@ export const importProducts = async (req, res, next) => {
         const upperName = name.toUpperCase();
         if (upperName.includes('BUZZER')) {
           famille = 'BUZZER';
-        } else if (upperName.includes('ECRAN') || upperName.includes('LCD') || upperName.includes('OLED') || upperName.includes('DISPLAY')) {
-          famille = 'ECRAN';
+        } else if (upperName.includes('AFFICHEUR') || upperName.includes('ECRAN') || upperName.includes('LCD') || upperName.includes('OLED') || upperName.includes('DISPLAY')) {
+          famille = 'AFFICHEUR';
         } else if (upperName.includes('BATTERIE') || upperName.includes('BAT ')) {
           famille = 'BATTERIE';
         } else if (upperName.includes('CONNECTEUR') || upperName.includes('CHARGE') || upperName.includes('NAPPE')) {

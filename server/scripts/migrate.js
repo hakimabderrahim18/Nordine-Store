@@ -88,7 +88,12 @@ function deserializeDoc(item) {
   if (item === null || item === undefined) return item;
   
   if (Array.isArray(item)) {
-    return item.map(i => deserializeDoc(i));
+    return item.map(i => {
+      if (typeof i === 'string' && /^[0-9a-fA-F]{24}$/.test(i)) {
+        return new mongoose.Types.ObjectId(i);
+      }
+      return deserializeDoc(i);
+    });
   }
   
   if (typeof item === 'object') {
@@ -109,7 +114,11 @@ function deserializeDoc(item) {
         // Convertir les dates sérialisées
         if (typeof val === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(val)) {
           item[key] = new Date(val);
-        } else if (typeof val === 'string' && /^[0-9a-fA-F]{24}$/.test(val) && (key.toLowerCase().endsWith('id') || key === '_id')) {
+        } else if (typeof val === 'string' && /^[0-9a-fA-F]{24}$/.test(val) && (
+          key.toLowerCase().endsWith('id') || 
+          key === '_id' || 
+          ['category', 'brand', 'user', 'product'].includes(key)
+        )) {
           item[key] = new mongoose.Types.ObjectId(val);
         } else {
           item[key] = deserializeDoc(val);

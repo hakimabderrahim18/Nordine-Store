@@ -70,14 +70,34 @@
     "__v": 0
   },
   {
-    "_id": "6a3ff93def9c9dcd2380cdbc",
-    "name": "test",
-    "description": "tzst",
-    "image": "/uploads/image-1782577469862-26216151.png",
+    "_id": "6a479024870c5990bab4a570",
+    "name": "AFFICHEUR (LCD)",
+    "description": "AFFICHEUR شاشة",
+    "image": "/uploads/spare_part.png",
     "status": "active",
-    "slug": "test",
-    "createdAt": "2026-06-27T16:24:29.869Z",
-    "updatedAt": "2026-06-27T16:24:29.869Z",
+    "slug": "afficheur-lcd",
+    "createdAt": "2026-07-03T10:34:12.120Z",
+    "updatedAt": "2026-07-03T10:34:12.120Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a986f1fb2551f0976dd465c",
+    "name": "BUZZER",
+    "image": "",
+    "status": "active",
+    "slug": "buzzer",
+    "createdAt": "2026-09-02T18:46:55.754Z",
+    "updatedAt": "2026-09-02T18:46:55.754Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab114fc7a315935ef4aab37",
+    "name": "ECRAN",
+    "image": "",
+    "status": "active",
+    "slug": "ecran",
+    "createdAt": "2026-09-21T11:29:00.054Z",
+    "updatedAt": "2026-09-21T11:29:00.054Z",
     "__v": 0
   }
 ]
