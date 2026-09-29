@@ -30,16 +30,29 @@ conn.on('ready', () => {
       return;
     }
 
-    const uploadFile = (local, remote) => {
+    const uploadFile = (local, remote, checkSameSize = false) => {
       return new Promise((resolve, reject) => {
-        sftp.fastPut(local, remote, (err) => {
-          if (err) reject(err);
-          else resolve();
-        });
+        if (checkSameSize) {
+          const localStats = fs.statSync(local);
+          sftp.stat(remote, (err, remoteStats) => {
+            if (!err && remoteStats && remoteStats.size === localStats.size) {
+              return resolve();
+            }
+            sftp.fastPut(local, remote, (putErr) => {
+              if (putErr) reject(putErr);
+              else resolve();
+            });
+          });
+        } else {
+          sftp.fastPut(local, remote, (putErr) => {
+            if (putErr) reject(putErr);
+            else resolve();
+          });
+        }
       });
     };
 
-    const uploadDirRecursive = async (localDirPath, remoteDirPath) => {
+    const uploadDirRecursive = async (localDirPath, remoteDirPath, checkSameSize = false) => {
       const items = fs.readdirSync(localDirPath, { withFileTypes: true });
       try {
         await new Promise((res) => sftp.mkdir(remoteDirPath, () => res()));
@@ -49,9 +62,9 @@ conn.on('ready', () => {
         const localPath = path.join(localDirPath, item.name);
         const remotePath = `${remoteDirPath}/${item.name}`;
         if (item.isDirectory()) {
-          await uploadDirRecursive(localPath, remotePath);
+          await uploadDirRecursive(localPath, remotePath, checkSameSize);
         } else {
-          await uploadFile(localPath, remotePath);
+          await uploadFile(localPath, remotePath, checkSameSize);
         }
       }
     };
@@ -59,15 +72,16 @@ conn.on('ready', () => {
     (async () => {
       try {
         console.log('📤 Uploading updated client build dist/...');
-        await uploadDirRecursive(clientDist, '/var/www/nordinestore/client/dist');
+        await uploadDirRecursive(clientDist, '/var/www/nordinestore/client/dist', false);
 
         console.log('📤 Uploading updated server files and DB export...');
         const serverDirsToSync = ['controllers', 'models', 'routes', 'middlewares', 'scripts', 'utils', 'config', 'db-export', 'uploads'];
         for (const dir of serverDirsToSync) {
           const localDir = path.join(serverDir, dir);
           if (fs.existsSync(localDir)) {
+            const isUploads = dir === 'uploads';
             console.log(`Syncing server/${dir}...`);
-            await uploadDirRecursive(localDir, `/var/www/nordinestore/server/${dir}`);
+            await uploadDirRecursive(localDir, `/var/www/nordinestore/server/${dir}`, isUploads);
           }
         }
         
