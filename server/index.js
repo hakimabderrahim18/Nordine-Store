@@ -48,6 +48,9 @@ const io = new Server(server, {
 // Expose Socket.io to express routes
 app.set('socketio', io);
 
+// Trust proxy for Nginx reverse proxy (fixes express-rate-limit)
+app.set('trust proxy', 1);
+
 // Security and utility middleware
 app.use(helmet({
   crossOriginResourcePolicy: false // Allows serving local files statically without blocking headers

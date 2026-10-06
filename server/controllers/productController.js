@@ -1,5 +1,6 @@
 import fs from 'fs';
 import xlsx from 'xlsx';
+import mongoose from 'mongoose';
 import Product from '../models/Product.js';
 import Review from '../models/Review.js';
 import Category from '../models/Category.js';
@@ -186,7 +187,6 @@ export const createProduct = async (req, res, next) => {
     if (resolvedImages.length === 0) {
       let categoryName = '';
       if (category) {
-        const Category = mongoose.model('Category');
         const catDoc = await Category.findById(category);
         if (catDoc) categoryName = catDoc.name.toUpperCase();
       }
