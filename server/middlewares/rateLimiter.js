@@ -21,3 +21,14 @@ export const authLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
+
+export const contactLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // limit each IP to 5 contact attempts per windowMs
+  message: {
+    success: false,
+    message: 'Trop de messages envoyés. Veuillez patienter 15 minutes avant de réessayer.'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});

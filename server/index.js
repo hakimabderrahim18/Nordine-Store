@@ -20,6 +20,8 @@ import notificationRoutes from './routes/notificationRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
 import wishlistRoutes from './routes/wishlistRoutes.js';
 import yalidineRoutes from './routes/yalidineRoutes.js';
+import carouselRoutes from './routes/carouselRoutes.js';
+import contactRoutes from './routes/contactRoutes.js';
 import { notFound, errorHandler } from './middlewares/errorMiddleware.js';
 
 dotenv.config();
@@ -63,6 +65,8 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
+import Product from './models/Product.js';
+
 // Serve local upload fallbacks statically
 const uploadPath = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadPath)){
@@ -81,6 +85,71 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/wishlist', wishlistRoutes);
 app.use('/api/yalidine', yalidineRoutes);
+app.use('/api/carousel', carouselRoutes);
+app.use('/api/contact', contactRoutes);
+
+// Google SEO: Dynamic XML Sitemap
+app.get('/sitemap.xml', async (req, res) => {
+  try {
+    const products = await Product.find({}).select('_id name images updatedAt').lean();
+    const baseUrl = 'https://nounoutelecom.com';
+
+    let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+    xml += `<urlset xmlns="http://www.sitemap.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n`;
+
+    // Static page URLs
+    xml += `  <url><loc>${baseUrl}/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>\n`;
+    xml += `  <url><loc>${baseUrl}/shop</loc><changefreq>daily</changefreq><priority>0.9</priority></url>\n`;
+    xml += `  <url><loc>${baseUrl}/about</loc><priority>0.5</priority></url>\n`;
+    xml += `  <url><loc>${baseUrl}/contact</loc><priority>0.5</priority></url>\n`;
+
+    // Product URLs & Google Image entries
+    products.forEach((prod) => {
+      const prodUrl = `${baseUrl}/products/${prod._id}`;
+      const lastMod = prod.updatedAt ? new Date(prod.updatedAt).toISOString() : new Date().toISOString();
+      const escapedName = prod.name.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+      xml += `  <url>\n`;
+      xml += `    <loc>${prodUrl}</loc>\n`;
+      xml += `    <lastmod>${lastMod}</lastmod>\n`;
+      xml += `    <changefreq>weekly</changefreq>\n`;
+      xml += `    <priority>0.8</priority>\n`;
+
+      if (prod.images && prod.images.length > 0) {
+        prod.images.forEach((img) => {
+          let imgUrl = img;
+          if (!imgUrl.startsWith('http')) {
+            imgUrl = `${baseUrl}${imgUrl.startsWith('/') ? '' : '/'}${imgUrl}`;
+          }
+          xml += `    <image:image>\n`;
+          xml += `      <image:loc>${imgUrl}</image:loc>\n`;
+          xml += `      <image:title>${escapedName}</image:title>\n`;
+          xml += `    </image:image>\n`;
+        });
+      }
+      xml += `  </url>\n`;
+    });
+
+    xml += `</urlset>`;
+
+    res.header('Content-Type', 'application/xml');
+    res.send(xml);
+  } catch (err) {
+    console.error('Sitemap generation error:', err);
+    res.status(500).end();
+  }
+});
+
+// Google SEO: Dynamic robots.txt
+app.get('/robots.txt', (req, res) => {
+  let robots = `User-agent: *\n`;
+  robots += `Allow: /\n`;
+  robots += `Allow: /uploads/\n`;
+  robots += `Allow: /products/\n`;
+  robots += `Sitemap: https://nounoutelecom.com/sitemap.xml\n`;
+  res.header('Content-Type', 'text/plain');
+  res.send(robots);
+});
 
 // Base Route
 app.get('/', (req, res) => {

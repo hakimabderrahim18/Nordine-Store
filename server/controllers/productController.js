@@ -421,20 +421,28 @@ export const respondToReview = async (req, res, next) => {
 // @route   POST /api/products/import
 // @access  Private/Admin
 export const importProducts = async (req, res, next) => {
+  let filePath = null;
   try {
     if (!req.file) {
-      res.status(400);
-      throw new Error('Veuillez télécharger un fichier Excel ou CSV');
+      return res.status(400).json({
+        success: false,
+        message: 'Veuillez sélectionner un fichier Excel (.xls, .xlsx) ou CSV valide'
+      });
     }
 
-    const filePath = req.file.path;
+    filePath = req.file.path;
     const workbook = xlsx.readFile(filePath);
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
     const rows = xlsx.utils.sheet_to_json(worksheet);
 
-    let createdCount = 0;
-    let updatedCount = 0;
+    if (!rows || rows.length === 0) {
+      if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+      return res.status(400).json({
+        success: false,
+        message: 'Le fichier est vide ou ne contient aucune ligne valide'
+      });
+    }
 
     const parsePrice = (val) => {
       if (val === undefined || val === null || val === '') return 0;
@@ -464,9 +472,71 @@ export const importProducts = async (req, res, next) => {
       'CONDOR', 'LENOVO', 'MOTOROLA', 'LG', 'SONY', 'ASUS', 'ZTE', 'GOOGLE'
     ];
 
+    // 1. Preload all categories & brands in memory
+    const [allCategories, allBrands, existingProducts] = await Promise.all([
+      Category.find({}),
+      Brand.find({}),
+      Product.find({}, '_id sku name images stock')
+    ]);
+
+    const categoryMap = new Map();
+    allCategories.forEach(c => categoryMap.set(c.name.trim().toLowerCase(), c._id));
+
+    const brandMap = new Map();
+    allBrands.forEach(b => brandMap.set(b.name.trim().toLowerCase(), b._id));
+
+    const skuMap = new Map();
+    const nameMap = new Map();
+    existingProducts.forEach(p => {
+      if (p.sku) skuMap.set(p.sku.trim().toLowerCase(), p);
+      if (p.name) nameMap.set(p.name.trim().toLowerCase(), p);
+    });
+
+    // Helper to get or create category ID
+    const getCategoryId = async (catName) => {
+      if (!catName) return null;
+      const lower = catName.trim().toLowerCase();
+      if (categoryMap.has(lower)) return categoryMap.get(lower);
+      try {
+        const newCat = await Category.create({ name: catName.trim() });
+        categoryMap.set(lower, newCat._id);
+        return newCat._id;
+      } catch (err) {
+        const found = await Category.findOne({ name: { $regex: new RegExp(`^${catName.trim()}$`, 'i') } });
+        if (found) {
+          categoryMap.set(lower, found._id);
+          return found._id;
+        }
+        return null;
+      }
+    };
+
+    // Helper to get or create brand ID
+    const getBrandId = async (bName) => {
+      const brandToUse = bName && bName.toLowerCase() !== 'generique' ? bName.trim() : 'GENERIQUE';
+      const lower = brandToUse.toLowerCase();
+      if (brandMap.has(lower)) return brandMap.get(lower);
+      try {
+        const newBrand = await Brand.create({ name: brandToUse });
+        brandMap.set(lower, newBrand._id);
+        return newBrand._id;
+      } catch (err) {
+        const found = await Brand.findOne({ name: { $regex: new RegExp(`^${brandToUse}$`, 'i') } });
+        if (found) {
+          brandMap.set(lower, found._id);
+          return found._id;
+        }
+        return null;
+      }
+    };
+
+    const bulkOps = [];
+    let createdCount = 0;
+    let updatedCount = 0;
+
     for (const row of rows) {
       const nameVal = getVal(row, ['Désignation', 'Designation', 'name', 'nom', 'article', 'description', 'titre', 'produit']);
-      if (!nameVal || !nameVal.toString().trim()) continue; // Skip rows without name
+      if (!nameVal || !nameVal.toString().trim()) continue;
       const name = normalizeAfficheurName(nameVal.toString().trim());
 
       const skuVal = getVal(row, ['Réf produit', 'Rf produit', 'sku', 'ref', 'reference', 'code', 'ref produit', 'référence']);
@@ -493,12 +563,10 @@ export const importProducts = async (req, res, next) => {
       let marqueStr = getVal(row, ['Marque', 'brand', 'marque'], '').toString().trim();
       const imageVal = getVal(row, ['Image', 'image', 'images', 'photo', 'lien image', 'photos'], '').toString().trim();
 
-      // Normalize famille for Afficheurs
       if (famille.toUpperCase() === 'ECRAN' || famille.toUpperCase() === 'LCD') {
         famille = 'AFFICHEUR';
       }
 
-      // Auto-detect brand if missing
       if (!marqueStr || marqueStr === 'NaN' || marqueStr === 'nan' || marqueStr.toLowerCase() === 'generique') {
         const upperName = name.toUpperCase();
         for (const b of KNOWN_BRANDS) {
@@ -510,7 +578,6 @@ export const importProducts = async (req, res, next) => {
         }
       }
 
-      // Auto-detect category if missing
       if (!famille || famille === 'PIECE') {
         const upperName = name.toUpperCase();
         if (upperName.includes('BUZZER')) {
@@ -534,33 +601,9 @@ export const importProducts = async (req, res, next) => {
         }
       }
 
-      // Resolve category
-      let categoryId = null;
-      if (famille) {
-        let cat = await Category.findOne({ name: { $regex: new RegExp(`^${famille}$`, 'i') } });
-        if (!cat) {
-          cat = await Category.create({ name: famille });
-        }
-        categoryId = cat._id;
-      }
+      const categoryId = await getCategoryId(famille);
+      const brandId = await getBrandId(marqueStr);
 
-      // Resolve brand
-      let brandId = null;
-      if (marqueStr && marqueStr !== 'NaN' && marqueStr !== 'nan' && marqueStr.toLowerCase() !== 'generique') {
-        let br = await Brand.findOne({ name: { $regex: new RegExp(`^${marqueStr}$`, 'i') } });
-        if (!br) {
-          br = await Brand.create({ name: marqueStr });
-        }
-        brandId = br._id;
-      } else {
-        let br = await Brand.findOne({ name: 'GENERIQUE' });
-        if (!br) {
-          br = await Brand.create({ name: 'GENERIQUE' });
-        }
-        brandId = br._id;
-      }
-
-      // Determine images
       let images = [];
       if (imageVal) {
         images = [imageVal];
@@ -597,61 +640,57 @@ export const importProducts = async (req, res, next) => {
         images = [imagePath];
       }
 
-      // Check if product exists by SKU or by Name
-      let product = null;
-      if (sku) {
-        product = await Product.findOne({ sku });
-      }
-      if (!product) {
-        product = await Product.findOne({ name: { $regex: new RegExp(`^${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') } });
-      }
+      // Check existing product
+      const lowerSku = sku ? sku.toLowerCase() : '';
+      const lowerName = name.toLowerCase();
+      let existing = (lowerSku && skuMap.get(lowerSku)) || nameMap.get(lowerName);
 
-      // If SKU was missing, generate or use existing
       if (!sku) {
-        if (product && product.sku) {
-          sku = product.sku;
+        if (existing && existing.sku) {
+          sku = existing.sku;
         } else {
           const baseSlug = name.toUpperCase()
             .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
             .replace(/[^A-Z0-9]+/g, '-')
             .replace(/^-+|-+$/g, '')
             .substring(0, 35);
-          
-          let candidate = baseSlug || `PROD-${Date.now().toString(36).toUpperCase()}`;
-          const exists = await Product.findOne({ sku: candidate });
-          if (exists) {
-            candidate = `${candidate}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
-          }
-          sku = candidate;
+          sku = baseSlug || `PROD-${Date.now().toString(36).toUpperCase()}`;
         }
       }
 
-      if (product) {
-        // Update product
-        product.name = name;
-        if (parsedStock !== null) product.stock = parsedStock;
-        product.priceDetail = priceDetail;
-        product.priceDetailReparation = priceDetailReparation;
-        product.priceReparation = priceReparation;
-        product.priceDemiGros = priceDemiGros;
-        product.priceSuperGros = priceSuperGros;
-        product.pricePromo = pricePromo;
-        product.famille = famille;
-        product.sousFamille = sousFamille;
-        product.marque = marqueStr;
-        if (categoryId) product.category = categoryId;
-        if (brandId) product.brand = brandId;
-        
-        // Update image if explicitly provided in excel, or if product has no images
-        if (imageVal || !product.images || product.images.length === 0) {
-          product.images = images;
+      if (existing) {
+        const updateDoc = {
+          name,
+          sku,
+          priceDetail,
+          priceDetailReparation,
+          priceReparation,
+          priceDemiGros,
+          priceSuperGros,
+          pricePromo,
+          famille,
+          sousFamille,
+          marque: marqueStr,
+          category: categoryId,
+          brand: brandId,
+          isAvailable: true
+        };
+        if (parsedStock !== null) {
+          updateDoc.stock = parsedStock;
+        }
+        if (imageVal || !existing.images || existing.images.length === 0) {
+          updateDoc.images = images;
         }
 
-        await product.save();
+        bulkOps.push({
+          updateOne: {
+            filter: { _id: existing._id },
+            update: { $set: updateDoc }
+          }
+        });
         updatedCount++;
       } else {
-        // Create product
-        await Product.create({
+        const newProduct = {
           sku,
           name,
           description: `Composant ${name}`,
@@ -667,29 +706,53 @@ export const importProducts = async (req, res, next) => {
           marque: marqueStr,
           category: categoryId,
           brand: brandId,
-          images
+          images,
+          isAvailable: true
+        };
+
+        bulkOps.push({
+          insertOne: {
+            document: newProduct
+          }
         });
+
+        // Register in maps so duplicate rows in same file are handled gracefully
+        const simulatedObj = { _id: new mongoose.Types.ObjectId(), sku, name, images, stock: newProduct.stock };
+        if (sku) skuMap.set(sku.toLowerCase(), simulatedObj);
+        nameMap.set(lowerName, simulatedObj);
         createdCount++;
       }
     }
 
-    // Delete temp upload file
-    if (fs.existsSync(filePath)) {
+    // Execute bulkWrite in chunks
+    const BATCH_SIZE = 1000;
+    for (let i = 0; i < bulkOps.length; i += BATCH_SIZE) {
+      const batch = bulkOps.slice(i, i + BATCH_SIZE);
+      if (batch.length > 0) {
+        await Product.bulkWrite(batch, { ordered: false });
+      }
+    }
+
+    // Clean temp file
+    if (filePath && fs.existsSync(filePath)) {
       fs.unlinkSync(filePath);
     }
 
-    res.json({
+    return res.json({
       success: true,
-      message: `Import terminé. ${createdCount} produits créés, ${updatedCount} produits mis à jour.`,
+      message: `Import terminé avec succès ! ${createdCount} nouveaux produits créés, ${updatedCount} produits mis à jour.`,
       createdCount,
       updatedCount
     });
   } catch (error) {
-    // Delete temp upload file if exists
-    if (req.file && fs.existsSync(req.file.path)) {
-      fs.unlinkSync(req.file.path);
+    console.error('Import Products Controller Error:', error);
+    if (filePath && fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
     }
-    next(error);
+    return res.status(500).json({
+      success: false,
+      message: 'Erreur lors du traitement du fichier : ' + (error.message || 'Erreur serveur')
+    });
   }
 };
 

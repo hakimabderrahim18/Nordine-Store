@@ -128,7 +128,8 @@ export const productService = {
     const response = await API.post('/products/import', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
-      }
+      },
+      timeout: 180000
     });
     return response.data;
   },

@@ -197,17 +197,21 @@ export default function Products() {
     if (!file) return;
 
     setImporting(true);
-    const toastId = toast.loading('Importation des produits en cours...');
+    const toastId = toast.loading('Importation et mise à jour des produits en cours...');
     try {
       const res = await productService.importProducts(file);
       if (res.success) {
-        toast.success(res.message || 'Importation réussie !', { id: toastId });
+        toast.success(res.message || 'Importation réussie !', { id: toastId, duration: 5000 });
         fetchProductsList(); // Refresh products list
       } else {
-        toast.error('Erreur lors de l\'importation', { id: toastId });
+        toast.error(res.message || 'Erreur lors de l\'importation', { id: toastId });
       }
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Erreur lors de l\'importation', { id: toastId });
+      if (err.response?.status === 401) {
+        toast.error('Votre session administrateur a expiré. Veuillez vous reconnecter.', { id: toastId, duration: 6000 });
+      } else {
+        toast.error(err.response?.data?.message || err.message || 'Erreur lors de l\'importation', { id: toastId, duration: 6000 });
+      }
     } finally {
       setImporting(false);
       e.target.value = ''; // Reset file input
@@ -492,7 +496,7 @@ export default function Products() {
             <span>{isAr ? 'استيراد Excel' : 'Importer Excel'}</span>
             <input
               type="file"
-              accept=".xls,.xlsx,.csv"
+              accept=".xls,.xlsx,.csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv"
               className="hidden"
               onChange={handleImportExcel}
               disabled={importing}

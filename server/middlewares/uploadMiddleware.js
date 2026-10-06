@@ -110,14 +110,23 @@ const excelFilter = (req, file, cb) => {
   if (ext === '.xls' || ext === '.xlsx' || ext === '.csv') {
     cb(null, true);
   } else {
-    cb(new Error('Only Excel (.xls, .xlsx) or CSV files are allowed'));
+    cb(new Error('Seuls les fichiers Excel (.xls, .xlsx) ou CSV sont autorisés'));
   }
 };
 
 const excelUpload = multer({
   storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+  limits: { fileSize: 30 * 1024 * 1024 }, // 30MB limit
   fileFilter: excelFilter
 });
 
-export const uploadExcel = excelUpload.single('file');
+export const uploadExcel = (req, res, next) => {
+  excelUpload.single('file')(req, res, (err) => {
+    if (err) {
+      console.error('Excel Upload Middleware Error:', err);
+      return res.status(400).json({ success: false, message: err.message || 'Erreur lors du téléchargement du fichier Excel' });
+    }
+    next();
+  });
+};
+
