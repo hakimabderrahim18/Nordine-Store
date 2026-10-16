@@ -658,16 +658,25 @@ export const importProducts = async (req, res, next) => {
         }
       }
 
+      const effectivePrice = priceDetail || 0;
+      const effectiveDemiGros = priceDemiGros || 0;
+      const effectiveSuperGros = priceSuperGros || 0;
+      const effectiveDiscount = pricePromo || 0;
+
       if (existing) {
         const updateDoc = {
           name,
           sku,
-          priceDetail,
+          price: effectivePrice,
+          priceDetail: effectivePrice,
           priceDetailReparation,
           priceReparation,
-          priceDemiGros,
-          priceSuperGros,
-          pricePromo,
+          demiGrosPrice: effectiveDemiGros,
+          priceDemiGros: effectiveDemiGros,
+          superGrosPrice: effectiveSuperGros,
+          priceSuperGros: effectiveSuperGros,
+          discountPrice: effectiveDiscount,
+          pricePromo: effectiveDiscount,
           famille,
           sousFamille,
           marque: marqueStr,
@@ -695,12 +704,16 @@ export const importProducts = async (req, res, next) => {
           name,
           description: `Composant ${name}`,
           stock: parsedStock !== null ? parsedStock : 100,
-          priceDetail,
+          price: effectivePrice,
+          priceDetail: effectivePrice,
           priceDetailReparation,
           priceReparation,
-          priceDemiGros,
-          priceSuperGros,
-          pricePromo,
+          demiGrosPrice: effectiveDemiGros,
+          priceDemiGros: effectiveDemiGros,
+          superGrosPrice: effectiveSuperGros,
+          priceSuperGros: effectiveSuperGros,
+          discountPrice: effectiveDiscount,
+          pricePromo: effectiveDiscount,
           famille,
           sousFamille,
           marque: marqueStr,

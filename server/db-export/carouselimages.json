@@ -205,5 +205,32 @@
     "createdAt": "2026-09-13T10:22:08.984Z",
     "updatedAt": "2026-09-13T10:22:08.984Z",
     "__v": 0
+  },
+  {
+    "_id": "6ac50feeef8341a48eaaf5bf",
+    "image": "/uploads/image-1791299566323-512134263.png",
+    "title": "AFFICHEUR INFINIX HOT 50 PRO PLUS ",
+    "link": "",
+    "createdAt": "2026-10-06T15:12:46.359Z",
+    "updatedAt": "2026-10-06T15:12:46.359Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ad0b5a268b9570a46f7dc87",
+    "image": "/uploads/image-1792062882557-443197724.png",
+    "title": "",
+    "link": "",
+    "createdAt": "2026-10-15T11:14:42.595Z",
+    "updatedAt": "2026-10-15T11:14:42.595Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ad0b9f168b9570a46f7dcdf",
+    "image": "/uploads/image-1792063985477-233657777.png",
+    "title": "",
+    "link": "",
+    "createdAt": "2026-10-15T11:33:05.514Z",
+    "updatedAt": "2026-10-15T11:33:05.514Z",
+    "__v": 0
   }
 ]

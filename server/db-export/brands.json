@@ -280,5 +280,55 @@
     "createdAt": "2026-06-28T01:52:24.289Z",
     "updatedAt": "2026-06-28T01:52:24.289Z",
     "__v": 0
+  },
+  {
+    "_id": "6ac51017ef8341a48eab01b2",
+    "name": "NORMAL",
+    "logo": "",
+    "status": "active",
+    "slug": "normal",
+    "createdAt": "2026-10-06T15:13:27.141Z",
+    "updatedAt": "2026-10-06T15:13:27.141Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ac51017ef8341a48eab01b8",
+    "name": "HD+ JT",
+    "logo": "",
+    "status": "active",
+    "slug": "hd-jt",
+    "createdAt": "2026-10-06T15:13:27.173Z",
+    "updatedAt": "2026-10-06T15:13:27.173Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ac51403ef8341a48eab5591",
+    "name": "BLINDE",
+    "logo": "",
+    "status": "active",
+    "slug": "blinde",
+    "createdAt": "2026-10-06T15:30:11.236Z",
+    "updatedAt": "2026-10-06T15:30:11.236Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ac51404ef8341a48eab55f0",
+    "name": "GOLDEN BLINDE",
+    "logo": "",
+    "status": "active",
+    "slug": "golden-blinde",
+    "createdAt": "2026-10-06T15:30:12.035Z",
+    "updatedAt": "2026-10-06T15:30:12.035Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ac5603568b9570a46f79fa7",
+    "name": "LENOVO",
+    "logo": "",
+    "status": "active",
+    "slug": "lenovo",
+    "createdAt": "2026-10-06T20:55:17.711Z",
+    "updatedAt": "2026-10-06T20:55:17.711Z",
+    "__v": 0
   }
 ]

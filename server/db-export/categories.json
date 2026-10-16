@@ -99,5 +99,35 @@
     "createdAt": "2026-09-21T11:29:00.054Z",
     "updatedAt": "2026-09-21T11:29:00.054Z",
     "__v": 0
+  },
+  {
+    "_id": "6ac51009ef8341a48eaaf5ca",
+    "name": "BATTERIE",
+    "image": "",
+    "status": "active",
+    "slug": "batterie",
+    "createdAt": "2026-10-06T15:13:13.072Z",
+    "updatedAt": "2026-10-06T15:13:13.072Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ac51014ef8341a48eaaff90",
+    "name": "AFFICHEUR",
+    "image": "",
+    "status": "active",
+    "slug": "afficheur",
+    "createdAt": "2026-10-06T15:13:24.907Z",
+    "updatedAt": "2026-10-06T15:13:24.907Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ac51014ef8341a48eaaff9a",
+    "name": "CONNECTEUR",
+    "image": "",
+    "status": "active",
+    "slug": "connecteur",
+    "createdAt": "2026-10-06T15:13:24.945Z",
+    "updatedAt": "2026-10-06T15:13:24.945Z",
+    "__v": 0
   }
 ]

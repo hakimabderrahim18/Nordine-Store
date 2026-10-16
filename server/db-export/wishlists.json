@@ -172,10 +172,12 @@
   {
     "_id": "6a7d9c6dcc51473e89679bc8",
     "user": "6a7d9c6dcc51473e89679bc4",
-    "products": [],
+    "products": [
+      "6a3ff068ef64c5384b51b1b6"
+    ],
     "createdAt": "2026-08-13T10:29:01.810Z",
-    "updatedAt": "2026-08-13T10:29:01.810Z",
-    "__v": 0
+    "updatedAt": "2026-10-01T14:35:54.307Z",
+    "__v": 1
   },
   {
     "_id": "6a7daa15cc51473e89679e2c",
@@ -670,10 +672,15 @@
   {
     "_id": "6ab066e67a315935ef4aa0c2",
     "user": "6ab066e57a315935ef4aa0be",
-    "products": [],
+    "products": [
+      "6a3ff068ef64c5384b51b2bc",
+      "6ab114fc7a315935ef4aab42",
+      "6a3ff068ef64c5384b51b296",
+      "6a3ff068ef64c5384b51b274"
+    ],
     "createdAt": "2026-09-20T23:06:14.008Z",
-    "updatedAt": "2026-09-20T23:06:14.008Z",
-    "__v": 0
+    "updatedAt": "2026-10-03T22:46:41.356Z",
+    "__v": 4
   },
   {
     "_id": "6ab13ab67a315935ef4aad73",
@@ -697,6 +704,70 @@
     "products": [],
     "createdAt": "2026-09-24T08:44:35.258Z",
     "updatedAt": "2026-09-24T08:44:35.258Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ac2dddbef8341a48eaae280",
+    "user": "6ac2dddbef8341a48eaae27c",
+    "products": [],
+    "createdAt": "2026-10-04T23:14:35.973Z",
+    "updatedAt": "2026-10-04T23:14:35.973Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ac4caa6ef8341a48eaaf30f",
+    "user": "6ac4caa6ef8341a48eaaf30b",
+    "products": [],
+    "createdAt": "2026-10-06T10:17:10.883Z",
+    "updatedAt": "2026-10-06T10:17:10.883Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ac5155cef8341a48eab715e",
+    "user": "6ac5155cef8341a48eab715a",
+    "products": [],
+    "createdAt": "2026-10-06T15:35:56.721Z",
+    "updatedAt": "2026-10-06T15:35:56.721Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ac8029068b9570a46f7a789",
+    "user": "6ac8029068b9570a46f7a785",
+    "products": [],
+    "createdAt": "2026-10-08T20:52:32.824Z",
+    "updatedAt": "2026-10-08T20:52:32.824Z",
+    "__v": 0
+  },
+  {
+    "_id": "6accbe8e68b9570a46f7c2d6",
+    "user": "6accbe8d68b9570a46f7c2d2",
+    "products": [],
+    "createdAt": "2026-10-12T11:03:42.350Z",
+    "updatedAt": "2026-10-12T11:03:42.350Z",
+    "__v": 0
+  },
+  {
+    "_id": "6acdffd368b9570a46f7cac0",
+    "user": "6acdffd268b9570a46f7cabc",
+    "products": [],
+    "createdAt": "2026-10-13T09:54:27.154Z",
+    "updatedAt": "2026-10-13T09:54:27.154Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ace187e68b9570a46f7ccaa",
+    "user": "6ace187e68b9570a46f7cca6",
+    "products": [],
+    "createdAt": "2026-10-13T11:39:42.311Z",
+    "updatedAt": "2026-10-13T11:39:42.311Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ace1a5c68b9570a46f7cccf",
+    "user": "6ace1a5c68b9570a46f7cccb",
+    "products": [],
+    "createdAt": "2026-10-13T11:47:40.570Z",
+    "updatedAt": "2026-10-13T11:47:40.570Z",
     "__v": 0
   }
 ]

@@ -293,14 +293,16 @@
     "shippingPrice": 0,
     "discountPrice": 0,
     "totalPrice": 43050,
-    "isPaid": false,
-    "isDelivered": false,
-    "deliveryStatus": "processing",
+    "isPaid": true,
+    "isDelivered": true,
+    "deliveryStatus": "delivered",
     "couponUsed": null,
     "createdAt": "2026-09-17T11:23:53.139Z",
-    "updatedAt": "2026-09-17T16:01:55.972Z",
+    "updatedAt": "2026-10-03T15:28:54.823Z",
     "__v": 0,
-    "trackingNumber": ""
+    "trackingNumber": "",
+    "deliveredAt": "2026-10-03T15:28:54.817Z",
+    "paidAt": "2026-10-03T15:28:54.817Z"
   },
   {
     "_id": "6aabfd597a315935ef4a8e74",
@@ -331,13 +333,16 @@
     "shippingPrice": 0,
     "discountPrice": 0,
     "totalPrice": 4740,
-    "isPaid": false,
-    "isDelivered": false,
-    "deliveryStatus": "processing",
+    "isPaid": true,
+    "isDelivered": true,
+    "deliveryStatus": "delivered",
     "couponUsed": null,
     "createdAt": "2026-09-17T14:46:49.937Z",
-    "updatedAt": "2026-09-17T16:02:01.008Z",
-    "__v": 0
+    "updatedAt": "2026-10-03T15:28:47.135Z",
+    "__v": 0,
+    "deliveredAt": "2026-10-03T15:28:47.130Z",
+    "paidAt": "2026-10-03T15:28:47.131Z",
+    "trackingNumber": ""
   },
   {
     "_id": "6ab11c637a315935ef4aacfa",
@@ -486,5 +491,326 @@
     "trackingNumber": "",
     "deliveredAt": "2026-09-26T18:40:36.400Z",
     "paidAt": "2026-09-26T18:40:36.400Z"
+  },
+  {
+    "_id": "6abe7014ef8341a48eaacffb",
+    "user": "6a7d9c6dcc51473e89679bc4",
+    "isGuest": false,
+    "orderItems": [
+      {
+        "product": "6a3ff068ef64c5384b51b1b6",
+        "name": "AFFICHEUR ACE BUZZ 6 PRIME/BUZZ 7 LITE/BLACK VIEW A85",
+        "quantity": 1,
+        "price": 2600,
+        "image": "/uploads/screen.png",
+        "variant": {},
+        "_id": "6abe7014ef8341a48eaacffc"
+      }
+    ],
+    "shippingAddress": {
+      "street": "Retrait au Magasin (Boutique)",
+      "city": "Tiaret",
+      "state": "Tiaret",
+      "postalCode": "00000",
+      "country": "Algeria",
+      "phone": "0696203589"
+    },
+    "paymentMethod": "COD",
+    "deliveryType": "Retrait au Magasin",
+    "itemsPrice": 2600,
+    "shippingPrice": 0,
+    "discountPrice": 0,
+    "totalPrice": 2600,
+    "isPaid": true,
+    "isDelivered": true,
+    "deliveryStatus": "delivered",
+    "couponUsed": null,
+    "createdAt": "2026-10-01T14:37:08.383Z",
+    "updatedAt": "2026-10-01T14:56:51.305Z",
+    "__v": 0,
+    "trackingNumber": "",
+    "deliveredAt": "2026-10-01T14:56:51.304Z",
+    "paidAt": "2026-10-01T14:56:51.304Z"
+  },
+  {
+    "_id": "6ac0c4e1ef8341a48eaad90c",
+    "user": "6ab066e57a315935ef4aa0be",
+    "isGuest": false,
+    "orderItems": [
+      {
+        "product": "6a3ff068ef64c5384b51b223",
+        "name": "AFFICHEUR OPPO A15 HD+ JT",
+        "quantity": 5,
+        "price": 1790,
+        "image": "/uploads/screen.png",
+        "variant": {},
+        "_id": "6ac0c4e1ef8341a48eaad90d"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b227",
+        "name": "AFFICHEUR OPPO A16 HD+ JT",
+        "quantity": 5,
+        "price": 1750,
+        "image": "/uploads/screen.png",
+        "variant": {},
+        "_id": "6ac0c4e1ef8341a48eaad90e"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b268",
+        "name": "AFFICHEUR REALME C21Y/C25 HD",
+        "quantity": 5,
+        "price": 1580,
+        "image": "/uploads/screen.png",
+        "variant": {},
+        "_id": "6ac0c4e1ef8341a48eaad90f"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b295",
+        "name": "AFFICHEUR REDMI 9A/9C/10A DJN",
+        "quantity": 5,
+        "price": 1450,
+        "image": "/uploads/screen.png",
+        "variant": {},
+        "_id": "6ac0c4e1ef8341a48eaad910"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b3af",
+        "name": "NAP CHARGE REDMI 9A HIGH QUALITY",
+        "quantity": 5,
+        "price": 350,
+        "image": "/uploads/connecteur.png",
+        "variant": {},
+        "_id": "6ac0c4e1ef8341a48eaad911"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b2bc",
+        "name": "AFFICHEUR REDMI NOTE 9 PRO / NOTE 9S HD+ JT",
+        "quantity": 3,
+        "price": 1880,
+        "image": "/uploads/screen.png",
+        "variant": {},
+        "_id": "6ac0c4e1ef8341a48eaad912"
+      }
+    ],
+    "shippingAddress": {
+      "street": "Dréan - StopDesk",
+      "city": "El Tarf",
+      "state": "El Tarf",
+      "postalCode": "00000",
+      "country": "Algeria",
+      "phone": "0540134359"
+    },
+    "paymentMethod": "COD",
+    "deliveryType": "StopDesk",
+    "itemsPrice": 40240,
+    "shippingPrice": 0,
+    "discountPrice": 0,
+    "totalPrice": 40240,
+    "isPaid": true,
+    "isDelivered": true,
+    "deliveryStatus": "delivered",
+    "couponUsed": null,
+    "createdAt": "2026-10-03T09:03:29.293Z",
+    "updatedAt": "2026-10-03T14:32:41.054Z",
+    "__v": 0,
+    "trackingNumber": "",
+    "deliveredAt": "2026-10-03T14:32:41.052Z",
+    "paidAt": "2026-10-03T14:32:41.053Z"
+  },
+  {
+    "_id": "6ac4bfa0ef8341a48eaaf1c4",
+    "user": "6a7d9c6dcc51473e89679bc4",
+    "isGuest": false,
+    "orderItems": [
+      {
+        "product": "6a3ff068ef64c5384b51b2a7",
+        "name": "AFFICHEUR REDMI NOTE 10 5G/POCO M3 PRO/NOTE 10 PRO 5G/NOTE 11 PRO 5G HD+ JT",
+        "quantity": 1,
+        "price": 2400,
+        "image": "/uploads/screen.png",
+        "variant": {},
+        "_id": "6ac4bfa0ef8341a48eaaf1c5"
+      }
+    ],
+    "shippingAddress": {
+      "street": "Retrait au Magasin (Boutique)",
+      "city": "Tiaret",
+      "state": "Tiaret",
+      "postalCode": "00000",
+      "country": "Algeria",
+      "phone": "0696203589"
+    },
+    "paymentMethod": "COD",
+    "deliveryType": "Retrait au Magasin",
+    "itemsPrice": 2400,
+    "shippingPrice": 0,
+    "discountPrice": 0,
+    "totalPrice": 2400,
+    "isPaid": true,
+    "isDelivered": true,
+    "deliveryStatus": "delivered",
+    "couponUsed": null,
+    "createdAt": "2026-10-06T09:30:08.446Z",
+    "updatedAt": "2026-10-06T14:12:43.438Z",
+    "__v": 0,
+    "deliveredAt": "2026-10-06T14:12:43.436Z",
+    "paidAt": "2026-10-06T14:12:43.436Z",
+    "trackingNumber": ""
+  },
+  {
+    "_id": "6acd074868b9570a46f7c52b",
+    "user": "6a7d9c6dcc51473e89679bc4",
+    "isGuest": false,
+    "orderItems": [
+      {
+        "product": "6ac510ccef8341a48eab1b46",
+        "name": "AFFICHEUR OPPO A31 2020/A5 2020/A9 2020/A11X GOLDEN BLINDE",
+        "quantity": 1,
+        "price": 2200,
+        "image": "/uploads/spare_part.png",
+        "variant": {},
+        "_id": "6acd074868b9570a46f7c52c"
+      }
+    ],
+    "shippingAddress": {
+      "street": "Retrait au Magasin (Boutique)",
+      "city": "Tiaret",
+      "state": "Tiaret",
+      "postalCode": "00000",
+      "country": "Algeria",
+      "phone": "0696203589"
+    },
+    "paymentMethod": "COD",
+    "deliveryType": "Retrait au Magasin",
+    "itemsPrice": 2200,
+    "shippingPrice": 0,
+    "discountPrice": 0,
+    "totalPrice": 2200,
+    "isPaid": true,
+    "isDelivered": true,
+    "deliveryStatus": "delivered",
+    "couponUsed": null,
+    "createdAt": "2026-10-12T16:14:00.786Z",
+    "updatedAt": "2026-10-14T10:25:09.303Z",
+    "__v": 0,
+    "deliveredAt": "2026-10-14T10:25:09.300Z",
+    "paidAt": "2026-10-14T10:25:09.300Z",
+    "trackingNumber": ""
+  },
+  {
+    "_id": "6ace0b1a68b9570a46f7cba9",
+    "user": "6ab066e57a315935ef4aa0be",
+    "isGuest": false,
+    "orderItems": [
+      {
+        "product": "6ac510cdef8341a48eab1c14",
+        "name": "AFFICHEUR REALME C11 2021 GOLDEN BLINDE",
+        "quantity": 5,
+        "price": 1780,
+        "image": "/uploads/spare_part.png",
+        "variant": {},
+        "_id": "6ace0b1a68b9570a46f7cbaa"
+      },
+      {
+        "product": "6ac510ceef8341a48eab1d8a",
+        "name": "AFFICHEUR REDMI NOTE 8 HD+ JT",
+        "quantity": 2,
+        "price": 1900,
+        "image": "/uploads/spare_part.png",
+        "variant": {},
+        "_id": "6ace0b1a68b9570a46f7cbab"
+      },
+      {
+        "product": "6ac510daef8341a48eab295e",
+        "name": "NAP POWER OPPO A15",
+        "quantity": 10,
+        "price": 120,
+        "image": "/uploads/spare_part.png",
+        "variant": {},
+        "_id": "6ace0b1a68b9570a46f7cbac"
+      },
+      {
+        "product": "6ac510ceef8341a48eab1cf4",
+        "name": "AFFICHEUR REDMI 9A/9C/10A/POCO C3 GOLDEN BLINDE",
+        "quantity": 5,
+        "price": 1770,
+        "image": "/uploads/spare_part.png",
+        "variant": {},
+        "_id": "6ace0b1a68b9570a46f7cbad"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b23e",
+        "name": "AFFICHEUR OPPO A5S/A7/A11K/A12/RLM 3/RLM 3I HD+ JT",
+        "quantity": 5,
+        "price": 1750,
+        "image": "/uploads/screen.png",
+        "variant": {},
+        "_id": "6ace0b1a68b9570a46f7cbae"
+      }
+    ],
+    "shippingAddress": {
+      "street": "Dréan - StopDesk",
+      "city": "El Tarf",
+      "state": "El Tarf",
+      "postalCode": "00000",
+      "country": "Algeria",
+      "phone": "0540134359"
+    },
+    "paymentMethod": "COD",
+    "deliveryType": "StopDesk",
+    "itemsPrice": 31500,
+    "shippingPrice": 0,
+    "discountPrice": 0,
+    "totalPrice": 31500,
+    "isPaid": true,
+    "isDelivered": true,
+    "deliveryStatus": "delivered",
+    "couponUsed": null,
+    "createdAt": "2026-10-13T10:42:34.732Z",
+    "updatedAt": "2026-10-14T13:52:27.151Z",
+    "__v": 0,
+    "trackingNumber": "",
+    "deliveredAt": "2026-10-14T13:52:27.150Z",
+    "paidAt": "2026-10-14T13:52:27.150Z"
+  },
+  {
+    "_id": "6ace5d1268b9570a46f7cea2",
+    "user": "6a7d9c6dcc51473e89679bc4",
+    "isGuest": false,
+    "orderItems": [
+      {
+        "product": "6ac510ccef8341a48eab1b46",
+        "name": "AFFICHEUR OPPO A31 2020/A5 2020/A9 2020/A11X GOLDEN BLINDE",
+        "quantity": 1,
+        "price": 2200,
+        "image": "/uploads/spare_part.png",
+        "variant": {},
+        "_id": "6ace5d1268b9570a46f7cea3"
+      }
+    ],
+    "shippingAddress": {
+      "street": "Retrait au Magasin (Boutique)",
+      "city": "Tiaret",
+      "state": "Tiaret",
+      "postalCode": "00000",
+      "country": "Algeria",
+      "phone": "0696203589"
+    },
+    "paymentMethod": "COD",
+    "deliveryType": "Retrait au Magasin",
+    "itemsPrice": 2200,
+    "shippingPrice": 0,
+    "discountPrice": 0,
+    "totalPrice": 2200,
+    "isPaid": true,
+    "isDelivered": true,
+    "deliveryStatus": "delivered",
+    "couponUsed": null,
+    "createdAt": "2026-10-13T16:32:18.123Z",
+    "updatedAt": "2026-10-14T13:52:22.524Z",
+    "__v": 0,
+    "trackingNumber": "",
+    "deliveredAt": "2026-10-14T13:52:22.522Z",
+    "paidAt": "2026-10-14T13:52:22.522Z"
   }
 ]
