@@ -213,7 +213,7 @@ export default function Profile() {
                   day: 'numeric',
                   month: 'long',
                   year: 'numeric'
-                });
+                }) + ' ' + (isAr ? 'الساعة' : 'à') + ' ' + new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
                 // Status colors
                 let statusBg = 'bg-slate-100 text-slate-700';

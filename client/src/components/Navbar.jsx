@@ -62,23 +62,23 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className={`fixed left-1/2 -translate-x-1/2 w-[94%] max-w-7xl z-40 rounded-[24px] px-6 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        className={`fixed left-1/2 -translate-x-1/2 w-[95%] sm:w-[94%] max-w-7xl z-40 rounded-[24px] px-3.5 sm:px-6 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
           scrolled 
-            ? 'top-2 py-3 bg-white/90 border border-gray-200 shadow-lg shadow-gray-200/50 backdrop-blur-md' 
-            : 'top-6 py-4.5 bg-white/75 border border-gray-200/50 shadow-sm backdrop-blur-sm'
+            ? 'top-2 py-2.5 sm:py-3 bg-white/90 border border-gray-200 shadow-lg shadow-gray-200/50 backdrop-blur-md' 
+            : 'top-4 sm:top-6 py-3.5 sm:py-4.5 bg-white/80 border border-gray-200/60 shadow-sm backdrop-blur-sm'
         }`}
       >
         <div className="flex items-center justify-between gap-1.5 sm:gap-4">
           {/* Brand Logo */}
-          <Link to="/" className="flex items-center space-x-1 sm:space-x-2 select-none group flex-shrink-0">
-            <img src="/01.svg" alt="Nounou Telecom Logo" className="h-6 sm:h-9 w-auto object-contain" />
-            <span className="font-black text-[11px] sm:text-sm md:text-base tracking-[0.1em] sm:tracking-[0.15em] text-slate-800 whitespace-nowrap">
-              NOUNOU<span className="text-brand-primary hidden sm:inline"> TELECOM</span>
+          <Link to="/" className="flex items-center space-x-1.5 sm:space-x-2 select-none group flex-shrink-0">
+            <img src="/01.svg" alt="Nounou Telecom Logo" className="h-7 sm:h-9 w-auto object-contain" />
+            <span className="font-black text-xs sm:text-sm md:text-base tracking-[0.12em] text-slate-800 whitespace-nowrap">
+              NOUNOU<span className="text-brand-primary"> TELECOM</span>
             </span>
           </Link>
 
           {/* Desktop Navigation Links */}
-          <div className="hidden xl:flex items-center space-x-7">
+          <div className="hidden lg:flex items-center space-x-7">
             {navLinks.map((link) => {
               const isActive = location.pathname === link.path;
               return (
@@ -100,11 +100,6 @@ export default function Navbar() {
                 </Link>
               );
             })}
-          </div>
-
-          {/* Search Bar & Action Button Directly in Header (Mobile Phone & Desktop) */}
-          <div className="flex-1 max-w-[180px] xs:max-w-[240px] sm:max-w-xs md:max-w-sm mx-1">
-            <SearchAutocomplete isHeaderSearch />
           </div>
 
           {/* User Operations / Quick Actions */}

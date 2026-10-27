@@ -10,7 +10,8 @@ const vpsConfig = {
   host: process.env.VPS_HOST || '37.60.253.8',
   port: parseInt(process.env.VPS_PORT || '22', 10),
   username: process.env.VPS_USER || 'root',
-  password: process.env.VPS_PASSWORD || 'lXFf4nszTgNjy0OjUYC68zVRSkCj'
+  password: process.env.VPS_PASSWORD || 'lXFf4nszTgNjy0OjUYC68zVRSkCj',
+  readyTimeout: 60000
 };
 
 const rootDir = path.resolve(__dirname, '../../');
@@ -20,6 +21,10 @@ const serverDir = path.join(rootDir, 'server');
 console.log('⚡ Starting Fast Deployment to VPS...');
 
 const conn = new Client();
+
+conn.on('error', (err) => {
+  console.error('SSH Error:', err);
+});
 
 conn.on('ready', () => {
   console.log('✔ Connected via SSH to VPS');

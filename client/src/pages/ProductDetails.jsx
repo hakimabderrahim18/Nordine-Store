@@ -7,6 +7,7 @@ import { addCartItem, addGuestItem } from '../store/cartSlice';
 import { toggleWishlist } from '../store/wishlistSlice';
 import { productService, getImageUrl } from '../services/api';
 import { useTranslation } from '../context/LanguageContext';
+import { getProductQualityBadge } from '../utils/qualityHelper';
 
 export default function ProductDetails() {
   const { id } = useParams();
@@ -335,10 +336,16 @@ export default function ProductDetails() {
                   }
                 }
                 const hasDiscount = product.discountPrice && !isB2B;
+                const quality = getProductQualityBadge(product.name);
 
                 return (
-                  <div className="flex items-center space-x-3">
+                  <div className="flex items-center space-x-3 flex-wrap gap-y-2">
                     <span className="text-2xl md:text-3xl font-black text-slate-900 ltr-text">{price.toLocaleString()} DA</span>
+                    {quality && (
+                      <span className={`text-xs font-black uppercase px-2.5 py-1 rounded-lg border whitespace-nowrap ${quality.color}`}>
+                        {quality.label}
+                      </span>
+                    )}
                     {(hasDiscount || isB2B) && (
                       <span className="text-sm text-slate-400 line-through ltr-text">
                         {product.price.toLocaleString()} DA

@@ -812,5 +812,97 @@
     "trackingNumber": "",
     "deliveredAt": "2026-10-14T13:52:22.522Z",
     "paidAt": "2026-10-14T13:52:22.522Z"
+  },
+  {
+    "_id": "6adcc5ece6ffac4f65d6931c",
+    "user": "6ab066e57a315935ef4aa0be",
+    "isGuest": false,
+    "orderItems": [
+      {
+        "product": "6ac510ceef8341a48eab1d8a",
+        "name": "AFFICHEUR REDMI NOTE 8 HD+ JT",
+        "quantity": 3,
+        "price": 1900,
+        "image": "/uploads/spare_part.png",
+        "variant": {},
+        "_id": "6adcc5ece6ffac4f65d6931d"
+      },
+      {
+        "product": "6ac510ceef8341a48eab1ce6",
+        "name": "AFFICHEUR REDMI 9/9 PRIME GOLDEN BLINDE",
+        "quantity": 3,
+        "price": 1820,
+        "image": "/uploads/afficheur_redmi_9.png",
+        "variant": {},
+        "_id": "6adcc5ece6ffac4f65d6931e"
+      },
+      {
+        "product": "6ac510daef8341a48eab295e",
+        "name": "NAP POWER OPPO A15",
+        "quantity": 10,
+        "price": 120,
+        "image": "/uploads/spare_part.png",
+        "variant": {},
+        "_id": "6adcc5ece6ffac4f65d6931f"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b223",
+        "name": "AFFICHEUR OPPO A15 HD+ JT",
+        "quantity": 6,
+        "price": 1790,
+        "image": "/uploads/images-1792504720931-590210554.png",
+        "variant": {},
+        "_id": "6adcc5ece6ffac4f65d69320"
+      },
+      {
+        "product": "6a3ff068ef64c5384b51b227",
+        "name": "AFFICHEUR OPPO A16 HD+ JT",
+        "quantity": 6,
+        "price": 1750,
+        "image": "/uploads/images-1792504693807-580691908.png",
+        "variant": {},
+        "_id": "6adcc5ece6ffac4f65d69321"
+      },
+      {
+        "product": "6ac510cfef8341a48eab1e4e",
+        "name": "AFFICHEUR SAM A13/M13/F13 HD+ JT",
+        "quantity": 5,
+        "price": 1900,
+        "image": "/uploads/spare_part.png",
+        "variant": {},
+        "_id": "6adcc5ece6ffac4f65d69322"
+      },
+      {
+        "product": "6ac510cdef8341a48eab1c4c",
+        "name": "AFFICHEUR REALME C51/C53/NOTE 50 GOLDEN BLINDE",
+        "quantity": 5,
+        "price": 1870,
+        "image": "/uploads/spare_part.png",
+        "variant": {},
+        "_id": "6adcc5ece6ffac4f65d69323"
+      }
+    ],
+    "shippingAddress": {
+      "street": "Dréan - StopDesk",
+      "city": "El Tarf",
+      "state": "El Tarf",
+      "postalCode": "00000",
+      "country": "Algeria",
+      "phone": "054134359"
+    },
+    "paymentMethod": "COD",
+    "deliveryType": "StopDesk",
+    "itemsPrice": 52450,
+    "shippingPrice": 0,
+    "discountPrice": 0,
+    "totalPrice": 52450,
+    "isPaid": false,
+    "isDelivered": false,
+    "deliveryStatus": "shipped",
+    "couponUsed": null,
+    "createdAt": "2026-10-24T14:51:24.746Z",
+    "updatedAt": "2026-10-24T15:52:03.954Z",
+    "__v": 0,
+    "trackingNumber": ""
   }
 ]

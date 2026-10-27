@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Loader2, Package, ChevronRight, X, Lock, MessageCircle } from 'lucide-react';
 import { productService, getImageUrl } from '../services/api';
 import { useTranslation } from '../context/LanguageContext';
+import { getProductQualityBadge } from '../utils/qualityHelper';
 
 export default function SearchAutocomplete({ isMobile = false, isHeaderSearch = false, onCloseMobileMenu }) {
   const { t, language } = useTranslation();
@@ -190,6 +191,8 @@ export default function SearchAutocomplete({ isMobile = false, isHeaderSearch = 
                     displayPrice = prod.superGrosPrice;
                   }
 
+                  const quality = getProductQualityBadge(prod.name);
+
                   return (
                     <div
                       key={prod._id}
@@ -225,19 +228,26 @@ export default function SearchAutocomplete({ isMobile = false, isHeaderSearch = 
                         </div>
                       </div>
 
-                      {/* Price / Stock */}
-                      <div className="text-end flex-shrink-0 flex flex-col items-end">
-                        {isAuthenticated ? (
-                          <span className="text-xs font-black text-slate-900 ltr-text">
-                            {displayPrice.toLocaleString()} DA
-                          </span>
-                        ) : (
-                          <span className="text-[9px] font-bold text-amber-700 bg-amber-50 border border-amber-200/60 px-1.5 py-0.5 rounded flex items-center gap-1">
-                            <Lock size={9} />
-                            {isAr ? 'عضو' : 'Membre'}
-                          </span>
-                        )}
-                        <span className={`text-[8px] font-bold uppercase mt-0.5 ${prod.stock > 0 ? 'text-emerald-600' : 'text-rose-500'}`}>
+                      {/* Price / Quality Model Badge / Stock */}
+                      <div className="text-end flex-shrink-0 flex flex-col items-end gap-1">
+                        <div className="flex items-center gap-1.5 justify-end">
+                          {quality && (
+                            <span className={`text-[8px] sm:text-[9px] font-black uppercase px-1.5 py-0.5 rounded border whitespace-nowrap ${quality.color}`}>
+                              {quality.shortLabel || quality.label}
+                            </span>
+                          )}
+                          {isAuthenticated ? (
+                            <span className="text-xs sm:text-sm font-black text-slate-900 ltr-text whitespace-nowrap">
+                              {displayPrice.toLocaleString()} DA
+                            </span>
+                          ) : (
+                            <span className="text-[9px] font-bold text-amber-700 bg-amber-50 border border-amber-200/60 px-1.5 py-0.5 rounded flex items-center gap-1 whitespace-nowrap">
+                              <Lock size={9} />
+                              {isAr ? 'عضو' : 'Membre'}
+                            </span>
+                          )}
+                        </div>
+                        <span className={`text-[8px] font-bold uppercase ${prod.stock > 0 ? 'text-emerald-600' : 'text-rose-500'}`}>
                           {prod.stock > 0 ? (isAr ? 'متوفر' : 'En stock') : (isAr ? 'نفذ' : 'Rupture')}
                         </span>
                       </div>

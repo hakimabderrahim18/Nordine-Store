@@ -374,8 +374,10 @@ export default function Orders() {
                       <span className="text-xs font-black text-slate-800 ltr-text">
                         #{order._id.toString().substring(18).toUpperCase()}
                       </span>
-                      <span className="text-[10px] text-slate-400 ltr-text">
-                        {new Date(order.createdAt).toLocaleDateString(isAr ? 'ar-DZ' : 'fr-FR')}
+                      <span className="text-[10px] text-slate-500 font-semibold ltr-text flex items-center gap-1">
+                        <span>{new Date(order.createdAt).toLocaleDateString(isAr ? 'ar-DZ' : 'fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })}</span>
+                        <span className="text-slate-400 font-normal">à</span>
+                        <span className="text-slate-700 font-bold">{new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                       </span>
                       <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded w-fit ${
                         order.deliveryStatus === 'delivered'
@@ -405,6 +407,11 @@ export default function Orders() {
                   <span className="text-xs text-slate-400 font-semibold">{isAr ? 'معرف الطلب' : 'Identifiant de commande'}</span>
                   <span className="text-lg font-black text-slate-800 ltr-text">
                     #{selectedOrder._id.toString().substring(12).toUpperCase()}
+                  </span>
+                  <span className="text-xs text-slate-500 font-medium mt-1 flex items-center gap-1.5">
+                    <span>📅 {new Date(selectedOrder.createdAt).toLocaleDateString(isAr ? 'ar-DZ' : 'fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })}</span>
+                    <span className="text-slate-400 font-bold">•</span>
+                    <span>⏰ {new Date(selectedOrder.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                   </span>
                 </div>
               </div>

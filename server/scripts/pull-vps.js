@@ -10,7 +10,8 @@ const vpsConfig = {
   host: process.env.VPS_HOST || '37.60.253.8',
   port: parseInt(process.env.VPS_PORT || '22', 10),
   username: process.env.VPS_USER || 'root',
-  password: process.env.VPS_PASSWORD || 'lXFf4nszTgNjy0OjUYC68zVRSkCj'
+  password: process.env.VPS_PASSWORD || 'lXFf4nszTgNjy0OjUYC68zVRSkCj',
+  readyTimeout: 60000
 };
 
 const rootDir = path.resolve(__dirname, '../../');
@@ -20,6 +21,10 @@ const localUploads = path.join(rootDir, 'server/uploads');
 console.log('⚡ Connecting to VPS to pull data...');
 
 const conn = new Client();
+
+conn.on('error', (err) => {
+  console.error('SSH Error:', err);
+});
 
 conn.on('ready', () => {
   console.log('✔ Connected via SSH to VPS');
@@ -69,6 +74,12 @@ conn.on('ready', () => {
                 if (item.attrs.isDirectory()) {
                   await downloadDir(rPath, lPath);
                 } else {
+                  if (fs.existsSync(lPath)) {
+                    const lStat = fs.statSync(lPath);
+                    if (lStat.size === item.attrs.size) {
+                      continue;
+                    }
+                  }
                   await new Promise((res, rej) => {
                     sftp.fastGet(rPath, lPath, (getErr) => {
                       if (getErr) rej(getErr);

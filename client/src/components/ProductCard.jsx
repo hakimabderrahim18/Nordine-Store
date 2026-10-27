@@ -8,6 +8,7 @@ import { toggleWishlist } from '../store/wishlistSlice';
 import { addCartItem, addGuestItem } from '../store/cartSlice';
 import { getImageUrl } from '../services/api';
 import { useTranslation } from '../context/LanguageContext';
+import { getProductQualityBadge } from '../utils/qualityHelper';
 
 export default function ProductCard({ product }) {
   const { t, language } = useTranslation();
@@ -157,10 +158,17 @@ export default function ProductCard({ product }) {
               }
               const hasDiscount = product.discountPrice && !isB2B;
 
+              const quality = getProductQualityBadge(product.name);
+
               return (
                 <div className="flex flex-col">
-                  <div className="flex items-baseline space-x-1">
+                  <div className="flex items-center gap-1.5 flex-wrap">
                     <span className="text-base font-black text-slate-800 ltr-text">{price.toLocaleString()} DA</span>
+                    {quality && (
+                      <span className={`text-[8px] font-black uppercase px-1.5 py-0.5 rounded border whitespace-nowrap ${quality.color}`}>
+                        {quality.shortLabel || quality.label}
+                      </span>
+                    )}
                     {(hasDiscount || isB2B) && (
                       <span className="text-[10px] text-slate-500 line-through ltr-text">
                         {product.price.toLocaleString()} DA

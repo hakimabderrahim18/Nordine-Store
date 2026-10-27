@@ -314,7 +314,11 @@ export default function Orders() {
                       <td className="py-4 px-6 font-bold text-slate-800">
                         <div className="flex flex-col">
                           <span>#{o._id.toString().substring(18).toUpperCase()}</span>
-                          <span className="text-[10px] text-slate-500 font-semibold">{new Date(o.createdAt).toLocaleDateString()}</span>
+                          <span className="text-[10px] text-slate-500 font-semibold flex items-center gap-1">
+                            <span>{new Date(o.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })}</span>
+                            <span className="text-slate-400 font-normal">à</span>
+                            <span className="text-slate-700 font-bold">{new Date(o.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                          </span>
                         </div>
                       </td>
                       <td className="py-4 px-6">
@@ -415,6 +419,11 @@ export default function Orders() {
                      selectedOrder.deliveryStatus === 'cancelled' ? 'Annulée' : selectedOrder.deliveryStatus}
                   </span>
                 </h2>
+                <span className="text-xs text-slate-500 font-semibold flex items-center gap-1.5 mt-0.5">
+                  <span>📅 {new Date(selectedOrder.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })}</span>
+                  <span className="text-slate-300">•</span>
+                  <span>⏰ {new Date(selectedOrder.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                </span>
               </div>
               <div className="flex items-center gap-3">
                 <button
