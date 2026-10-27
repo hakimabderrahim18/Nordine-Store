@@ -156,27 +156,44 @@ export default function SearchAutocomplete({ isMobile = false, isHeaderSearch = 
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 6, scale: 0.98 }}
             transition={{ duration: 0.2 }}
-            className={`absolute z-50 mt-2 bg-white/95 backdrop-blur-md border border-gray-200 rounded-[20px] shadow-2xl overflow-hidden ${
+            className={`absolute z-50 mt-2 bg-white border border-amber-300/80 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden ${
               isMobile
                 ? 'left-0 right-0 w-full'
                 : isAr ? 'right-0 w-80 md:w-96' : 'left-0 w-80 md:w-96'
             }`}
           >
             {/* Header info */}
-            <div className="px-4 py-2.5 bg-slate-50/80 border-b border-gray-100 flex items-center justify-between">
-              <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">
-                {isAr ? 'مقترحات البحث' : 'Suggestions de recherche'}
-              </span>
-              {isSearching && (
-                <div className="flex items-center space-x-1 text-brand-primary">
-                  <Loader2 size={12} className="animate-spin" />
-                  <span className="text-[10px] font-bold">{isAr ? 'جاري البحث...' : 'Recherche...'}</span>
-                </div>
-              )}
+            <div className="px-3.5 py-2 bg-gradient-to-r from-slate-50 to-amber-50/40 border-b border-gray-100 flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-slate-500">
+                  {isAr ? 'نتائج البحث' : 'Résultats de recherche'}
+                </span>
+                {suggestions.length > 0 && (
+                  <span className="bg-amber-100 text-amber-800 text-[10px] font-black px-1.5 py-0.5 rounded-full">
+                    {totalSuggestions || suggestions.length}
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                {isSearching && (
+                  <div className="flex items-center gap-1 text-amber-600">
+                    <Loader2 size={12} className="animate-spin" />
+                    <span className="text-[10px] font-bold">{isAr ? 'جاري البحث...' : 'Recherche...'}</span>
+                  </div>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setShowDropdown(false)}
+                  className="p-1 text-slate-400 hover:text-slate-700 rounded-md hover:bg-slate-200/50 transition-colors"
+                  title={isAr ? 'إغلاق' : 'Fermer'}
+                >
+                  <X size={14} />
+                </button>
+              </div>
             </div>
 
             {/* Content Area */}
-            <div className="max-h-80 overflow-y-auto divide-y divide-gray-100">
+            <div className="max-h-[380px] sm:max-h-[420px] overflow-y-auto divide-y divide-slate-100">
               {isSearching && suggestions.length === 0 ? (
                 <div className="p-6 text-center text-slate-400 text-xs font-semibold flex flex-col items-center gap-2">
                   <Loader2 size={20} className="animate-spin text-brand-primary" />
@@ -192,15 +209,16 @@ export default function SearchAutocomplete({ isMobile = false, isHeaderSearch = 
                   }
 
                   const quality = getProductQualityBadge(prod.name);
+                  const isNoisySku = !prod.sku || prod.sku.startsWith('AFFICHEUR-') || prod.sku.length > 15;
 
                   return (
                     <div
                       key={prod._id}
                       onClick={() => handleSelectProduct(prod._id)}
-                      className="p-3 hover:bg-amber-50/50 transition-colors duration-150 cursor-pointer flex items-center space-x-3 group"
+                      className="p-2.5 sm:p-3 hover:bg-amber-50/60 active:bg-amber-100/50 transition-colors duration-150 cursor-pointer flex items-center gap-2.5 sm:gap-3 group"
                     >
                       {/* Product Thumbnail */}
-                      <div className="w-11 h-11 rounded-xl bg-slate-100 border border-slate-200/60 overflow-hidden flex-shrink-0 flex items-center justify-center p-1 group-hover:border-brand-primary/40 transition-colors">
+                      <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-white border border-slate-200 shadow-xs overflow-hidden flex-shrink-0 flex items-center justify-center p-1 group-hover:border-amber-400 transition-colors">
                         <img
                           src={getImageUrl(prod.images?.[0] || prod.image)}
                           alt={prod.name}
@@ -213,41 +231,42 @@ export default function SearchAutocomplete({ isMobile = false, isHeaderSearch = 
 
                       {/* Info */}
                       <div className="flex-1 min-w-0 text-start">
-                        <h4 className="text-xs font-bold text-slate-800 truncate group-hover:text-brand-primary transition-colors">
+                        <h4 className="text-xs sm:text-[13px] font-bold text-slate-800 line-clamp-2 leading-tight group-hover:text-amber-700 transition-colors">
                           {prod.name}
                         </h4>
-                        <div className="flex items-center gap-2 mt-0.5">
+                        <div className="flex flex-wrap items-center gap-1.5 mt-1">
                           {prod.brand?.name && (
-                            <span className="text-[9px] font-black uppercase text-brand-primary bg-brand-primary/10 px-1.5 py-0.5 rounded">
+                            <span className="text-[9px] font-black uppercase text-amber-700 bg-amber-100/80 px-1.5 py-0.5 rounded">
                               {prod.brand.name}
                             </span>
                           )}
-                          <span className="text-[9px] font-semibold text-slate-400 ltr-text">
-                            SKU: {prod.sku}
-                          </span>
+                          {!isNoisySku && (
+                            <span className="text-[9px] font-semibold text-slate-400 ltr-text">
+                              Ref: {prod.sku}
+                            </span>
+                          )}
                         </div>
                       </div>
 
-                      {/* Price / Quality Model Badge / Stock */}
-                      <div className="text-end flex-shrink-0 flex flex-col items-end gap-1">
-                        <div className="flex items-center gap-1.5 justify-end">
-                          {quality && (
-                            <span className={`text-[8px] sm:text-[9px] font-black uppercase px-1.5 py-0.5 rounded border whitespace-nowrap ${quality.color}`}>
-                              {quality.shortLabel || quality.label}
-                            </span>
-                          )}
-                          {isAuthenticated ? (
-                            <span className="text-xs sm:text-sm font-black text-slate-900 ltr-text whitespace-nowrap">
-                              {displayPrice.toLocaleString()} DA
-                            </span>
-                          ) : (
-                            <span className="text-[9px] font-bold text-amber-700 bg-amber-50 border border-amber-200/60 px-1.5 py-0.5 rounded flex items-center gap-1 whitespace-nowrap">
-                              <Lock size={9} />
-                              {isAr ? 'عضو' : 'Membre'}
-                            </span>
-                          )}
-                        </div>
-                        <span className={`text-[8px] font-bold uppercase ${prod.stock > 0 ? 'text-emerald-600' : 'text-rose-500'}`}>
+                      {/* Stacked Right Column: Quality Badge, Price, Stock */}
+                      <div className="min-w-[85px] sm:min-w-[105px] text-end flex-shrink-0 flex flex-col items-end justify-center gap-1">
+                        {quality && (
+                          <span className={`text-[9px] sm:text-[10px] font-black uppercase px-2 py-0.5 rounded-md border tracking-wide whitespace-nowrap shadow-xs ${quality.color}`}>
+                            {quality.shortLabel || quality.label}
+                          </span>
+                        )}
+                        {isAuthenticated ? (
+                          <span className="text-xs sm:text-sm font-black text-slate-900 ltr-text whitespace-nowrap">
+                            {displayPrice.toLocaleString()} <span className="text-[10px] sm:text-xs text-amber-600 font-bold">DA</span>
+                          </span>
+                        ) : (
+                          <span className="text-[9px] font-bold text-amber-700 bg-amber-50 border border-amber-200/80 px-1.5 py-0.5 rounded flex items-center gap-1 whitespace-nowrap">
+                            <Lock size={9} />
+                            {isAr ? 'عضو' : 'Prix membre'}
+                          </span>
+                        )}
+                        <span className={`text-[9px] font-semibold flex items-center gap-1 ${prod.stock > 0 ? 'text-emerald-600' : 'text-rose-500'}`}>
+                          <span className={`w-1.5 h-1.5 rounded-full ${prod.stock > 0 ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
                           {prod.stock > 0 ? (isAr ? 'متوفر' : 'En stock') : (isAr ? 'نفذ' : 'Rupture')}
                         </span>
                       </div>
@@ -293,14 +312,14 @@ export default function SearchAutocomplete({ isMobile = false, isHeaderSearch = 
             {suggestions.length > 0 && (
               <div
                 onClick={handleViewAll}
-                className="p-3 bg-slate-50 border-t border-gray-100 text-center hover:bg-amber-100/50 transition-colors cursor-pointer flex items-center justify-center space-x-1 text-xs font-black uppercase text-brand-primary"
+                className="p-2.5 sm:p-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white text-center hover:brightness-105 active:scale-[0.99] transition-all cursor-pointer flex items-center justify-center gap-1.5 text-xs font-black uppercase shadow-inner"
               >
                 <span>
                   {isAr
-                    ? `عرض جميع النتائج (${totalSuggestions})`
-                    : `Voir tous les ${totalSuggestions} résultats`}
+                    ? `عرض جميع النتائج (${totalSuggestions || suggestions.length})`
+                    : `Voir tous les ${totalSuggestions || suggestions.length} résultats`}
                 </span>
-                <ChevronRight size={14} className={isAr ? 'rotate-180' : ''} />
+                <ChevronRight size={15} className={isAr ? 'rotate-180' : ''} />
               </div>
             )}
           </motion.div>

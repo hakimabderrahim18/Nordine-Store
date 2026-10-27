@@ -21,7 +21,7 @@ export function getProductQualityBadge(name) {
       color: 'bg-purple-100 text-purple-900 border-purple-300 shadow-sm'
     },
     {
-      regex: /\bHD\+?\s*JT\b/i,
+      regex: /\bHD[+\-]?\s*JT\b/i,
       label: 'HD+ JT',
       shortLabel: 'HD+ JT',
       color: 'bg-sky-100 text-sky-900 border-sky-300 shadow-sm'
