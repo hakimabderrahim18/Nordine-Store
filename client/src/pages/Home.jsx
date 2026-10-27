@@ -115,14 +115,15 @@ export default function Home() {
     <div className="min-h-screen bg-brand-bg text-left">
       {/* 1. HERO SECTION */}
       <section 
-        className="relative w-full text-white mt-6 pt-28 pb-16 md:py-24 overflow-hidden border-b border-gray-200 bg-gradient-to-br from-white via-amber-50/30 to-white"
+        className="relative w-full text-white mt-6 pt-28 pb-16 md:py-24 border-b border-gray-200 bg-gradient-to-br from-white via-amber-50/30 to-white overflow-visible"
       >
-        {/* Animated canvas particles layer */}
-        <HeroParticles />
-        {/* Dark vignette overlay to blend particles with background */}
-        <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/50 to-transparent pointer-events-none" style={{ zIndex: 2 }} />
+        {/* Animated canvas particles layer clipped to background */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <HeroParticles />
+          <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/50 to-transparent" style={{ zIndex: 2 }} />
+        </div>
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center relative" style={{ zIndex: 5 }}>
-          <div className="flex flex-col space-y-6 z-10 text-left">
+          <div className="flex flex-col space-y-6 z-20 text-left relative">
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
@@ -161,7 +162,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.15 }}
-              className="w-full bg-white/95 backdrop-blur-md p-3 sm:p-4 rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-xl shadow-slate-200/50 space-y-2.5 text-start"
+              className="w-full bg-white/95 backdrop-blur-md p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-xl shadow-slate-200/50 space-y-3 text-start relative z-30"
             >
               <div className="flex items-center justify-between px-1">
                 <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-amber-600 flex items-center gap-1.5">

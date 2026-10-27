@@ -238,7 +238,7 @@ export default function Navbar() {
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="flex flex-col space-y-3 pb-4 border-b border-gray-100"
+                className="flex flex-col space-y-3 pb-4 border-b border-gray-100 relative z-50"
               >
                 <SearchAutocomplete isMobile onCloseMobileMenu={() => setMenuOpen(false)} />
                 <Link

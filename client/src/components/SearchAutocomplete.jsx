@@ -17,6 +17,7 @@ export default function SearchAutocomplete({ isMobile = false, isHeaderSearch = 
   const [totalSuggestions, setTotalSuggestions] = useState(0);
   const [isSearching, setIsSearching] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
 
   const containerRef = useRef(null);
   const isAr = language === 'ar';
@@ -99,69 +100,100 @@ export default function SearchAutocomplete({ isMobile = false, isHeaderSearch = 
   };
 
   return (
-    <div ref={containerRef} className={`relative ${isMobile || isHeaderSearch ? 'w-full' : 'w-auto'}`}>
-      <form onSubmit={handleFormSubmit} className="relative flex items-center w-full gap-1 sm:gap-2">
-        <div className="relative flex-1 flex items-center">
-          <input
-            type="text"
-            placeholder={t('search_placeholder')}
-            value={searchVal}
-            onChange={(e) => setSearchVal(e.target.value)}
-            onFocus={() => {
-              if (searchVal.trim().length >= 2) {
-                setShowDropdown(true);
-              }
-            }}
-            className={`w-full bg-slate-50 border border-slate-200 text-slate-800 text-[11px] sm:text-xs rounded-full py-1.5 ${
-              isAr ? 'pr-8 pl-7' : 'pl-8 pr-7'
-            } focus:outline-none focus:border-brand-primary font-medium`}
-          />
-          <Search
-            size={12}
-            className={`absolute top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none ${
-              isAr ? 'right-2.5' : 'left-2.5'
-            }`}
-          />
-          {searchVal && (
-            <button
-              type="button"
-              onClick={clearSearch}
-              className={`absolute top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 transition-colors ${
-                isAr ? 'left-2' : 'right-2'
-              }`}
-            >
-              <X size={11} />
-            </button>
-          )}
-        </div>
-
-        {/* Action Search Button */}
-        <button
-          type="submit"
-          title={isAr ? 'بحث' : 'Rechercher'}
-          className="gold-bg-gradient text-slate-950 hover:opacity-90 font-black text-xs px-2.5 py-1.5 sm:px-3.5 sm:py-1.5 rounded-full flex items-center justify-center space-x-1 shadow-sm transition-transform active:scale-95 flex-shrink-0 cursor-pointer"
-        >
-          <Search size={13} className="stroke-[2.5]" />
-          <span className="hidden sm:inline-block text-[10px] sm:text-[11px] uppercase tracking-wider font-black">
-            {isAr ? 'بحث' : 'Chercher'}
-          </span>
-        </button>
-      </form>
-
-      {/* Suggestions Dropdown Popup */}
+    <>
+      {/* Dimmed backdrop when search dropdown is active to focus 100% on search and put other sections in background */}
       <AnimatePresence>
         {showDropdown && searchVal.trim().length >= 2 && (
           <motion.div
-            initial={{ opacity: 0, y: 8, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 6, scale: 0.98 }}
-            transition={{ duration: 0.2 }}
-            className={`absolute z-50 mt-2 bg-white border border-amber-300/80 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden ${
-              isMobile
-                ? 'left-0 right-0 w-full'
-                : isAr ? 'right-0 w-80 md:w-96' : 'left-0 w-80 md:w-96'
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            onClick={() => setShowDropdown(false)}
+            className="fixed inset-0 bg-slate-950/40 backdrop-blur-[2px] z-[90]"
+          />
+        )}
+      </AnimatePresence>
+
+      <div
+        ref={containerRef}
+        className={`relative ${isMobile || isHeaderSearch ? 'w-full' : 'w-auto'} ${
+          showDropdown && searchVal.trim().length >= 2 ? 'z-[100]' : 'z-30'
+        }`}
+      >
+        <form onSubmit={handleFormSubmit} className="relative flex items-center w-full gap-2">
+          <div
+            className={`relative flex-1 flex items-center bg-white border-2 rounded-2xl sm:rounded-full transition-all duration-200 shadow-xs ${
+              isFocused || (showDropdown && searchVal.trim().length >= 2)
+                ? 'border-amber-500 ring-4 ring-amber-400/30 shadow-lg'
+                : 'border-slate-200 hover:border-slate-300'
             }`}
           >
+            <Search
+              size={18}
+              className={`absolute top-1/2 -translate-y-1/2 pointer-events-none transition-colors ${
+                isFocused || (showDropdown && searchVal.trim().length >= 2)
+                  ? 'text-amber-500 stroke-[2.5]'
+                  : 'text-slate-400'
+              } ${isAr ? 'right-3.5' : 'left-3.5'}`}
+            />
+            <input
+              type="text"
+              placeholder={t('search_placeholder')}
+              value={searchVal}
+              onChange={(e) => setSearchVal(e.target.value)}
+              onFocus={() => {
+                setIsFocused(true);
+                if (searchVal.trim().length >= 2) {
+                  setShowDropdown(true);
+                }
+              }}
+              onBlur={() => setIsFocused(false)}
+              className={`w-full bg-transparent text-slate-900 placeholder:text-slate-400 text-xs sm:text-sm font-semibold rounded-2xl sm:rounded-full h-11 sm:h-12 py-2.5 ${
+                isAr ? 'pr-11 pl-9' : 'pl-11 pr-9'
+              } focus:outline-none`}
+            />
+            {searchVal && (
+              <button
+                type="button"
+                onClick={clearSearch}
+                aria-label="Effacer la recherche"
+                className={`absolute top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-all ${
+                  isAr ? 'left-2.5' : 'right-2.5'
+                }`}
+              >
+                <X size={15} />
+              </button>
+            )}
+          </div>
+
+          {/* Action Search Button: Big, crisp, bold, highly visible on phone and desktop */}
+          <button
+            type="submit"
+            title={isAr ? 'بحث' : 'Rechercher'}
+            className="h-11 sm:h-12 px-4 sm:px-6 rounded-2xl sm:rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-1.5 sm:gap-2 shadow-md shadow-amber-500/25 transition-all duration-150 active:scale-95 flex-shrink-0 cursor-pointer"
+          >
+            <Search size={16} className="stroke-[3]" />
+            <span className="font-black">
+              {isAr ? 'بحث' : 'Chercher'}
+            </span>
+          </button>
+        </form>
+
+        {/* Suggestions Dropdown Popup */}
+        <AnimatePresence>
+          {showDropdown && searchVal.trim().length >= 2 && (
+            <motion.div
+              initial={{ opacity: 0, y: 8, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 6, scale: 0.98 }}
+              transition={{ duration: 0.2 }}
+              className={`absolute z-[100] mt-2 bg-white border-2 border-amber-400 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden ${
+                isMobile
+                  ? 'left-0 right-0 w-full'
+                  : isAr ? 'right-0 w-80 md:w-96' : 'left-0 w-80 md:w-96'
+              }`}
+            >
             {/* Header info */}
             <div className="px-3.5 py-2 bg-gradient-to-r from-slate-50 to-amber-50/40 border-b border-gray-100 flex items-center justify-between">
               <div className="flex items-center gap-1.5">
@@ -326,5 +358,6 @@ export default function SearchAutocomplete({ isMobile = false, isHeaderSearch = 
         )}
       </AnimatePresence>
     </div>
+    </>
   );
 }
