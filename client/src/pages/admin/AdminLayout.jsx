@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, Outlet, useLocation, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { LayoutDashboard, Shield, Wrench, FileCheck, Home, Menu, X, User, Image } from 'lucide-react';
+import { LayoutDashboard, Shield, Wrench, FileCheck, Home, Menu, X, User, Image, Flame } from 'lucide-react';
 import AdminNotifications from '../../components/AdminNotifications';
 import { useTranslation } from '../../context/LanguageContext';
 
@@ -23,6 +23,7 @@ export default function AdminLayout() {
     if (pathname.startsWith('/admin/products')) return t('admin_page_inventory');
     if (pathname.startsWith('/admin/orders')) return t('admin_page_orders');
     if (pathname.startsWith('/admin/users')) return t('admin_page_users');
+    if (pathname.startsWith('/admin/promotions')) return isAr ? 'إدارة العروض الترويجية' : 'Promotions & Offres';
     if (pathname.startsWith('/admin/carousel')) return t('admin_page_carousel');
     return t('admin_title');
   };
@@ -32,6 +33,7 @@ export default function AdminLayout() {
     { label: t('admin_inventory'), path: '/admin/products', icon: <Wrench size={16} /> },
     { label: t('admin_orders'), path: '/admin/orders', icon: <FileCheck size={16} /> },
     { label: t('admin_users'), path: '/admin/users', icon: <User size={16} /> },
+    { label: isAr ? 'العروض الترويجية' : 'Promotions', path: '/admin/promotions', icon: <Flame size={16} /> },
     { label: t('admin_carousel'), path: '/admin/carousel', icon: <Image size={16} /> }
   ];
 

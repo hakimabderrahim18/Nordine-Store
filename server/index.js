@@ -21,6 +21,7 @@ import cartRoutes from './routes/cartRoutes.js';
 import wishlistRoutes from './routes/wishlistRoutes.js';
 import yalidineRoutes from './routes/yalidineRoutes.js';
 import carouselRoutes from './routes/carouselRoutes.js';
+import promotionRoutes from './routes/promotionRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
 import { notFound, errorHandler } from './middlewares/errorMiddleware.js';
 
@@ -89,6 +90,7 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/wishlist', wishlistRoutes);
 app.use('/api/yalidine', yalidineRoutes);
 app.use('/api/carousel', carouselRoutes);
+app.use('/api/promotions', promotionRoutes);
 app.use('/api/contact', contactRoutes);
 
 // Google SEO: Dynamic XML Sitemap

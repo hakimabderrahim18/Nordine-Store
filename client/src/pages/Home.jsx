@@ -7,7 +7,8 @@ import HeroParticles from '../components/HeroParticles';
 import SuggestedPhonesCarousel from '../components/SuggestedPhonesCarousel';
 import DeviceSelector from '../components/DeviceSelector';
 import SearchAutocomplete from '../components/SearchAutocomplete';
-import { productService, categoryService, brandService, carouselService, getImageUrl, getCategoryDisplayName } from '../services/api';
+import PromotionsSection from '../components/PromotionsSection';
+import { productService, categoryService, brandService, carouselService, promotionService, getImageUrl, getCategoryDisplayName } from '../services/api';
 import heroSideImg from '../assets/hero_side.png';
 import { useTranslation } from '../context/LanguageContext';
 
@@ -18,6 +19,8 @@ export default function Home() {
   const [brands, setBrands] = useState([]);
   const [popularProducts, setPopularProducts] = useState([]);
   const [carouselImages, setCarouselImages] = useState([]);
+  const [promotions, setPromotions] = useState([]);
+  const [promotionsLoading, setPromotionsLoading] = useState(true);
   const [devicesData, setDevicesData] = useState({ brands: [], popularPhones: [] });
   const [activeSlide, setActiveSlide] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -69,6 +72,15 @@ export default function Home() {
           if (carouselRes.success) setCarouselImages(carouselRes.images);
         } catch (cErr) {
           console.error('Error fetching carousel images:', cErr);
+        }
+
+        try {
+          const promoRes = await promotionService.getActivePromotions();
+          if (promoRes.success) setPromotions(promoRes.promotions || []);
+        } catch (pErr) {
+          console.error('Error fetching promotions:', pErr);
+        } finally {
+          setPromotionsLoading(false);
         }
       } catch (err) {
         console.error('Error loading home data:', err);
@@ -176,6 +188,9 @@ export default function Home() {
 
               {/* Autocomplete Input */}
               <SearchAutocomplete isMobile={true} />
+
+              {/* DEDICATED PROMOTIONS SECTION JUST AFTER SEARCH */}
+              <PromotionsSection promotions={promotions} loading={promotionsLoading} />
 
               {/* Quick Category Chips for Phone & Desktop */}
               <div className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-0.5 no-scrollbar select-none">

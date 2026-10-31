@@ -32,6 +32,7 @@ import AdminProducts from './pages/admin/Products';
 import AdminOrders from './pages/admin/Orders';
 import AdminUsers from './pages/admin/Users';
 import AdminCarousel from './pages/admin/Carousel';
+import AdminPromotions from './pages/admin/Promotions';
 
 import { fetchCart } from './store/cartSlice';
 import { fetchWishlist } from './store/wishlistSlice';
@@ -96,6 +97,7 @@ export default function App() {
                 <Route path="products" element={<AdminProducts />} />
                 <Route path="orders" element={<AdminOrders />} />
                 <Route path="users" element={<AdminUsers />} />
+                <Route path="promotions" element={<AdminPromotions />} />
                 <Route path="carousel" element={<AdminCarousel />} />
               </Route>
             </Routes>

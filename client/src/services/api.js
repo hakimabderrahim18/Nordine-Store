@@ -403,6 +403,44 @@ export const carouselService = {
   }
 };
 
+// Promotion Services
+export const promotionService = {
+  // Public: get only active promotions
+  getActivePromotions: async () => {
+    const response = await API.get('/promotions');
+    return response.data;
+  },
+  // Admin: get all promotions (including inactive)
+  getAllPromotions: async () => {
+    const response = await API.get('/promotions/all');
+    return response.data;
+  },
+  createPromotion: async (formData) => {
+    const response = await API.post('/promotions', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    return response.data;
+  },
+  updatePromotion: async (id, formData) => {
+    const response = await API.put(`/promotions/${id}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    return response.data;
+  },
+  togglePromotionActive: async (id) => {
+    const response = await API.patch(`/promotions/${id}/toggle`);
+    return response.data;
+  },
+  deletePromotion: async (id) => {
+    const response = await API.delete(`/promotions/${id}`);
+    return response.data;
+  }
+};
+
 // Contact Services
 export const contactService = {
   submitContactForm: async (formData) => {
