@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Loader2, Package, ChevronRight, X, Lock, MessageCircle } from 'lucide-react';
+import { Search, Loader2, Package, ChevronRight, X, Lock, MessageCircle, Smartphone } from 'lucide-react';
 import { productService, getImageUrl } from '../services/api';
 import { useTranslation } from '../context/LanguageContext';
 import { getProductQualityBadge } from '../utils/qualityHelper';
@@ -14,19 +14,46 @@ export default function SearchAutocomplete({ isMobile = false, isHeaderSearch = 
 
   const [searchVal, setSearchVal] = useState('');
   const [suggestions, setSuggestions] = useState([]);
+  const [phoneSuggestions, setPhoneSuggestions] = useState([]);
   const [totalSuggestions, setTotalSuggestions] = useState(0);
   const [isSearching, setIsSearching] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
 
+  // Cached devices data for fast phone model matching
+  const cachedDevicesRef = useRef([]);
+
   const containerRef = useRef(null);
   const isAr = language === 'ar';
+
+  // Preload devices catalog once for matching phone models (iPhone 8, Samsung A10, etc.)
+  useEffect(() => {
+    let isMounted = true;
+    productService.getDevices().then((res) => {
+      if (isMounted && res && res.success && res.brands) {
+        const flatList = [];
+        res.brands.forEach((b) => {
+          (b.models || []).forEach((m) => {
+            flatList.push({
+              name: m.name,
+              brand: b.name,
+              count: m.count || 0,
+              sampleImage: m.sampleImage
+            });
+          });
+        });
+        cachedDevicesRef.current = flatList;
+      }
+    }).catch(() => {});
+    return () => { isMounted = false; };
+  }, []);
 
   // Debounced search when searchVal changes
   useEffect(() => {
     const trimmed = searchVal.trim();
     if (trimmed.length < 2) {
       setSuggestions([]);
+      setPhoneSuggestions([]);
       setTotalSuggestions(0);
       setIsSearching(false);
       setShowDropdown(false);
@@ -35,6 +62,24 @@ export default function SearchAutocomplete({ isMobile = false, isHeaderSearch = 
 
     setShowDropdown(true);
     setIsSearching(true);
+
+    // Instant local matching for phone models
+    if (cachedDevicesRef.current.length > 0) {
+      const qTokens = trimmed.toUpperCase().split(/\s+/).filter(Boolean);
+      const matchedPhones = cachedDevicesRef.current.filter((phone) => {
+        const pName = phone.name.toUpperCase();
+        const pBrand = phone.brand.toUpperCase();
+        return qTokens.every((t) => {
+          if (t === 'IPHONE' || t === 'IPH') return pName.includes('IPHONE') || pBrand.includes('APPLE');
+          if (t === 'SAMSUNG' || t === 'SAM') return pName.includes('SAMSUNG') || pBrand.includes('SAMSUNG');
+          if (t === 'HUAWEI' || t === 'HW') return pName.includes('HUAWEI') || pBrand.includes('HUAWEI');
+          if (t === 'XIAOMI' || t === 'REDMI') return pName.includes('REDMI') || pBrand.includes('XIAOMI');
+          if (/^[4-9]$/.test(t)) return new RegExp(`\\b(?:${t}|${t}G)\\b`, 'i').test(pName);
+          return pName.includes(t) || pBrand.includes(t);
+        });
+      }).slice(0, 3);
+      setPhoneSuggestions(matchedPhones);
+    }
 
     const timer = setTimeout(async () => {
       try {
@@ -53,7 +98,7 @@ export default function SearchAutocomplete({ isMobile = false, isHeaderSearch = 
       } finally {
         setIsSearching(false);
       }
-    }, 280);
+    }, 240);
 
     return () => clearTimeout(timer);
   }, [searchVal]);
@@ -86,6 +131,13 @@ export default function SearchAutocomplete({ isMobile = false, isHeaderSearch = 
     navigate(`/products/${productId}`);
   };
 
+  const handleSelectPhone = (phoneName) => {
+    setShowDropdown(false);
+    setSearchVal('');
+    if (onCloseMobileMenu) onCloseMobileMenu();
+    navigate(`/shop?model=${encodeURIComponent(phoneName)}`);
+  };
+
   const handleViewAll = () => {
     const trimmed = searchVal.trim();
     setShowDropdown(false);
@@ -96,6 +148,7 @@ export default function SearchAutocomplete({ isMobile = false, isHeaderSearch = 
   const clearSearch = () => {
     setSearchVal('');
     setSuggestions([]);
+    setPhoneSuggestions([]);
     setShowDropdown(false);
   };
 
@@ -121,25 +174,25 @@ export default function SearchAutocomplete({ isMobile = false, isHeaderSearch = 
           showDropdown && searchVal.trim().length >= 2 ? 'z-[100]' : 'z-30'
         }`}
       >
-        <form onSubmit={handleFormSubmit} className="relative flex items-center w-full gap-2">
+        <form onSubmit={handleFormSubmit} className="relative flex items-center w-full gap-1.5 sm:gap-2">
           <div
-            className={`relative flex-1 flex items-center bg-white border-2 rounded-2xl sm:rounded-full transition-all duration-200 shadow-xs ${
+            className={`relative flex-1 flex items-center bg-white border-2 rounded-xl sm:rounded-full transition-all duration-200 shadow-xs ${
               isFocused || (showDropdown && searchVal.trim().length >= 2)
-                ? 'border-amber-500 ring-4 ring-amber-400/30 shadow-lg'
+                ? 'border-amber-500 ring-2 sm:ring-4 ring-amber-400/30 shadow-lg'
                 : 'border-slate-200 hover:border-slate-300'
             }`}
           >
             <Search
-              size={18}
+              size={16}
               className={`absolute top-1/2 -translate-y-1/2 pointer-events-none transition-colors ${
                 isFocused || (showDropdown && searchVal.trim().length >= 2)
                   ? 'text-amber-500 stroke-[2.5]'
                   : 'text-slate-400'
-              } ${isAr ? 'right-3.5' : 'left-3.5'}`}
+              } ${isAr ? 'right-2.5 sm:right-3.5' : 'left-2.5 sm:left-3.5'}`}
             />
             <input
               type="text"
-              placeholder={t('search_placeholder')}
+              placeholder={isAr ? 'ابحث عن هاتف أو قطعة (iPhone, Samsung, شاشة)...' : 'Rechercher un téléphone ou pièce (iPhone, Samsung)...'}
               value={searchVal}
               onChange={(e) => setSearchVal(e.target.value)}
               onFocus={() => {
@@ -149,8 +202,8 @@ export default function SearchAutocomplete({ isMobile = false, isHeaderSearch = 
                 }
               }}
               onBlur={() => setIsFocused(false)}
-              className={`w-full bg-transparent text-slate-900 placeholder:text-slate-400 text-xs sm:text-sm font-semibold rounded-2xl sm:rounded-full h-11 sm:h-12 py-2.5 ${
-                isAr ? 'pr-11 pl-9' : 'pl-11 pr-9'
+              className={`w-full bg-transparent text-slate-900 placeholder:text-slate-400 text-[11px] sm:text-sm font-semibold rounded-xl sm:rounded-full h-10 sm:h-12 py-2 ${
+                isAr ? 'pr-8 sm:pr-11 pl-8 sm:pl-9' : 'pl-8 sm:pl-11 pr-8 sm:pr-9'
               } focus:outline-none`}
             />
             {searchVal && (
@@ -158,23 +211,23 @@ export default function SearchAutocomplete({ isMobile = false, isHeaderSearch = 
                 type="button"
                 onClick={clearSearch}
                 aria-label="Effacer la recherche"
-                className={`absolute top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-all ${
-                  isAr ? 'left-2.5' : 'right-2.5'
+                className={`absolute top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-all ${
+                  isAr ? 'left-1.5 sm:left-2.5' : 'right-1.5 sm:right-2.5'
                 }`}
               >
-                <X size={15} />
+                <X size={14} />
               </button>
             )}
           </div>
 
-          {/* Action Search Button: Big, crisp, bold, highly visible on phone and desktop */}
+          {/* Action Search Button: optimized for compact iPhone 8 and big desktop screens */}
           <button
             type="submit"
             title={isAr ? 'بحث' : 'Rechercher'}
-            className="h-11 sm:h-12 px-4 sm:px-6 rounded-2xl sm:rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-1.5 sm:gap-2 shadow-md shadow-amber-500/25 transition-all duration-150 active:scale-95 flex-shrink-0 cursor-pointer"
+            className="h-10 sm:h-12 px-3 sm:px-6 rounded-xl sm:rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-1 sm:gap-2 shadow-md shadow-amber-500/25 transition-all duration-150 active:scale-95 flex-shrink-0 cursor-pointer"
           >
-            <Search size={16} className="stroke-[3]" />
-            <span className="font-black">
+            <Search size={15} className="stroke-[3]" />
+            <span className="font-black text-[11px] sm:text-sm">
               {isAr ? 'بحث' : 'Chercher'}
             </span>
           </button>
@@ -225,8 +278,45 @@ export default function SearchAutocomplete({ isMobile = false, isHeaderSearch = 
             </div>
 
             {/* Content Area */}
-            <div className="max-h-[380px] sm:max-h-[420px] overflow-y-auto divide-y divide-slate-100">
-              {isSearching && suggestions.length === 0 ? (
+            <div className="max-h-[340px] sm:max-h-[420px] overflow-y-auto divide-y divide-slate-100">
+              {/* MATCHED PHONE MODELS SECTION (Search phones directly from search bar!) */}
+              {phoneSuggestions.length > 0 && (
+                <div className="bg-gradient-to-r from-amber-500/10 via-amber-400/5 to-transparent p-2 sm:p-2.5">
+                  <div className="flex items-center gap-1.5 px-1 pb-1.5 text-[10px] font-black uppercase text-amber-800 tracking-wider">
+                    <Smartphone size={13} className="text-amber-600 stroke-[2.5]" />
+                    <span>{isAr ? 'موديلات وهواتف مطابقة' : 'Modèles de smartphones correspondants'}</span>
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    {phoneSuggestions.map((phone) => (
+                      <div
+                        key={phone.name}
+                        onClick={() => handleSelectPhone(phone.name)}
+                        className="p-2 rounded-xl bg-white/90 hover:bg-amber-100/70 border border-amber-200/80 shadow-xs cursor-pointer flex items-center justify-between gap-2 transition-all active:scale-[0.98] group"
+                      >
+                        <div className="flex items-center gap-2 min-w-0">
+                          <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-300/60 flex items-center justify-center text-amber-700 flex-shrink-0 group-hover:bg-amber-500 group-hover:text-slate-950 transition-colors">
+                            <Smartphone size={16} />
+                          </div>
+                          <div className="text-start min-w-0">
+                            <h5 className="text-[11px] sm:text-xs font-black text-slate-900 group-hover:text-amber-700 truncate">
+                              {phone.name}
+                            </h5>
+                            <span className="text-[9px] font-bold text-slate-400 uppercase">
+                              {phone.brand} • {phone.count} {isAr ? 'قطعة وإكسسوار' : 'pièces & composants'}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1 text-[10px] font-black text-amber-700 uppercase bg-amber-50 px-2 py-1 rounded-lg border border-amber-200 flex-shrink-0 group-hover:bg-amber-500 group-hover:text-slate-950 transition-colors">
+                          <span>{isAr ? 'عرض القطع' : 'Voir tout'}</span>
+                          <ChevronRight size={12} className={isAr ? 'rotate-180' : ''} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {isSearching && suggestions.length === 0 && phoneSuggestions.length === 0 ? (
                 <div className="p-6 text-center text-slate-400 text-xs font-semibold flex flex-col items-center gap-2">
                   <Loader2 size={20} className="animate-spin text-brand-primary" />
                   <span>{isAr ? 'جاري البحث عن المنتجات المطابقة...' : 'Recherche des pièces en cours...'}</span>
@@ -247,10 +337,10 @@ export default function SearchAutocomplete({ isMobile = false, isHeaderSearch = 
                     <div
                       key={prod._id}
                       onClick={() => handleSelectProduct(prod._id)}
-                      className="p-2.5 sm:p-3 hover:bg-amber-50/60 active:bg-amber-100/50 transition-colors duration-150 cursor-pointer flex items-center gap-2.5 sm:gap-3 group"
+                      className="p-2 sm:p-2.5 sm:p-3 hover:bg-amber-50/60 active:bg-amber-100/50 transition-colors duration-150 cursor-pointer flex items-center gap-2 sm:gap-3 group"
                     >
-                      {/* Product Thumbnail */}
-                      <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-white border border-slate-200 shadow-xs overflow-hidden flex-shrink-0 flex items-center justify-center p-1 group-hover:border-amber-400 transition-colors">
+                      {/* Product Thumbnail: compact on iPhone 8 */}
+                      <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl bg-white border border-slate-200 shadow-xs overflow-hidden flex-shrink-0 flex items-center justify-center p-1 group-hover:border-amber-400 transition-colors">
                         <img
                           src={getImageUrl(prod.images?.[0] || prod.image)}
                           alt={prod.name}
@@ -263,42 +353,42 @@ export default function SearchAutocomplete({ isMobile = false, isHeaderSearch = 
 
                       {/* Info */}
                       <div className="flex-1 min-w-0 text-start">
-                        <h4 className="text-xs sm:text-[13px] font-bold text-slate-800 line-clamp-2 leading-tight group-hover:text-amber-700 transition-colors">
+                        <h4 className="text-[11px] sm:text-[13px] font-bold text-slate-800 line-clamp-2 leading-tight group-hover:text-amber-700 transition-colors">
                           {prod.name}
                         </h4>
-                        <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                        <div className="flex flex-wrap items-center gap-1 sm:gap-1.5 mt-0.5 sm:mt-1">
                           {prod.brand?.name && (
-                            <span className="text-[9px] font-black uppercase text-amber-700 bg-amber-100/80 px-1.5 py-0.5 rounded">
+                            <span className="text-[8px] sm:text-[9px] font-black uppercase text-amber-700 bg-amber-100/80 px-1 sm:px-1.5 py-0.5 rounded">
                               {prod.brand.name}
                             </span>
                           )}
                           {!isNoisySku && (
-                            <span className="text-[9px] font-semibold text-slate-400 ltr-text">
+                            <span className="text-[8px] sm:text-[9px] font-semibold text-slate-400 ltr-text">
                               Ref: {prod.sku}
                             </span>
                           )}
                         </div>
                       </div>
 
-                      {/* Stacked Right Column: Quality Badge, Price, Stock */}
-                      <div className="min-w-[85px] sm:min-w-[105px] text-end flex-shrink-0 flex flex-col items-end justify-center gap-1">
+                      {/* Stacked Right Column: Quality Badge, Price, Stock (fits perfectly on iPhone 8 375px width) */}
+                      <div className="min-w-[76px] sm:min-w-[105px] text-end flex-shrink-0 flex flex-col items-end justify-center gap-0.5 sm:gap-1">
                         {quality && (
-                          <span className={`text-[9px] sm:text-[10px] font-black uppercase px-2 py-0.5 rounded-md border tracking-wide whitespace-nowrap shadow-xs ${quality.color}`}>
+                          <span className={`text-[8px] sm:text-[10px] font-black uppercase px-1.5 sm:px-2 py-0.5 rounded border tracking-wide whitespace-nowrap shadow-xs ${quality.color}`}>
                             {quality.shortLabel || quality.label}
                           </span>
                         )}
                         {isAuthenticated ? (
-                          <span className="text-xs sm:text-sm font-black text-slate-900 ltr-text whitespace-nowrap">
-                            {displayPrice.toLocaleString()} <span className="text-[10px] sm:text-xs text-amber-600 font-bold">DA</span>
+                          <span className="text-[11px] sm:text-sm font-black text-slate-900 ltr-text whitespace-nowrap">
+                            {displayPrice.toLocaleString()} <span className="text-[9px] sm:text-xs text-amber-600 font-bold">DA</span>
                           </span>
                         ) : (
-                          <span className="text-[9px] font-bold text-amber-700 bg-amber-50 border border-amber-200/80 px-1.5 py-0.5 rounded flex items-center gap-1 whitespace-nowrap">
-                            <Lock size={9} />
+                          <span className="text-[8px] sm:text-[9px] font-bold text-amber-700 bg-amber-50 border border-amber-200/80 px-1 sm:px-1.5 py-0.5 rounded flex items-center gap-1 whitespace-nowrap">
+                            <Lock size={8} />
                             {isAr ? 'عضو' : 'Prix membre'}
                           </span>
                         )}
-                        <span className={`text-[9px] font-semibold flex items-center gap-1 ${prod.stock > 0 ? 'text-emerald-600' : 'text-rose-500'}`}>
-                          <span className={`w-1.5 h-1.5 rounded-full ${prod.stock > 0 ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
+                        <span className={`text-[8px] sm:text-[9px] font-semibold flex items-center gap-1 ${prod.stock > 0 ? 'text-emerald-600' : 'text-rose-500'}`}>
+                          <span className={`w-1 sm:w-1.5 h-1 sm:h-1.5 rounded-full ${prod.stock > 0 ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
                           {prod.stock > 0 ? (isAr ? 'متوفر' : 'En stock') : (isAr ? 'نفذ' : 'Rupture')}
                         </span>
                       </div>

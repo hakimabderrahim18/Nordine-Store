@@ -16,21 +16,32 @@ export const getProducts = async (req, res, next) => {
     const query = {};
     const andConditions = [];
 
+    // Helper to build flexible alias patterns for brand and model terms
+    const buildSearchPattern = (token) => {
+      const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const upper = token.toUpperCase();
+      if (upper === 'IPHONE' || upper === 'IPH') return '(?:IPHONE|IPH)';
+      if (upper === 'SAMSUNG' || upper === 'SAM') return '(?:SAMSUNG|SAM)';
+      if (upper === 'HUAWEI' || upper === 'HW') return '(?:HUAWEI|HW)';
+      if (upper === 'REALME' || upper === 'REALM') return '(?:REALME|REALM)';
+      if (upper === 'CONDOR' || upper === 'CON') return '(?:CONDOR|CON)';
+      if (upper === 'REDMI' || upper === 'RED') return '(?:REDMI|RED)';
+      if (upper === 'INFINIX' || upper === 'INF') return '(?:INFINIX|INF)';
+      if (upper === 'XIAOMI' || upper === 'MI') return '(?:XIAOMI|MI)';
+      if (upper === 'MOTOROLA' || upper === 'MOTO') return '(?:MOTOROLA|MOTO)';
+      // Handle digit models with optional 'G' suffix (e.g., iPhone 8 / 8G, 7 / 7G, 6 / 6G)
+      if (/^[4-9]$/.test(upper)) return `(?:${upper}|${upper}G)`;
+      if (/^[4-9]G$/.test(upper)) return `(?:${upper}|${upper.slice(0, -1)})`;
+      return escapeRegex(token);
+    };
+
     // Device / Model smart search query
     if (model && model.trim()) {
-      const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       const cleanModel = model.trim();
       const tokens = cleanModel.split(/\s+/).filter(Boolean);
 
       const modelConditions = tokens.map((t) => {
-        let regexPattern = escapeRegex(t);
-        const upperT = t.toUpperCase();
-        if (upperT === 'IPHONE') regexPattern = '(IPHONE|IPH)';
-        else if (upperT === 'SAMSUNG') regexPattern = '(SAMSUNG|SAM)';
-        else if (upperT === 'HUAWEI') regexPattern = '(HUAWEI|HW)';
-        else if (upperT === 'REALME') regexPattern = '(REALME|REALM)';
-        else if (upperT === 'CONDOR') regexPattern = '(CONDOR|CON)';
-        
+        const regexPattern = buildSearchPattern(t);
         const regex = new RegExp(regexPattern, 'i');
         return {
           $or: [
@@ -43,13 +54,13 @@ export const getProducts = async (req, res, next) => {
       andConditions.push(...modelConditions);
     }
 
-    // Enhanced regex search for partial matching (supports multi-term out-of-order search & 2-letter tokens)
+    // Enhanced regex search for partial matching (supports multi-term out-of-order search, phone models & 2-letter tokens)
     if (keyword && keyword.trim()) {
-      const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       const terms = keyword.trim().split(/\s+/).filter(Boolean);
 
-      if (terms.length === 1) {
-        const regex = new RegExp(escapeRegex(terms[0]), 'i');
+      terms.forEach((t) => {
+        const regexPattern = buildSearchPattern(t);
+        const regex = new RegExp(regexPattern, 'i');
         andConditions.push({
           $or: [
             { name: regex },
@@ -57,18 +68,7 @@ export const getProducts = async (req, res, next) => {
             { description: regex }
           ]
         });
-      } else if (terms.length > 1) {
-        terms.forEach((t) => {
-          const regex = new RegExp(escapeRegex(t), 'i');
-          andConditions.push({
-            $or: [
-              { name: regex },
-              { sku: regex },
-              { description: regex }
-            ]
-          });
-        });
-      }
+      });
     }
 
     if (andConditions.length > 0) {
@@ -927,6 +927,7 @@ export const getDevices = async (req, res, next) => {
             if (t === 'HUAWEI') return name.includes('HUAWEI') || name.includes('HW');
             if (t === 'REALME') return name.includes('REALME') || name.includes('REALM');
             if (t === 'CONDOR') return name.includes('CONDOR') || name.includes('CON');
+            if (/^[4-9]$/.test(t)) return new RegExp(`\\b(?:${t}|${t}G)\\b`, 'i').test(name);
             return name.includes(t);
           });
         });
