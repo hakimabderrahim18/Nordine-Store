@@ -18,7 +18,11 @@ export default function SuggestedPhonesCarousel({ popularPhones = [], loading = 
   };
 
   const handlePhoneClick = (phone) => {
-    navigate(`/shop?model=${encodeURIComponent(phone.name)}`);
+    const brandName = phone.brand || '';
+    const fullSearch = brandName && !phone.name.toLowerCase().includes(brandName.toLowerCase())
+      ? `${brandName} ${phone.name}`
+      : phone.name;
+    navigate(`/shop?model=${encodeURIComponent(fullSearch)}`);
   };
 
   if (!loading && (!popularPhones || popularPhones.length === 0)) {

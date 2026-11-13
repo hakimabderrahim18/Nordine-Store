@@ -20,36 +20,31 @@ export const getProducts = async (req, res, next) => {
     const buildSearchPattern = (token) => {
       const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       const upper = token.toUpperCase();
-      if (upper === 'IPHONE' || upper === 'IPH') return '(?:IPHONE|IPH)';
+      if (upper === 'IPHONE' || upper === 'IPH' || upper === 'APPLE') return '(?:APPLE|IPHONE|IPH)';
       if (upper === 'SAMSUNG' || upper === 'SAM') return '(?:SAMSUNG|SAM)';
-      if (upper === 'HUAWEI' || upper === 'HW') return '(?:HUAWEI|HW)';
-      if (upper === 'REALME' || upper === 'REALM') return '(?:REALME|REALM)';
+      if (upper === 'HUAWEI' || upper === 'HW' || upper === 'HONOR') return '(?:HUAWEI|HW|HONOR)';
+      if (upper === 'REALME' || upper === 'REALM' || upper === 'RLM' || upper === 'NARZO') return '(?:REALME|REALM|RLM|NARZO)';
       if (upper === 'CONDOR' || upper === 'CON') return '(?:CONDOR|CON)';
-      if (upper === 'REDMI' || upper === 'RED') return '(?:REDMI|RED)';
+      if (upper === 'REDMI' || upper === 'REDM' || upper === 'RED' || upper === 'XIAOMI' || upper === 'MI' || upper === 'POCO') return '(?:XIAOMI|MI|REDMI|REDM|RED|POCO)';
       if (upper === 'INFINIX' || upper === 'INF') return '(?:INFINIX|INF)';
-      if (upper === 'XIAOMI' || upper === 'MI') return '(?:XIAOMI|MI)';
+      if (upper === 'OPPO' || upper === 'OPP' || upper === 'RENO') return '(?:OPPO|OPP|RENO)';
       if (upper === 'MOTOROLA' || upper === 'MOTO') return '(?:MOTOROLA|MOTO)';
+      if (upper === 'TECNO') return '(?:TECNO)';
       // Handle digit models with optional 'G' suffix (e.g., iPhone 8 / 8G, 7 / 7G, 6 / 6G)
       if (/^[4-9]$/.test(upper)) return `(?:${upper}|${upper}G)`;
       if (/^[4-9]G$/.test(upper)) return `(?:${upper}|${upper.slice(0, -1)})`;
       return escapeRegex(token);
     };
 
-    // Device / Model smart search query (handles brand names, model numbers, and multi-word models like "S25 Ultra", "Samsung S25", "A12")
+    // Device / Model smart search query (handles brand names, model numbers, and multi-word models like "S25 Ultra", "Samsung S25", "Oppo A77", "A12")
     if (model && model.trim()) {
-      const cleanModel = model.trim();
+      const cleanModel = model.replace(/[/,\-_]+/g, ' ').trim();
       const tokens = cleanModel.split(/\s+/).filter(Boolean);
 
-      // Separate brand tokens (Samsung, Apple, iPhone, etc.) from model identifiers (S25, Ultra, A12, 11)
-      const brandWords = ['SAMSUNG', 'SAM', 'APPLE', 'IPHONE', 'IPH', 'HUAWEI', 'HW', 'HONOR', 'XIAOMI', 'REDMI', 'RED', 'OPPO', 'VIVO', 'REALME', 'REALM', 'INFINIX', 'INF', 'TECNO', 'CONDOR', 'CON', 'MOTOROLA', 'MOTO'];
-      const modelTokensOnly = tokens.filter(t => !brandWords.includes(t.toUpperCase()));
+      const uniquePatterns = [...new Set(tokens.map(t => buildSearchPattern(t)))];
 
-      // If we have specific model tokens (e.g. ['S25'] from 'Samsung S25' or ['A55'] from 'Galaxy A55')
-      const targetTokens = modelTokensOnly.length > 0 ? modelTokensOnly : tokens;
-
-      const modelConditions = targetTokens.map((t) => {
-        const regexPattern = buildSearchPattern(t);
-        const regex = new RegExp(regexPattern, 'i');
+      const modelConditions = uniquePatterns.map((pattern) => {
+        const regex = new RegExp(pattern, 'i');
         return {
           $or: [
             { name: regex },
@@ -826,13 +821,15 @@ export const getDevices = async (req, res, next) => {
         slug: 'samsung',
         logo: '/uploads/samsung-logo.png',
         models: [
-          'S25 Ultra', 'S25 Plus', 'S25', 'S24 Ultra', 'S24 Plus', 'S24 FE', 'S24',
+          'S25 Ultra', 'S25 Plus', 'S25 FE', 'S25', 'S24 Ultra', 'S24 Plus', 'S24 FE', 'S24',
           'S23 Ultra', 'S23 Plus', 'S23 FE', 'S23', 'S22 Ultra', 'S22 Plus', 'S22',
           'S21 Ultra', 'S21 Plus', 'S21 FE', 'S21', 'S20 Ultra', 'S20 Plus', 'S20 FE', 'S20',
           'Note 20 Ultra', 'Note 20', 'Note 10 Plus', 'Note 10', 'Note 9', 'Note 8',
+          'S10 Plus', 'S10E', 'S10', 'S9 Plus', 'S9', 'S8 Plus', 'S8',
           'A55', 'A54', 'A53', 'A52', 'A51', 'A50', 'A35', 'A34', 'A33', 'A32', 'A31', 'A30',
-          'A25', 'A24', 'A23', 'A22', 'A21S', 'A20S', 'A16', 'A15', 'A14', 'A13', 'A12',
-          'A11', 'A10S', 'A10', 'A05S', 'A05', 'A04S', 'A04E', 'A04', 'A03S', 'A03 Core', 'A03', 'A02S', 'A02', 'A01'
+          'A25', 'A24', 'A23', 'A22', 'A21S', 'A21', 'A20S', 'A20', 'A17', 'A16', 'A15', 'A14', 'A13', 'A12',
+          'A11', 'A10S', 'A10', 'A05S', 'A05', 'A04S', 'A04E', 'A04', 'A03S', 'A03 Core', 'A03', 'A02S', 'A02', 'A01',
+          'M53', 'M35', 'M33', 'M31', 'M23', 'M14', 'M13', 'M12', 'M11', 'M10', 'A750'
         ]
       },
       {
@@ -857,10 +854,11 @@ export const getDevices = async (req, res, next) => {
           'Redmi Note 14 Pro', 'Redmi Note 14', 'Redmi Note 13 Pro', 'Redmi Note 13',
           'Redmi Note 12 Pro', 'Redmi Note 12', 'Redmi Note 11 Pro', 'Redmi Note 11',
           'Redmi Note 10 Pro', 'Redmi Note 10', 'Redmi Note 9 Pro', 'Redmi Note 9',
-          'Redmi Note 8 Pro', 'Redmi Note 8', 'Redmi 15C', 'Redmi 14C', 'Redmi 13C',
-          'Redmi 12', 'Redmi 12C', 'Redmi 10', 'Redmi 10C', 'Redmi 9', 'Redmi 9A', 'Redmi 9C', 'Redmi 9T', 'Redmi 8', 'Redmi 8A', 'Redmi A1 Plus',
+          'Redmi Note 8 Pro', 'Redmi Note 8', 'Redmi Note 7', 'Redmi Note 6 Pro', 'Redmi Note 5',
+          'Redmi 15C', 'Redmi 14C', 'Redmi 13C',
+          'Redmi 12', 'Redmi 12C', 'Redmi 10', 'Redmi 10C', 'Redmi 9', 'Redmi 9A', 'Redmi 9C', 'Redmi 9T', 'Redmi 8', 'Redmi 8A', 'Redmi 7', 'Redmi 7A', 'Redmi 6', 'Redmi 6A', 'Redmi A3', 'Redmi A2', 'Redmi A1 Plus',
           'Poco X6 Pro', 'Poco X6', 'Poco X5 Pro', 'Poco X5', 'Poco X3 Pro', 'Poco X3',
-          'Poco M6 Pro', 'Poco M5', 'Poco M4 Pro', 'Poco M3', 'Poco F5', 'Poco F4', 'Poco F3'
+          'Poco M6 Pro', 'Poco M6', 'Poco M5', 'Poco M4 Pro', 'Poco M3', 'Poco C75', 'Poco C65', 'Poco C40', 'Poco F5', 'Poco F4', 'Poco F3'
         ]
       },
       {
@@ -868,8 +866,8 @@ export const getDevices = async (req, res, next) => {
         slug: 'oppo',
         models: [
           'Reno 12 Pro', 'Reno 12', 'Reno 11 Pro', 'Reno 11', 'Reno 10 Pro', 'Reno 10',
-          'Reno 8', 'Reno 7', 'Reno 6', 'Reno 5',
-          'A94', 'A78', 'A74', 'A60', 'A58', 'A57', 'A55', 'A54', 'A53', 'A52', 'A40', 'A3X', 'A31', 'A17', 'A16', 'A15', 'A12', 'A11K', 'A5S', 'A1K'
+          'Reno 8', 'Reno 7', 'Reno 6', 'Reno 5', 'Reno 4', 'Reno 3', 'Reno 2', 'Reno 2F', 'Reno 2Z',
+          'A97', 'A94', 'A79', 'A78', 'A77', 'A77S', 'A74', 'A60', 'A59', 'A58', 'A58X', 'A57', 'A55', 'A54', 'A53', 'A52', 'A40', 'A38', 'A3X', 'A31', 'A18', 'A17', 'A17K', 'A16', 'A16K', 'A15', 'A15S', 'A12', 'A11K', 'A9 2020', 'A5 2020', 'A5S', 'A1K'
         ]
       },
       {
@@ -877,31 +875,33 @@ export const getDevices = async (req, res, next) => {
         slug: 'realme',
         models: [
           'Realme C85', 'Realme C75', 'Realme C67', 'Realme C65', 'Realme C63', 'Realme C61',
-          'Realme C55', 'Realme C53', 'Realme C51', 'Realme C35', 'Realme C33', 'Realme C30S', 'Realme C30', 'Realme C21Y', 'Realme C11',
-          'Realme 12 Pro', 'Realme 12', 'Realme 11 Pro', 'Realme 11', 'Realme 10', 'Realme 9', 'Realme 8'
+          'Realme C55', 'Realme C53', 'Realme C51', 'Realme C35', 'Realme C33', 'Realme C31', 'Realme C30S', 'Realme C30', 'Realme C25', 'Realme C21Y', 'Realme C15', 'Realme C12', 'Realme C11', 'Realme C3', 'Realme C2',
+          'Realme 12 Pro', 'Realme 12', 'Realme 11 Pro', 'Realme 11', 'Realme 10', 'Realme 9', 'Realme 8 Pro', 'Realme 8I', 'Realme 8', 'Realme 7', 'Narzo 50'
         ]
       },
       {
         name: 'Infinix',
         slug: 'infinix',
         models: [
-          'Smart 8', 'Smart 7', 'Hot 40 Pro', 'Hot 40', 'Hot 30', 'Hot 20', 'Hot 12 Play', 'Hot 11 Play', 'Note 40', 'Note 30', 'Note 12'
+          'Smart 9', 'Smart 8', 'Smart 7', 'Smart 6 Plus', 'Smart 6', 'Smart 5',
+          'Hot 50 Pro', 'Hot 50', 'Hot 50I', 'Hot 40 Pro', 'Hot 40', 'Hot 30', 'Hot 20', 'Hot 12 Play', 'Hot 12I', 'Hot 11 Play', 'Hot 11', 'Hot 10 Play', 'Hot 10S', 'Hot 10T', 'Hot 10', 'Hot 9',
+          'Note 40', 'Note 30', 'Note 12', 'Note 11', 'Note 10', 'Note 8', 'Note 7', 'S5', 'S4'
         ]
       },
       {
         name: 'Tecno',
         slug: 'tecno',
         models: [
-          'Spark 20 Pro', 'Spark 20', 'Spark 10 Pro', 'Spark 10', 'Camon 30', 'Camon 20', 'Pouvoir 4', 'Pop 8', 'Pop 7'
+          'Spark 20 Pro', 'Spark 20', 'Spark 10 Pro', 'Spark 10', 'Spark 9 Pro', 'Spark 8C', 'Spark 8T', 'Spark 7', 'Camon 30', 'Camon 20', 'Pouvoir 4', 'Pop 8', 'Pop 7'
         ]
       },
       {
         name: 'Huawei / Honor',
         slug: 'huawei',
         models: [
-          'Honor X8', 'Honor X7', 'Honor 90', 'Honor 70', 'Honor 50', 'Honor 10 Lite', 'Honor 7X',
-          'P50 Pro', 'P40 Lite', 'P40', 'P30 Pro', 'P30 Lite', 'P20 Pro', 'P20 Lite',
-          'P Smart 2020', 'P Smart 2019', 'Y9A', 'Y9S', 'Y9', 'Y7 2020', 'Y7 2019', 'Mate 20 Pro', 'Mate 10 Pro'
+          'Honor Magic 5 Lite', 'Honor X9A', 'Honor X8', 'Honor X7', 'Honor 90', 'Honor 70', 'Honor 50', 'Honor 10 Lite', 'Honor 8X', 'Honor 7X', 'Honor 7C',
+          'P50 Pro', 'P40 Lite E', 'P40 Lite', 'P40', 'P30 Pro', 'P30 Lite', 'P20 Pro', 'P20 Lite', 'P10 Lite',
+          'P Smart 2020', 'P Smart 2019', 'P Smart Z', 'Nova 3I', 'Y9A', 'Y9S', 'Y9 Prime 2019', 'Y9 2019', 'Y8S', 'Y7P', 'Y7 2019', 'Y7 2018', 'Mate 20 Pro', 'Mate 20 Lite', 'Mate 10 Pro', 'Mate 10'
         ]
       },
       {
@@ -914,6 +914,18 @@ export const getDevices = async (req, res, next) => {
       }
     ];
 
+    const BRAND_KEYWORDS = {
+      samsung: ['SAMSUNG', 'SAM'],
+      apple: ['APPLE', 'IPHONE', 'IPH'],
+      xiaomi: ['XIAOMI', 'REDMI', 'REDM', 'POCO', 'MI '],
+      oppo: ['OPPO', 'OPP', 'RENO'],
+      realme: ['REALME', 'REALM', 'RLM', 'NARZO'],
+      infinix: ['INFINIX', 'INF', 'HOT ', 'SMART '],
+      tecno: ['TECNO', 'SPARK', 'CAMON', 'POUVOIR', 'POP '],
+      huawei: ['HUAWEI', 'HW', 'HONOR', 'NOVA', 'MATE'],
+      condor: ['CONDOR', 'CON', 'PLUME', 'GRIFFE', 'ALLURE']
+    };
+
     // Fetch all products to map product counts per model
     const allProds = await Product.find({}, 'name brand marque famille images').lean();
 
@@ -922,6 +934,7 @@ export const getDevices = async (req, res, next) => {
 
     for (const brand of BRANDS_CATALOG) {
       const modelsData = [];
+      const brandKeys = BRAND_KEYWORDS[brand.slug] || [];
 
       for (const model of brand.models) {
         const tokens = model.toUpperCase().split(/\s+/).filter(Boolean);
@@ -929,14 +942,17 @@ export const getDevices = async (req, res, next) => {
         // Find matching products
         const matchingProds = allProds.filter(p => {
           const name = p.name.toUpperCase();
+          const marque = (p.marque || '').toUpperCase();
+          
+          // Must match brand identifier if present
+          const brandMatch = brandKeys.length === 0 || brandKeys.some(k => name.includes(k) || marque.includes(k));
+          if (!brandMatch) return false;
+
           return tokens.every(t => {
-            if (t === 'IPHONE') return name.includes('IPHONE') || name.includes('IPH');
-            if (t === 'SAMSUNG') return name.includes('SAMSUNG') || name.includes('SAM');
-            if (t === 'HUAWEI') return name.includes('HUAWEI') || name.includes('HW');
-            if (t === 'REALME') return name.includes('REALME') || name.includes('REALM');
-            if (t === 'CONDOR') return name.includes('CONDOR') || name.includes('CON');
+            if (['IPHONE', 'SAMSUNG', 'HUAWEI', 'REALME', 'CONDOR', 'OPPO', 'INFINIX', 'TECNO', 'XIAOMI'].includes(t)) return true;
             if (/^[4-9]$/.test(t)) return new RegExp(`\\b(?:${t}|${t}G)\\b`, 'i').test(name);
-            return name.includes(t);
+            // Match token bounded or slash-separated (e.g. A77 matches /A77/, /A77 4G/, etc.)
+            return new RegExp(`(?:^|[\\s/,\\-])${t}(?:$|[\\s/,\\-])`, 'i').test(name);
           });
         });
 

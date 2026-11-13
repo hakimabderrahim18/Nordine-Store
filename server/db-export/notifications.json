@@ -669,5 +669,148 @@
     "createdAt": "2026-10-24T15:52:03.973Z",
     "updatedAt": "2026-10-24T15:52:03.973Z",
     "__v": 0
+  },
+  {
+    "_id": "6ae2100b74189c511d5066d3",
+    "user": "6ab066e57a315935ef4aa0be",
+    "title": "Order Status: delivered",
+    "message": "Your order #D6931C status has been updated to delivered.",
+    "type": "order",
+    "isRead": false,
+    "createdAt": "2026-10-28T15:08:59.673Z",
+    "updatedAt": "2026-10-28T15:08:59.673Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ae5ab5a74189c511d507112",
+    "user": "6ab066e57a315935ef4aa0be",
+    "title": "Order Confirmation",
+    "message": "Your order #507105 has been received.",
+    "type": "order",
+    "isRead": false,
+    "createdAt": "2026-10-31T08:48:26.996Z",
+    "updatedAt": "2026-10-31T08:48:26.996Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ae8936bca0f78d528ddc6f9",
+    "user": null,
+    "title": "New Order Placed",
+    "message": "Order #DDC6F0 has been placed by Yahia rabah (7,000 DA)",
+    "type": "order",
+    "isRead": true,
+    "createdAt": "2026-11-02T13:43:07.566Z",
+    "updatedAt": "2026-11-03T14:03:08.216Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ae8936bca0f78d528ddc6fb",
+    "user": "6a7d9c6dcc51473e89679bc4",
+    "title": "Order Confirmation",
+    "message": "Your order #DDC6F0 has been received.",
+    "type": "order",
+    "isRead": false,
+    "createdAt": "2026-11-02T13:43:07.572Z",
+    "updatedAt": "2026-11-02T13:43:07.572Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ae8b77dca0f78d528ddc881",
+    "user": "6ab066e57a315935ef4aa0be",
+    "title": "Order Status: processing",
+    "message": "Your order #507105 status has been updated to processing.",
+    "type": "order",
+    "isRead": false,
+    "createdAt": "2026-11-02T16:17:01.915Z",
+    "updatedAt": "2026-11-02T16:17:01.915Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ae8b783ca0f78d528ddc8db",
+    "user": "6ab066e57a315935ef4aa0be",
+    "title": "Order Status: shipped",
+    "message": "Your order #507105 status has been updated to shipped.",
+    "type": "order",
+    "isRead": false,
+    "createdAt": "2026-11-02T16:17:07.205Z",
+    "updatedAt": "2026-11-02T16:17:07.205Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ae8b7a2ca0f78d528ddc93c",
+    "user": "6a7d9c6dcc51473e89679bc4",
+    "title": "Order Status: delivered",
+    "message": "Your order #DDC6F0 status has been updated to delivered.",
+    "type": "order",
+    "isRead": false,
+    "createdAt": "2026-11-02T16:17:38.269Z",
+    "updatedAt": "2026-11-02T16:17:38.269Z",
+    "__v": 0
+  },
+  {
+    "_id": "6af03bdeca0f78d528dde8c2",
+    "user": "6ab066e57a315935ef4aa0be",
+    "title": "Order Status: delivered",
+    "message": "Your order #507105 status has been updated to delivered.",
+    "type": "order",
+    "isRead": false,
+    "createdAt": "2026-11-08T09:07:42.444Z",
+    "updatedAt": "2026-11-08T09:07:42.444Z",
+    "__v": 0
+  },
+  {
+    "_id": "6af17e6fca0f78d528ddf147",
+    "user": null,
+    "title": "New Order Placed",
+    "message": "Order #DDF12A has been placed by Wassim yahiaoui (113,280 DA)",
+    "type": "order",
+    "isRead": true,
+    "createdAt": "2026-11-09T08:03:59.482Z",
+    "updatedAt": "2026-11-09T10:42:22.511Z",
+    "__v": 0
+  },
+  {
+    "_id": "6af17e6fca0f78d528ddf149",
+    "user": "6ab066e57a315935ef4aa0be",
+    "title": "Order Confirmation",
+    "message": "Your order #DDF12A has been received.",
+    "type": "order",
+    "isRead": false,
+    "createdAt": "2026-11-09T08:03:59.487Z",
+    "updatedAt": "2026-11-09T08:03:59.487Z",
+    "__v": 0
+  },
+  {
+    "_id": "6af1a37eca0f78d528ddf2d0",
+    "user": "6ab066e57a315935ef4aa0be",
+    "title": "Order Status: processing",
+    "message": "Your order #DDF12A status has been updated to processing.",
+    "type": "order",
+    "isRead": false,
+    "createdAt": "2026-11-09T10:42:06.265Z",
+    "updatedAt": "2026-11-09T10:42:06.265Z",
+    "__v": 0
+  },
+  {
+    "_id": "6af1eb7dca0f78d528ddf426",
+    "user": "6ab066e57a315935ef4aa0be",
+    "title": "Order Status: shipped",
+    "message": "Your order #DDF12A status has been updated to shipped.",
+    "type": "order",
+    "isRead": false,
+    "createdAt": "2026-11-09T15:49:17.759Z",
+    "updatedAt": "2026-11-09T15:49:17.759Z",
+    "__v": 0
+  },
+  {
+    "_id": "6af422a3ca0f78d528ddf995",
+    "user": "6ab066e57a315935ef4aa0be",
+    "title": "Order Status: delivered",
+    "message": "Your order #DDF12A status has been updated to delivered.",
+    "type": "order",
+    "isRead": false,
+    "createdAt": "2026-11-11T08:09:07.525Z",
+    "updatedAt": "2026-11-11T08:09:07.525Z",
+    "__v": 0
   }
 ]

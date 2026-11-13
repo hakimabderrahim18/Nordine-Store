@@ -133,11 +133,14 @@ export default function SearchAutocomplete({ isMobile = false, isHeaderSearch = 
     navigate(`/products/${productId}`);
   };
 
-  const handleSelectPhone = (phoneName) => {
+  const handleSelectPhone = (phone) => {
     setShowDropdown(false);
     setSearchVal('');
     if (onCloseMobileMenu) onCloseMobileMenu();
-    navigate(`/shop?model=${encodeURIComponent(phoneName)}`);
+    const query = typeof phone === 'string'
+      ? phone
+      : (phone.fullName || (phone.brand && !phone.name.toLowerCase().includes(phone.brand.toLowerCase()) ? `${phone.brand} ${phone.name}` : phone.name));
+    navigate(`/shop?model=${encodeURIComponent(query)}`);
   };
 
   const handleViewAll = () => {
@@ -291,8 +294,8 @@ export default function SearchAutocomplete({ isMobile = false, isHeaderSearch = 
                   <div className="flex flex-col gap-1.5">
                     {phoneSuggestions.map((phone) => (
                       <div
-                        key={phone.name}
-                        onClick={() => handleSelectPhone(phone.name)}
+                        key={`${phone.brand}-${phone.name}`}
+                        onClick={() => handleSelectPhone(phone)}
                         className="p-2 rounded-xl bg-white/90 hover:bg-amber-100/70 border border-amber-200/80 shadow-xs cursor-pointer flex items-center justify-between gap-2 transition-all active:scale-[0.98] group"
                       >
                         <div className="flex items-center gap-2 min-w-0">

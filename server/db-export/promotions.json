@@ -1,0 +1,16 @@
+[
+  {
+    "_id": "6ae65abeca0f78d528ddbb3f",
+    "image": "/uploads/image-1793481405989-116382813.png",
+    "title": "saha",
+    "subtitle": "",
+    "badge": "PROMO",
+    "discountText": "-20%",
+    "link": "/shop",
+    "isActive": false,
+    "order": 0,
+    "createdAt": "2026-10-31T21:16:46.034Z",
+    "updatedAt": "2026-11-11T19:09:00.228Z",
+    "__v": 0
+  }
+]

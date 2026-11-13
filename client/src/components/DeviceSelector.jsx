@@ -55,7 +55,11 @@ export default function DeviceSelector({ onSelectModel, compact = false }) {
     if (onSelectModel) {
       onSelectModel(model);
     } else {
-      navigate(`/shop?model=${encodeURIComponent(model.name)}`);
+      const brandName = model.brandName || model.brand || currentBrand?.name || '';
+      const fullSearch = brandName && !model.name.toLowerCase().includes(brandName.toLowerCase())
+        ? `${brandName} ${model.name}`
+        : model.name;
+      navigate(`/shop?model=${encodeURIComponent(fullSearch)}`);
     }
   };
 

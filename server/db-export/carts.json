@@ -176,8 +176,8 @@
     "user": "6a7d9c6dcc51473e89679bc4",
     "items": [],
     "createdAt": "2026-08-13T10:29:01.802Z",
-    "updatedAt": "2026-10-13T16:32:18.152Z",
-    "__v": 4
+    "updatedAt": "2026-11-02T13:43:07.448Z",
+    "__v": 7
   },
   {
     "_id": "6a7daa15cc51473e89679e2a",
@@ -383,66 +383,10 @@
   {
     "_id": "6a8611c47431accc827f75ff",
     "user": "6a8611c47431accc827f75fd",
-    "items": [
-      {
-        "product": "6a3ff068ef64c5384b51b29a",
-        "quantity": 7,
-        "variant": {}
-      },
-      {
-        "product": "6a3ff068ef64c5384b51b22f",
-        "quantity": 6,
-        "variant": {}
-      },
-      {
-        "product": "6a3ff068ef64c5384b51b238",
-        "quantity": 2,
-        "variant": {}
-      },
-      {
-        "product": "6a3ff068ef64c5384b51b235",
-        "quantity": 2,
-        "variant": {}
-      },
-      {
-        "product": "6a3ff068ef64c5384b51b2b8",
-        "quantity": 1,
-        "variant": {}
-      },
-      {
-        "product": "6a3ff068ef64c5384b51b2a6",
-        "quantity": 1,
-        "variant": {}
-      },
-      {
-        "product": "6a3ff068ef64c5384b51b2ac",
-        "quantity": 1,
-        "variant": {}
-      },
-      {
-        "product": "6a3ff067ef64c5384b51af85",
-        "quantity": 1,
-        "variant": {}
-      },
-      {
-        "product": "6a3ff068ef64c5384b51b223",
-        "quantity": 4,
-        "variant": {}
-      },
-      {
-        "product": "6ac510ceef8341a48eab1d7a",
-        "quantity": 1,
-        "variant": {}
-      },
-      {
-        "product": "6a3ff068ef64c5384b51b22a",
-        "quantity": 1,
-        "variant": {}
-      }
-    ],
+    "items": [],
     "createdAt": "2026-08-19T20:27:48.155Z",
-    "updatedAt": "2026-10-20T18:55:05.703Z",
-    "__v": 53
+    "updatedAt": "2026-11-04T08:04:46.682Z",
+    "__v": 76
   },
   {
     "_id": "6a8611fd7431accc827f7609",
@@ -745,8 +689,8 @@
     "user": "6ab066e57a315935ef4aa0be",
     "items": [],
     "createdAt": "2026-09-20T23:06:14.005Z",
-    "updatedAt": "2026-10-24T14:51:24.791Z",
-    "__v": 35
+    "updatedAt": "2026-11-09T08:03:59.453Z",
+    "__v": 86
   },
   {
     "_id": "6ab13ab67a315935ef4aad71",
@@ -914,6 +858,70 @@
     "items": [],
     "createdAt": "2026-10-27T00:57:42.143Z",
     "updatedAt": "2026-10-27T00:57:42.143Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ae3ce6374189c511d506aec",
+    "user": "6ae3ce6374189c511d506aea",
+    "items": [],
+    "createdAt": "2026-10-29T22:53:23.520Z",
+    "updatedAt": "2026-10-29T22:53:23.520Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ae48dfe74189c511d506cd7",
+    "user": "6ae48dfe74189c511d506cd5",
+    "items": [],
+    "createdAt": "2026-10-30T12:30:54.828Z",
+    "updatedAt": "2026-10-30T12:30:54.828Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ae991aeca0f78d528ddcc82",
+    "user": "6ae991aeca0f78d528ddcc80",
+    "items": [],
+    "createdAt": "2026-11-03T07:47:58.536Z",
+    "updatedAt": "2026-11-03T07:47:58.536Z",
+    "__v": 0
+  },
+  {
+    "_id": "6aecf3e4ca0f78d528ddddf7",
+    "user": "6aecf3e4ca0f78d528ddddf5",
+    "items": [],
+    "createdAt": "2026-11-05T21:23:48.232Z",
+    "updatedAt": "2026-11-05T21:23:48.232Z",
+    "__v": 0
+  },
+  {
+    "_id": "6af44501ca0f78d528ddfa49",
+    "user": "6af44501ca0f78d528ddfa47",
+    "items": [],
+    "createdAt": "2026-11-11T10:35:45.876Z",
+    "updatedAt": "2026-11-11T10:35:45.876Z",
+    "__v": 0
+  },
+  {
+    "_id": "6af46789ca0f78d528ddfc15",
+    "user": "6af46789ca0f78d528ddfc13",
+    "items": [],
+    "createdAt": "2026-11-11T13:03:05.348Z",
+    "updatedAt": "2026-11-11T13:03:05.348Z",
+    "__v": 0
+  },
+  {
+    "_id": "6af5868dca0f78d528de00ea",
+    "user": "6af5868dca0f78d528de00e8",
+    "items": [],
+    "createdAt": "2026-11-12T09:27:41.682Z",
+    "updatedAt": "2026-11-12T09:27:41.682Z",
+    "__v": 0
+  },
+  {
+    "_id": "6af5e655ca0f78d528de061e",
+    "user": "6af5e654ca0f78d528de061c",
+    "items": [],
+    "createdAt": "2026-11-12T16:16:21.094Z",
+    "updatedAt": "2026-11-12T16:16:21.094Z",
     "__v": 0
   }
 ]

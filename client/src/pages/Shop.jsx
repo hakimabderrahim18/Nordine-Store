@@ -36,6 +36,20 @@ export default function Shop() {
 
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
+  // Normalize selected model to match option full values
+  const currentSelectedModelVal = React.useMemo(() => {
+    if (!selectedModel) return '';
+    for (const b of (devicesData.brands || [])) {
+      for (const m of (b.models || [])) {
+        const fullVal = m.name.toLowerCase().includes(b.name.toLowerCase()) ? m.name : `${b.name} ${m.name}`;
+        if (fullVal.toLowerCase() === selectedModel.toLowerCase() || m.name.toLowerCase() === selectedModel.toLowerCase()) {
+          return fullVal;
+        }
+      }
+    }
+    return selectedModel;
+  }, [selectedModel, devicesData.brands]);
+
   // Load Categories, Brands & Devices once on mount
   useEffect(() => {
     const loadFiltersData = async () => {
@@ -224,7 +238,7 @@ export default function Shop() {
               )}
             </div>
             <select
-              value={selectedModel}
+              value={currentSelectedModelVal}
               onChange={(e) => {
                 setSelectedModel(e.target.value);
                 applyFilters({ model: e.target.value });
@@ -234,11 +248,14 @@ export default function Shop() {
               <option value="">{language === 'ar' ? '📱 جميع الهواتف والموديلات' : '📱 Tous les modèles de téléphones'}</option>
               {devicesData.brands?.map((b) => (
                 <optgroup key={b.slug} label={`--- ${b.name} (${b.totalProducts} pièces) ---`}>
-                  {b.models.map((m) => (
-                    <option key={m.name} value={m.name}>
-                      {m.name} ({m.count})
-                    </option>
-                  ))}
+                  {b.models.map((m) => {
+                    const fullVal = m.name.toLowerCase().includes(b.name.toLowerCase()) ? m.name : `${b.name} ${m.name}`;
+                    return (
+                      <option key={`${b.slug}-${m.name}`} value={fullVal}>
+                        {m.name} ({m.count})
+                      </option>
+                    );
+                  })}
                 </optgroup>
               ))}
             </select>
@@ -631,7 +648,7 @@ export default function Shop() {
                   )}
                 </label>
                 <select
-                  value={selectedModel}
+                  value={currentSelectedModelVal}
                   onChange={(e) => {
                     setSelectedModel(e.target.value);
                     applyFilters({ model: e.target.value });
@@ -640,11 +657,18 @@ export default function Shop() {
                     selectedModel ? 'border-amber-400 bg-amber-50/40 text-amber-900 font-bold' : 'border-slate-100'
                   }`}
                 >
-                  <option value="">{language === 'ar' ? 'جميع الموديلات' : 'Tous les modèles'}</option>
-                  {availableModels.map((m) => (
-                    <option key={m.fullModel} value={m.fullModel}>
-                      {m.fullModel} ({m.count})
-                    </option>
+                  <option value="">{language === 'ar' ? '📱 جميع الهواتف والموديلات' : '📱 Tous les modèles de téléphones'}</option>
+                  {devicesData.brands?.map((b) => (
+                    <optgroup key={b.slug} label={`--- ${b.name} (${b.totalProducts} pièces) ---`}>
+                      {b.models.map((m) => {
+                        const fullVal = m.name.toLowerCase().includes(b.name.toLowerCase()) ? m.name : `${b.name} ${m.name}`;
+                        return (
+                          <option key={`${b.slug}-${m.name}`} value={fullVal}>
+                            {m.name} ({m.count})
+                          </option>
+                        );
+                      })}
+                    </optgroup>
                   ))}
                 </select>
               </div>

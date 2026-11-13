@@ -250,8 +250,8 @@
     "user": "6a7e0e69cc51473e8967a5ce",
     "products": [],
     "createdAt": "2026-08-13T18:35:22.035Z",
-    "updatedAt": "2026-08-13T18:35:22.035Z",
-    "__v": 0
+    "updatedAt": "2026-11-04T16:50:45.893Z",
+    "__v": 2
   },
   {
     "_id": "6a7e1f25cc51473e8967a770",
@@ -385,11 +385,12 @@
     "_id": "6a86d9ac7431accc827f7b22",
     "user": "6a86d9ac7431accc827f7b1e",
     "products": [
-      "6a3ff068ef64c5384b51b2df"
+      "6a3ff068ef64c5384b51b2df",
+      "6a3ff068ef64c5384b51b1f8"
     ],
     "createdAt": "2026-08-20T10:40:44.973Z",
-    "updatedAt": "2026-10-23T22:14:22.042Z",
-    "__v": 1
+    "updatedAt": "2026-11-03T10:00:01.470Z",
+    "__v": 2
   },
   {
     "_id": "6a86ddefc04eea092c84e959",
@@ -850,6 +851,70 @@
     "products": [],
     "createdAt": "2026-10-27T00:57:42.148Z",
     "updatedAt": "2026-10-27T00:57:42.148Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ae3ce6374189c511d506aee",
+    "user": "6ae3ce6374189c511d506aea",
+    "products": [],
+    "createdAt": "2026-10-29T22:53:23.524Z",
+    "updatedAt": "2026-10-29T22:53:23.524Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ae48dfe74189c511d506cd9",
+    "user": "6ae48dfe74189c511d506cd5",
+    "products": [],
+    "createdAt": "2026-10-30T12:30:54.834Z",
+    "updatedAt": "2026-10-30T12:30:54.834Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ae991aeca0f78d528ddcc84",
+    "user": "6ae991aeca0f78d528ddcc80",
+    "products": [],
+    "createdAt": "2026-11-03T07:47:58.539Z",
+    "updatedAt": "2026-11-03T07:47:58.539Z",
+    "__v": 0
+  },
+  {
+    "_id": "6aecf3e4ca0f78d528ddddf9",
+    "user": "6aecf3e4ca0f78d528ddddf5",
+    "products": [],
+    "createdAt": "2026-11-05T21:23:48.238Z",
+    "updatedAt": "2026-11-05T21:23:48.238Z",
+    "__v": 0
+  },
+  {
+    "_id": "6af44501ca0f78d528ddfa4b",
+    "user": "6af44501ca0f78d528ddfa47",
+    "products": [],
+    "createdAt": "2026-11-11T10:35:45.881Z",
+    "updatedAt": "2026-11-11T10:35:45.881Z",
+    "__v": 0
+  },
+  {
+    "_id": "6af46789ca0f78d528ddfc17",
+    "user": "6af46789ca0f78d528ddfc13",
+    "products": [],
+    "createdAt": "2026-11-11T13:03:05.358Z",
+    "updatedAt": "2026-11-11T13:03:05.358Z",
+    "__v": 0
+  },
+  {
+    "_id": "6af5868dca0f78d528de00ec",
+    "user": "6af5868dca0f78d528de00e8",
+    "products": [],
+    "createdAt": "2026-11-12T09:27:41.688Z",
+    "updatedAt": "2026-11-12T09:27:41.688Z",
+    "__v": 0
+  },
+  {
+    "_id": "6af5e655ca0f78d528de0620",
+    "user": "6af5e654ca0f78d528de061c",
+    "products": [],
+    "createdAt": "2026-11-12T16:16:21.098Z",
+    "updatedAt": "2026-11-12T16:16:21.098Z",
     "__v": 0
   }
 ]
