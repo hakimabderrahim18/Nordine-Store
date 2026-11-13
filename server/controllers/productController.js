@@ -35,18 +35,26 @@ export const getProducts = async (req, res, next) => {
       return escapeRegex(token);
     };
 
-    // Device / Model smart search query
+    // Device / Model smart search query (handles brand names, model numbers, and multi-word models like "S25 Ultra", "Samsung S25", "A12")
     if (model && model.trim()) {
       const cleanModel = model.trim();
       const tokens = cleanModel.split(/\s+/).filter(Boolean);
 
-      const modelConditions = tokens.map((t) => {
+      // Separate brand tokens (Samsung, Apple, iPhone, etc.) from model identifiers (S25, Ultra, A12, 11)
+      const brandWords = ['SAMSUNG', 'SAM', 'APPLE', 'IPHONE', 'IPH', 'HUAWEI', 'HW', 'HONOR', 'XIAOMI', 'REDMI', 'RED', 'OPPO', 'VIVO', 'REALME', 'REALM', 'INFINIX', 'INF', 'TECNO', 'CONDOR', 'CON', 'MOTOROLA', 'MOTO'];
+      const modelTokensOnly = tokens.filter(t => !brandWords.includes(t.toUpperCase()));
+
+      // If we have specific model tokens (e.g. ['S25'] from 'Samsung S25' or ['A55'] from 'Galaxy A55')
+      const targetTokens = modelTokensOnly.length > 0 ? modelTokensOnly : tokens;
+
+      const modelConditions = targetTokens.map((t) => {
         const regexPattern = buildSearchPattern(t);
         const regex = new RegExp(regexPattern, 'i');
         return {
           $or: [
             { name: regex },
-            { description: regex }
+            { description: regex },
+            { sku: regex }
           ]
         };
       });

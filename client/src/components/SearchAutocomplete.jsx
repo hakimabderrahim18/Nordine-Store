@@ -26,7 +26,7 @@ export default function SearchAutocomplete({ isMobile = false, isHeaderSearch = 
   const containerRef = useRef(null);
   const isAr = language === 'ar';
 
-  // Preload devices catalog once for matching phone models (iPhone 8, Samsung A10, etc.)
+  // Preload devices catalog once for matching phone models (iPhone 8, Samsung S25, etc.)
   useEffect(() => {
     let isMounted = true;
     productService.getDevices().then((res) => {
@@ -36,6 +36,7 @@ export default function SearchAutocomplete({ isMobile = false, isHeaderSearch = 
           (b.models || []).forEach((m) => {
             flatList.push({
               name: m.name,
+              fullName: `${b.name} ${m.name}`,
               brand: b.name,
               count: m.count || 0,
               sampleImage: m.sampleImage
@@ -68,14 +69,15 @@ export default function SearchAutocomplete({ isMobile = false, isHeaderSearch = 
       const qTokens = trimmed.toUpperCase().split(/\s+/).filter(Boolean);
       const matchedPhones = cachedDevicesRef.current.filter((phone) => {
         const pName = phone.name.toUpperCase();
+        const pFullName = (phone.fullName || '').toUpperCase();
         const pBrand = phone.brand.toUpperCase();
         return qTokens.every((t) => {
           if (t === 'IPHONE' || t === 'IPH') return pName.includes('IPHONE') || pBrand.includes('APPLE');
-          if (t === 'SAMSUNG' || t === 'SAM') return pName.includes('SAMSUNG') || pBrand.includes('SAMSUNG');
+          if (t === 'SAMSUNG' || t === 'SAM') return pName.includes('SAMSUNG') || pBrand.includes('SAMSUNG') || pFullName.includes('SAMSUNG');
           if (t === 'HUAWEI' || t === 'HW') return pName.includes('HUAWEI') || pBrand.includes('HUAWEI');
           if (t === 'XIAOMI' || t === 'REDMI') return pName.includes('REDMI') || pBrand.includes('XIAOMI');
           if (/^[4-9]$/.test(t)) return new RegExp(`\\b(?:${t}|${t}G)\\b`, 'i').test(pName);
-          return pName.includes(t) || pBrand.includes(t);
+          return pName.includes(t) || pBrand.includes(t) || pFullName.includes(t);
         });
       }).slice(0, 3);
       setPhoneSuggestions(matchedPhones);
