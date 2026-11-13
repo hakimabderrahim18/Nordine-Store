@@ -127,7 +127,7 @@ export default function Home() {
     <div className="min-h-screen bg-brand-bg text-left">
       {/* 1. HERO SECTION */}
       <section 
-        className="relative w-full text-white mt-6 pt-28 pb-16 md:py-24 border-b border-gray-200 bg-gradient-to-br from-white via-amber-50/30 to-white overflow-visible"
+        className="relative w-full text-white mt-6 pt-28 pb-16 md:py-24 border-b border-gray-200 bg-gradient-to-br from-white via-amber-50/30 to-white overflow-visible z-20"
       >
         {/* Animated canvas particles layer clipped to background */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -174,7 +174,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.15 }}
-              className="w-full bg-white/95 backdrop-blur-md p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-xl shadow-slate-200/50 space-y-3 text-start relative z-30"
+              className="w-full bg-white/95 backdrop-blur-md p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-xl shadow-slate-200/50 space-y-3 text-start relative z-40"
             >
               <div className="flex items-center justify-between px-1">
                 <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-amber-600 flex items-center gap-1.5">
@@ -357,7 +357,7 @@ export default function Home() {
       </section>
 
       {/* 2. STATS SECTION */}
-      <section className="bg-brand-secondary text-slate-800 py-10 relative overflow-hidden">
+      <section className="bg-brand-secondary text-slate-800 py-10 relative overflow-hidden z-10">
         <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none" />
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-6 text-center relative z-10">
           {stats.map((stat, index) => (

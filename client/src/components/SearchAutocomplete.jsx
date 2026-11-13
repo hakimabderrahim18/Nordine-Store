@@ -165,7 +165,7 @@ export default function SearchAutocomplete({ isMobile = false, isHeaderSearch = 
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
             onClick={() => setShowDropdown(false)}
-            className="fixed inset-0 bg-slate-950/40 backdrop-blur-[2px] z-[90]"
+            className="fixed inset-0 bg-slate-950/40 backdrop-blur-[2px] z-[9990]"
           />
         )}
       </AnimatePresence>
@@ -173,7 +173,7 @@ export default function SearchAutocomplete({ isMobile = false, isHeaderSearch = 
       <div
         ref={containerRef}
         className={`relative ${isMobile || isHeaderSearch ? 'w-full' : 'w-auto'} ${
-          showDropdown && searchVal.trim().length >= 2 ? 'z-[100]' : 'z-30'
+          showDropdown && searchVal.trim().length >= 2 ? 'z-[9999]' : 'z-30'
         }`}
       >
         <form onSubmit={handleFormSubmit} className="relative flex items-center w-full gap-1.5 sm:gap-2">
@@ -243,7 +243,7 @@ export default function SearchAutocomplete({ isMobile = false, isHeaderSearch = 
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 6, scale: 0.98 }}
               transition={{ duration: 0.2 }}
-              className={`absolute z-[100] mt-2 bg-white border-2 border-amber-400 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden ${
+              className={`absolute z-[9999] mt-2 bg-white border-2 border-amber-400 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden ${
                 isMobile
                   ? 'left-0 right-0 w-full'
                   : isAr ? 'right-0 w-80 md:w-96' : 'left-0 w-80 md:w-96'
