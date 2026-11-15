@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { User, Mail, ShoppingBag } from 'lucide-react';
+import { User, Mail, ShoppingBag, Phone, MapPin, Building } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { updateProfile, getProfile } from '../store/authSlice';
 import { authService, orderService } from '../services/api';
@@ -16,6 +16,9 @@ export default function Profile() {
   // Profile Edit fields
   const [name, setName] = useState(user?.name || '');
   const [email, setEmail] = useState(user?.email || '');
+  const [phone, setPhone] = useState(user?.phone || '');
+  const [wilaya, setWilaya] = useState(user?.wilaya || '');
+  const [commune, setCommune] = useState(user?.commune || '');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [profileLoading, setProfileLoading] = useState(false);
@@ -32,6 +35,9 @@ export default function Profile() {
     if (user) {
       setName(user.name || '');
       setEmail(user.email || '');
+      setPhone(user.phone || '');
+      setWilaya(user.wilaya || '');
+      setCommune(user.commune || '');
     }
   }, [user]);
 
@@ -44,7 +50,7 @@ export default function Profile() {
 
     setProfileLoading(true);
     try {
-      const data = { name, email };
+      const data = { name, email, phone, wilaya, commune };
       if (password) data.password = password;
 
       await dispatch(updateProfile(data)).unwrap();
@@ -140,6 +146,62 @@ export default function Profile() {
                   }`}
                 />
                 <Mail size={14} className={`absolute top-3.5 text-slate-400 ${isAr ? 'right-3.5' : 'left-3.5'}`} />
+              </div>
+            </div>
+
+            <div className="flex flex-col space-y-1">
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                {isAr ? 'رقم الهاتف' : 'Numéro de téléphone'}
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="0550123456"
+                  className={`w-full bg-slate-50 border border-slate-100 text-slate-800 text-xs rounded-[16px] py-3 focus:outline-none ${
+                    isAr ? 'pr-10 pl-4' : 'pl-10 pr-4'
+                  }`}
+                />
+                <Phone size={14} className={`absolute top-3.5 text-slate-400 ${isAr ? 'right-3.5' : 'left-3.5'}`} />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              <div className="flex flex-col space-y-1">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                  {isAr ? 'الولاية' : 'Wilaya'}
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={wilaya}
+                    onChange={(e) => setWilaya(e.target.value)}
+                    placeholder={isAr ? 'الولاية' : 'Wilaya'}
+                    className={`w-full bg-slate-50 border border-slate-100 text-slate-800 text-xs rounded-[16px] py-3 focus:outline-none ${
+                      isAr ? 'pr-8 pl-2' : 'pl-8 pr-2'
+                    }`}
+                  />
+                  <MapPin size={13} className={`absolute top-3.5 text-slate-400 ${isAr ? 'right-2.5' : 'left-2.5'}`} />
+                </div>
+              </div>
+
+              <div className="flex flex-col space-y-1">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                  {isAr ? 'البلدية' : 'Commune'}
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={commune}
+                    onChange={(e) => setCommune(e.target.value)}
+                    placeholder={isAr ? 'البلدية' : 'Commune'}
+                    className={`w-full bg-slate-50 border border-slate-100 text-slate-800 text-xs rounded-[16px] py-3 focus:outline-none ${
+                      isAr ? 'pr-8 pl-2' : 'pl-8 pr-2'
+                    }`}
+                  />
+                  <Building size={13} className={`absolute top-3.5 text-slate-400 ${isAr ? 'right-2.5' : 'left-2.5'}`} />
+                </div>
               </div>
             </div>
 

@@ -63,7 +63,7 @@ export default function Checkout() {
     fetchWilayas();
   }, []);
 
-  // Pre-fill fields for authenticated users if they have a saved address
+  // Pre-fill fields for authenticated users if they have a saved address or registered wilaya/commune
   useEffect(() => {
     if (isAuthenticated && user) {
       const defaultAddr = user.addresses?.find(a => a.isDefault) || user.addresses?.[0];
@@ -71,6 +71,8 @@ export default function Checkout() {
         if (defaultAddr.phone) setPhone(defaultAddr.phone);
         if (defaultAddr.city) setWilaya(defaultAddr.city);
       }
+      if (user.phone && !phone) setPhone(user.phone);
+      if (user.wilaya && !wilaya) setWilaya(user.wilaya);
     }
   }, [isAuthenticated, user]);
 
@@ -102,6 +104,18 @@ export default function Checkout() {
         const commRes = await yalidineService.getCommunes(selectedWilayaId);
         if (commRes.success && commRes.data) {
           setCommunesList(commRes.data);
+          
+          // Auto-select user commune if available
+          if (user?.commune && !selectedCommuneId) {
+            const normalizedUserComm = user.commune.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+            const matchComm = commRes.data.find(c => 
+              c.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim() === normalizedUserComm
+            );
+            if (matchComm) {
+              setSelectedCommuneId(matchComm.id.toString());
+              setSelectedCommune(matchComm);
+            }
+          }
         }
 
         // Fetch shipping fees for destination

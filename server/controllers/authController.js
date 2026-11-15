@@ -12,12 +12,17 @@ import sendEmail from '../utils/sendEmail.js';
 // @access  Public
 export const registerUser = async (req, res, next) => {
   try {
-    const { name, email, phone, password, clientType } = req.body;
+    const { name, email, phone, password, clientType, wilaya, commune } = req.body;
 
     const rawIdentifier = (email || phone || req.body.identifier || '').toString().trim();
     if (!rawIdentifier) {
       res.status(400);
       throw new Error('L\'adresse email ou le numéro de téléphone est requis');
+    }
+
+    if (!wilaya || !commune) {
+      res.status(400);
+      throw new Error('Veuillez sélectionner votre wilaya et votre commune');
     }
 
     let userEmail;
@@ -46,7 +51,9 @@ export const registerUser = async (req, res, next) => {
       email: userEmail || undefined,
       phone: userPhone || undefined,
       password,
-      clientType: clientType || 'retail'
+      clientType: clientType || 'retail',
+      wilaya: wilaya ? wilaya.trim() : undefined,
+      commune: commune ? commune.trim() : undefined
     });
 
     if (user) {
@@ -115,6 +122,9 @@ export const loginUser = async (req, res, next) => {
         _id: user._id,
         name: user.name,
         email: user.email,
+        phone: user.phone,
+        wilaya: user.wilaya,
+        commune: user.commune,
         role: user.role,
         clientType: user.clientType,
         avatar: user.avatar,
@@ -142,6 +152,9 @@ export const getUserProfile = async (req, res, next) => {
         _id: user._id,
         name: user.name,
         email: user.email,
+        phone: user.phone,
+        wilaya: user.wilaya,
+        commune: user.commune,
         role: user.role,
         clientType: user.clientType,
         avatar: user.avatar,
@@ -167,6 +180,15 @@ export const updateUserProfile = async (req, res, next) => {
     if (user) {
       user.name = req.body.name || user.name;
       user.email = req.body.email || user.email;
+      if (req.body.phone !== undefined) {
+        user.phone = req.body.phone;
+      }
+      if (req.body.wilaya !== undefined) {
+        user.wilaya = req.body.wilaya;
+      }
+      if (req.body.commune !== undefined) {
+        user.commune = req.body.commune;
+      }
       if (req.body.avatar) {
         user.avatar = req.body.avatar;
       }
@@ -174,22 +196,16 @@ export const updateUserProfile = async (req, res, next) => {
         user.password = req.body.password;
       }
 
-      const updatedUser = await User.findByIdAndUpdate(
-        req.user._id,
-        {
-          name: user.name,
-          email: user.email,
-          avatar: user.avatar,
-          password: req.body.password ? user.password : undefined
-        },
-        { new: true, runValidators: true }
-      );
+      const updatedUser = await user.save();
 
       res.json({
         success: true,
         _id: updatedUser._id,
         name: updatedUser.name,
         email: updatedUser.email,
+        phone: updatedUser.phone,
+        wilaya: updatedUser.wilaya,
+        commune: updatedUser.commune,
         role: updatedUser.role,
         clientType: updatedUser.clientType,
         avatar: updatedUser.avatar,
@@ -425,7 +441,7 @@ export const getAllUsers = async (req, res, next) => {
 // @access  Private/Admin
 export const createUser = async (req, res, next) => {
   try {
-    const { name, email, phone, password, role, clientType } = req.body;
+    const { name, email, phone, password, role, clientType, wilaya, commune } = req.body;
 
     const rawIdentifier = (email || phone || req.body.identifier || '').toString().trim();
     if (!rawIdentifier) {
@@ -461,6 +477,8 @@ export const createUser = async (req, res, next) => {
       password,
       role: role || 'client',
       clientType: clientType || 'retail',
+      wilaya: wilaya ? wilaya.trim() : undefined,
+      commune: commune ? commune.trim() : undefined,
       isVerified: true
     });
 
@@ -484,12 +502,21 @@ export const updateUser = async (req, res, next) => {
       throw new Error('User not found');
     }
 
-    const { name, email, role, clientType, password, isVerified } = req.body;
+    const { name, email, phone, role, clientType, password, isVerified, wilaya, commune } = req.body;
 
     user.name = name || user.name;
     user.email = email || user.email;
+    if (phone !== undefined) {
+      user.phone = phone;
+    }
     user.role = role || user.role;
     user.clientType = clientType || user.clientType;
+    if (wilaya !== undefined) {
+      user.wilaya = wilaya;
+    }
+    if (commune !== undefined) {
+      user.commune = commune;
+    }
 
     if (isVerified !== undefined) {
       user.isVerified = isVerified;
@@ -711,6 +738,8 @@ export const exportUsersToExcel = async (req, res, next) => {
         "Mot de passe": '123456',
         Email: user.email,
         Téléphone: user.phone || 'N/A',
+        Wilaya: user.wilaya || 'N/A',
+        Commune: user.commune || 'N/A',
         Rôle: user.role,
         "Type de Client": user.clientType || 'retail',
         "Date de Création": user.createdAt ? new Date(user.createdAt).toLocaleDateString('fr-FR') : 'N/A'

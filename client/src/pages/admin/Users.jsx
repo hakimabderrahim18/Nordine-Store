@@ -31,6 +31,8 @@ export default function Users() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [wilaya, setWilaya] = useState('');
+  const [commune, setCommune] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('client');
   const [clientType, setClientType] = useState('retail');
@@ -111,6 +113,8 @@ export default function Users() {
     setName('');
     setEmail('');
     setPhone('');
+    setWilaya('');
+    setCommune('');
     setPassword('');
     setRole('client');
     setClientType('retail');
@@ -122,6 +126,8 @@ export default function Users() {
     setName(userToEdit.name);
     setEmail(userToEdit.email || '');
     setPhone(userToEdit.phone || '');
+    setWilaya(userToEdit.wilaya || '');
+    setCommune(userToEdit.commune || '');
     setPassword('');
     setRole(userToEdit.role);
     setClientType(userToEdit.clientType || 'retail');
@@ -166,6 +172,8 @@ export default function Users() {
       name,
       email: email || undefined,
       phone: phone || undefined,
+      wilaya: wilaya || undefined,
+      commune: commune || undefined,
       role,
       clientType,
       password: password || undefined
@@ -204,13 +212,15 @@ export default function Users() {
     // Role filter
     if (selectedRoleFilter !== 'all' && u.role !== selectedRoleFilter) return false;
 
-    // Search query across name, phone, and email
+    // Search query across name, phone, email, wilaya, and commune
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
       const nameMatch = (u.name || '').toLowerCase().includes(q);
       const emailMatch = (u.email || '').toLowerCase().includes(q);
       const phoneMatch = (u.phone || '').toLowerCase().includes(q);
-      return nameMatch || emailMatch || phoneMatch;
+      const wilayaMatch = (u.wilaya || '').toLowerCase().includes(q);
+      const communeMatch = (u.commune || '').toLowerCase().includes(q);
+      return nameMatch || emailMatch || phoneMatch || wilayaMatch || communeMatch;
     }
 
     return true;
@@ -453,6 +463,11 @@ export default function Users() {
                         {u.email && !u.phone && (
                           <span className="text-slate-600 text-xs">{u.email}</span>
                         )}
+                        {(u.wilaya || u.commune) && (
+                          <span className="inline-flex items-center text-[10px] text-amber-900 font-bold bg-amber-100/70 border border-amber-200/70 px-2 py-0.5 rounded-lg w-fit mt-1">
+                            📍 {u.wilaya}{u.commune ? ` (${u.commune})` : ''}
+                          </span>
+                        )}
                       </div>
                     </td>
 
@@ -573,6 +588,14 @@ export default function Users() {
                   <span className="text-slate-700 font-semibold">{approvingUser.email}</span>
                 </div>
               )}
+              {(approvingUser.wilaya || approvingUser.commune) && (
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-slate-500 font-bold">{isAr ? 'الولاية / البلدية:' : 'Wilaya / Commune :'}</span>
+                  <span className="text-amber-800 font-black">
+                    📍 {approvingUser.wilaya}{approvingUser.commune ? ` (${approvingUser.commune})` : ''}
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* Select Tier for this user */}
@@ -689,6 +712,29 @@ export default function Users() {
                   onChange={(e) => setPhone(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-brand-primary"
                 />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold uppercase text-slate-500">{isAr ? 'الولاية' : 'Wilaya'}</label>
+                  <input
+                    type="text"
+                    value={wilaya}
+                    onChange={(e) => setWilaya(e.target.value)}
+                    placeholder="Alger, Oran..."
+                    className="w-full bg-slate-50 border border-slate-200 text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-brand-primary"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold uppercase text-slate-500">{isAr ? 'البلدية' : 'Commune'}</label>
+                  <input
+                    type="text"
+                    value={commune}
+                    onChange={(e) => setCommune(e.target.value)}
+                    placeholder="Commune..."
+                    className="w-full bg-slate-50 border border-slate-200 text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-brand-primary"
+                  />
+                </div>
               </div>
 
               <div className="space-y-1">

@@ -914,21 +914,6 @@
     "verificationToken": "6c5462362b26294287dae8862ebd1912e1b53168"
   },
   {
-    "_id": "6aa528d67a315935ef4a35a8",
-    "name": "Douba mohamed",
-    "email": "oppoffireshop1@gmail.com",
-    "password": "$2a$10$zfUstnb0iYLSDU7gCU8m7OMLGslIROoGcrBXDADGepiL7z/6kanW2",
-    "role": "client",
-    "clientType": "demi-gros",
-    "avatar": "https://res.cloudinary.com/dummy/image/upload/v1/avatars/default.png",
-    "isVerified": false,
-    "addresses": [],
-    "createdAt": "2026-09-12T10:26:30.676Z",
-    "updatedAt": "2026-09-12T10:26:30.887Z",
-    "__v": 0,
-    "verificationToken": "9562ab3295845b202a4a67fc137601c3aef9c727"
-  },
-  {
     "_id": "6aa801807a315935ef4a79e5",
     "name": "Khaled chikhi",
     "phone": "Khalidou",
@@ -1370,10 +1355,10 @@
     "role": "client",
     "clientType": "super-gros",
     "avatar": "https://res.cloudinary.com/dummy/image/upload/v1/avatars/default.png",
-    "isVerified": false,
+    "isVerified": true,
     "addresses": [],
     "createdAt": "2026-10-29T22:53:23.406Z",
-    "updatedAt": "2026-10-29T22:53:23.527Z",
+    "updatedAt": "2026-11-15T20:55:34.338Z",
     "__v": 0,
     "verificationToken": "5a1a8b5ae6a2d5e58244b511469da1191949084c"
   },

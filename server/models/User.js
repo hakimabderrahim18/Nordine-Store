@@ -49,6 +49,14 @@ const UserSchema = new mongoose.Schema({
     default: 'retail'
   },
   addresses: [AddressSchema],
+  wilaya: {
+    type: String,
+    trim: true
+  },
+  commune: {
+    type: String,
+    trim: true
+  },
   avatar: {
     type: String,
     default: 'https://res.cloudinary.com/dummy/image/upload/v1/avatars/default.png'
