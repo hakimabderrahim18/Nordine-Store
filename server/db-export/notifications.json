@@ -693,17 +693,6 @@
     "__v": 0
   },
   {
-    "_id": "6ae8936bca0f78d528ddc6f9",
-    "user": null,
-    "title": "New Order Placed",
-    "message": "Order #DDC6F0 has been placed by Yahia rabah (7,000 DA)",
-    "type": "order",
-    "isRead": true,
-    "createdAt": "2026-11-02T13:43:07.566Z",
-    "updatedAt": "2026-11-03T14:03:08.216Z",
-    "__v": 0
-  },
-  {
     "_id": "6ae8936bca0f78d528ddc6fb",
     "user": "6a7d9c6dcc51473e89679bc4",
     "title": "Order Confirmation",
@@ -756,17 +745,6 @@
     "isRead": false,
     "createdAt": "2026-11-08T09:07:42.444Z",
     "updatedAt": "2026-11-08T09:07:42.444Z",
-    "__v": 0
-  },
-  {
-    "_id": "6af17e6fca0f78d528ddf147",
-    "user": null,
-    "title": "New Order Placed",
-    "message": "Order #DDF12A has been placed by Wassim yahiaoui (113,280 DA)",
-    "type": "order",
-    "isRead": true,
-    "createdAt": "2026-11-09T08:03:59.482Z",
-    "updatedAt": "2026-11-09T10:42:22.511Z",
     "__v": 0
   },
   {

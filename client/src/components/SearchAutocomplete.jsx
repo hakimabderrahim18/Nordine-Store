@@ -64,20 +64,26 @@ export default function SearchAutocomplete({ isMobile = false, isHeaderSearch = 
     setShowDropdown(true);
     setIsSearching(true);
 
-    // Instant local matching for phone models
+    // Instant local matching for phone models (ignoring generic spare part words like lcd, afficheur, ecran...)
     if (cachedDevicesRef.current.length > 0) {
       const qTokens = trimmed.toUpperCase().split(/\s+/).filter(Boolean);
+      const PART_TERMS_REGEX = /^(LCD|ECRANS?|AFFICHEURS?|SCREENS?|DISPLAYS?|DALLES?|BATTERIES?|BAT|BATTERYS?|ACCUS?|NAPPES?|NAP|FLEX|VITRES?|GLASS|VERRES?|TACTILES?|CONNECTEURS?|CON|BUZZERS?|SPEAKERS?|HP|TIROIRS?|SIM|CHASSIS|FRAMES?|CACHES?|COQUES?|شاشة|بطارية|بوزر)$/i;
+      const modelTokens = qTokens.filter(t => !PART_TERMS_REGEX.test(t));
+      const tokensToMatch = modelTokens.length > 0 ? modelTokens : qTokens;
+
       const matchedPhones = cachedDevicesRef.current.filter((phone) => {
         const pName = phone.name.toUpperCase();
         const pFullName = (phone.fullName || '').toUpperCase();
         const pBrand = phone.brand.toUpperCase();
-        return qTokens.every((t) => {
+        return tokensToMatch.every((t) => {
           if (t === 'IPHONE' || t === 'IPH') return pName.includes('IPHONE') || pBrand.includes('APPLE');
           if (t === 'SAMSUNG' || t === 'SAM') return pName.includes('SAMSUNG') || pBrand.includes('SAMSUNG') || pFullName.includes('SAMSUNG');
           if (t === 'HUAWEI' || t === 'HW') return pName.includes('HUAWEI') || pBrand.includes('HUAWEI');
           if (t === 'XIAOMI' || t === 'REDMI') return pName.includes('REDMI') || pBrand.includes('XIAOMI');
           if (/^[4-9]$/.test(t)) return new RegExp(`\\b(?:${t}|${t}G)\\b`, 'i').test(pName);
-          return pName.includes(t) || pBrand.includes(t) || pFullName.includes(t);
+          const cleanT = t.replace(/[\-_/]+/g, '');
+          const cleanPName = pName.replace(/[\s\-_/]+/g, '');
+          return pName.includes(t) || cleanPName.includes(cleanT) || pBrand.includes(t) || pFullName.includes(t);
         });
       }).slice(0, 3);
       setPhoneSuggestions(matchedPhones);

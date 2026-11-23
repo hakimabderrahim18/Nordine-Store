@@ -16,23 +16,83 @@ export const getProducts = async (req, res, next) => {
     const query = {};
     const andConditions = [];
 
-    // Helper to build flexible alias patterns for brand and model terms
+    // Helper to build flexible alias patterns for brand, spare part synonyms, and model terms
     const buildSearchPattern = (token) => {
       const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const upper = token.toUpperCase();
+      const upper = token.toUpperCase().trim();
+
+      // Common Spare Part Synonyms (French, English, Arabic)
+      // Screens / Displays / Afficheurs / Dalles
+      if (/^(LCD|ECRANS?|AFFICHEURS?|SCREENS?|DISPLAYS?|DALLES?|شاشة|شاشات)$/i.test(upper)) {
+        return '(?:AFFICHEUR|ECRAN|LCD|SCREEN|DALLE|DISPLAY|شاشة|شاشات)';
+      }
+
+      // Batteries / Accus
+      if (/^(BATTERIES?|BAT|BATTERYS?|ACCUS?|PILES?|بطارية|بطاريات)$/i.test(upper)) {
+        return '(?:BATTERIE|BATTERY|BAT\\b|ACCU|بطارية|بطاريات)';
+      }
+
+      // Flex / Ribbon / Nappes
+      if (/^(NAPPES?|NAP|FLEX|RIBBONS?)$/i.test(upper)) {
+        return '(?:NAPPE|NAP\\b|FLEX)';
+      }
+
+      // Glass / Vitre / Tactile / Touch
+      if (/^(VITRES?|GLASS|VERRES?|TACTILES?|TOUCH|TGLASS|T-GLASS)$/i.test(upper)) {
+        return '(?:VITRE|GLASS|VERRE|TACTILE|TOUCH|T[\\s\\-_]*GLASS)';
+      }
+
+      // Connectors / Charging port / Sub-board
+      if (/^(CONNECTEURS?|CONNECTORS?|CON|SUB|SUB-?BOARD|PORTS?|CHARGES?|CHARGEURS?|CHARGERS?)$/i.test(upper)) {
+        return '(?:CONNECTEUR|CONNECTOR|CON\\b|SUB|CHARGE|CHARGEUR|CHARGER)';
+      }
+
+      // Buzzer / Speaker / Loudspeaker / Earphone
+      if (/^(BUZZERS?|SPEAKERS?|HAUT-?PARLEURS?|HP|ECOUTEURS?|BAFLES?|بوزر)$/i.test(upper)) {
+        return '(?:BUZZER|SPEAKER|HAUT[\\s\\-_]*PARLEUR|HP\\b|ECOUTEUR|BAFLE|بوزر)';
+      }
+
+      // SIM Tray / Tiroir SIM
+      if (/^(TIROIRS?|TRAYS?|SIM)$/i.test(upper)) {
+        return '(?:TIROIR|TRAY|SIM)';
+      }
+
+      // Chassis / Frame / Middle / Back cover / Cache / Coque
+      if (/^(CHASSIS|FRAMES?|MIDDLES?|CACHES?|COQUES?|HOUSINGS?|ARRIERE)$/i.test(upper)) {
+        return '(?:CHASSIS|FRAME|MIDDLE|CACHE|COQUE|HOUSING)';
+      }
+
+      // Camera / Lentille / Lens
+      if (/^(CAMERAS?|CAM|LENTILLES?|LENS)$/i.test(upper)) {
+        return '(?:CAMERA|CAM\\b|LENTILLE|LENS)';
+      }
+
+      // Brands and common brand abbreviations
       if (upper === 'IPHONE' || upper === 'IPH' || upper === 'APPLE') return '(?:APPLE|IPHONE|IPH)';
       if (upper === 'SAMSUNG' || upper === 'SAM') return '(?:SAMSUNG|SAM)';
       if (upper === 'HUAWEI' || upper === 'HW' || upper === 'HONOR') return '(?:HUAWEI|HW|HONOR)';
       if (upper === 'REALME' || upper === 'REALM' || upper === 'RLM' || upper === 'NARZO') return '(?:REALME|REALM|RLM|NARZO)';
-      if (upper === 'CONDOR' || upper === 'CON') return '(?:CONDOR|CON)';
-      if (upper === 'REDMI' || upper === 'REDM' || upper === 'RED' || upper === 'XIAOMI' || upper === 'MI' || upper === 'POCO') return '(?:XIAOMI|MI|REDMI|REDM|RED|POCO)';
+      if (upper === 'CONDOR') return '(?:CONDOR)';
+      if (upper === 'REDMI' || upper === 'REDM' || upper === 'RED' || upper === 'XIAOMI' || upper === 'MI' || upper === 'POCO') return '(?:XIAOMI|MI\\b|REDMI|REDM|RED\\b|POCO)';
       if (upper === 'INFINIX' || upper === 'INF') return '(?:INFINIX|INF)';
       if (upper === 'OPPO' || upper === 'OPP' || upper === 'RENO') return '(?:OPPO|OPP|RENO)';
       if (upper === 'MOTOROLA' || upper === 'MOTO') return '(?:MOTOROLA|MOTO)';
       if (upper === 'TECNO') return '(?:TECNO)';
+      if (upper === 'SONY') return '(?:SONY)';
+      if (upper === 'VIVO') return '(?:VIVO)';
+      if (upper === 'ONEPLUS' || upper === '1+') return '(?:ONEPLUS|ONE\\s*PLUS|1\\+)';
+
+      // Models with letters and numbers (e.g. A5S, S25, NOTE9, A05S, M14, P40, A12, etc.)
+      const modelMatch = upper.match(/^([A-Z]+)[\s\-_/]*(\d+)[\s\-_/]*([A-Z]*)$/i);
+      if (modelMatch) {
+        const [, prefix, num, suffix] = modelMatch;
+        return `${escapeRegex(prefix)}[\\s\\-_/]*${escapeRegex(num)}${suffix ? '[\\s\\-_/]*' + escapeRegex(suffix) : ''}`;
+      }
+
       // Handle digit models with optional 'G' suffix (e.g., iPhone 8 / 8G, 7 / 7G, 6 / 6G)
       if (/^[4-9]$/.test(upper)) return `(?:${upper}|${upper}G)`;
       if (/^[4-9]G$/.test(upper)) return `(?:${upper}|${upper.slice(0, -1)})`;
+
       return escapeRegex(token);
     };
 
@@ -57,19 +117,46 @@ export const getProducts = async (req, res, next) => {
       andConditions.push(...modelConditions);
     }
 
-    // Enhanced regex search for partial matching (supports multi-term out-of-order search, phone models & 2-letter tokens)
+    // Enhanced regex search for partial matching (supports multi-term out-of-order search, phone models & category/brand resolution)
     if (keyword && keyword.trim()) {
       const terms = keyword.trim().split(/\s+/).filter(Boolean);
 
-      terms.forEach((t) => {
+      // Pre-fetch matching categories and brands for the search terms
+      const catPromises = terms.map(t => {
+        const p = buildSearchPattern(t);
+        return Category.find({ name: new RegExp(p, 'i') }).select('_id');
+      });
+      const brandPromises = terms.map(t => {
+        const p = buildSearchPattern(t);
+        return Brand.find({ name: new RegExp(p, 'i') }).select('_id');
+      });
+
+      const [catResults, brandResults] = await Promise.all([
+        Promise.all(catPromises),
+        Promise.all(brandPromises)
+      ]);
+
+      terms.forEach((t, idx) => {
         const regexPattern = buildSearchPattern(t);
         const regex = new RegExp(regexPattern, 'i');
+        const orConditions = [
+          { name: regex },
+          { sku: regex },
+          { description: regex }
+        ];
+
+        const matchingCatIds = (catResults[idx] || []).map(c => c._id);
+        if (matchingCatIds.length > 0) {
+          orConditions.push({ category: { $in: matchingCatIds } });
+        }
+
+        const matchingBrandIds = (brandResults[idx] || []).map(b => b._id);
+        if (matchingBrandIds.length > 0) {
+          orConditions.push({ brand: { $in: matchingBrandIds } });
+        }
+
         andConditions.push({
-          $or: [
-            { name: regex },
-            { sku: regex },
-            { description: regex }
-          ]
+          $or: orConditions
         });
       });
     }
@@ -768,6 +855,442 @@ export const importProducts = async (req, res, next) => {
     return res.status(500).json({
       success: false,
       message: 'Erreur lors du traitement du fichier : ' + (error.message || 'Erreur serveur')
+    });
+  }
+};
+
+// @desc    Synchronize database with management software Excel file (verifies prices and availability)
+// @route   POST /api/products/sync
+// @access  Private/Admin
+export const syncProducts = async (req, res, next) => {
+  let filePath = null;
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'Veuillez sélectionner un fichier Excel (.xls, .xlsx) ou CSV valide pour la synchronisation'
+      });
+    }
+
+    filePath = req.file.path;
+    const workbook = xlsx.readFile(filePath);
+    const sheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[sheetName];
+    const rows = xlsx.utils.sheet_to_json(worksheet);
+
+    if (!rows || rows.length === 0) {
+      if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+      return res.status(400).json({
+        success: false,
+        message: 'Le fichier Excel est vide ou ne contient aucun produit'
+      });
+    }
+
+    // Helper functions
+    const parsePrice = (val) => {
+      if (val === undefined || val === null || val === '') return 0;
+      if (typeof val === 'number') return isNaN(val) ? 0 : val;
+      const cleanStr = val.toString().replace(/[\s\u00a0\u202f]/g, '').replace(',', '.');
+      const parsed = parseFloat(cleanStr);
+      return isNaN(parsed) ? 0 : parsed;
+    };
+
+    const normalizeKey = (k) => (k || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+
+    const getVal = (row, possibleKeys, defaultVal = '') => {
+      for (const key of possibleKeys) {
+        if (row[key] !== undefined && row[key] !== null) return row[key];
+        const targetNorm = normalizeKey(key);
+        for (const rowKey of Object.keys(row)) {
+          if (normalizeKey(rowKey) === targetNorm) {
+            return row[rowKey];
+          }
+        }
+      }
+      return defaultVal;
+    };
+
+    const normalizeAfficheurName = (name) => {
+      if (!name || typeof name !== 'string') return name;
+      let s = name;
+      s = s.replace(/\b(AFFICHEUR\s+LCD|ECRAN\s+LCD|LCD|ECRAN)\b/gi, 'AFFICHEUR');
+      s = s.replace(/\b(AFFICHEUR\s+)+AFFICHEUR\b/gi, 'AFFICHEUR');
+      s = s.replace(/\s+/g, ' ').trim();
+      return s;
+    };
+
+    const normalizeLookup = (s) => (s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
+
+    const KNOWN_BRANDS = [
+      'SAMSUNG', 'IPHONE', 'APPLE', 'OPPO', 'REALME', 'XIAOMI', 'REDMI', 'POCO',
+      'INFINIX', 'TECNO', 'ITEL', 'HUAWEI', 'HONOR', 'VIVO', 'ONEPLUS', 'NOKIA',
+      'CONDOR', 'LENOVO', 'MOTOROLA', 'LG', 'SONY', 'ASUS', 'ZTE', 'GOOGLE'
+    ];
+
+    // 1. Preload categories, brands, and all existing products
+    const [allCategories, allBrands, allProducts] = await Promise.all([
+      Category.find({}),
+      Brand.find({}),
+      Product.find({})
+    ]);
+
+    const categoryMap = new Map();
+    allCategories.forEach(c => categoryMap.set(c.name.trim().toLowerCase(), c._id));
+
+    const brandMap = new Map();
+    allBrands.forEach(b => brandMap.set(b.name.trim().toLowerCase(), b._id));
+
+    const skuMap = new Map();
+    const nameMap = new Map();
+    allProducts.forEach(p => {
+      if (p.sku) skuMap.set(normalizeLookup(p.sku), p);
+      if (p.name) nameMap.set(normalizeLookup(p.name), p);
+    });
+
+    const getCategoryId = async (catName) => {
+      if (!catName) return null;
+      const lower = catName.trim().toLowerCase();
+      if (categoryMap.has(lower)) return categoryMap.get(lower);
+      try {
+        const newCat = await Category.create({ name: catName.trim() });
+        categoryMap.set(lower, newCat._id);
+        return newCat._id;
+      } catch (err) {
+        const found = await Category.findOne({ name: { $regex: new RegExp(`^${catName.trim()}$`, 'i') } });
+        if (found) {
+          categoryMap.set(lower, found._id);
+          return found._id;
+        }
+        return null;
+      }
+    };
+
+    const getBrandId = async (bName) => {
+      const brandToUse = bName && bName.toLowerCase() !== 'generique' ? bName.trim() : 'GENERIQUE';
+      const lower = brandToUse.toLowerCase();
+      if (brandMap.has(lower)) return brandMap.get(lower);
+      try {
+        const newBrand = await Brand.create({ name: brandToUse });
+        brandMap.set(lower, newBrand._id);
+        return newBrand._id;
+      } catch (err) {
+        const found = await Brand.findOne({ name: { $regex: new RegExp(`^${brandToUse}$`, 'i') } });
+        if (found) {
+          brandMap.set(lower, found._id);
+          return found._id;
+        }
+        return null;
+      }
+    };
+
+    const bulkOps = [];
+    const matchedProductIds = new Set();
+    const priceChangedItems = [];
+    let priceUpdatedCount = 0;
+    let inStockConfirmedCount = 0;
+    let restoredStockCount = 0;
+    let createdCount = 0;
+
+    // Process each Excel row
+    for (const row of rows) {
+      const nameVal = getVal(row, ['Désignation', 'Designation', 'name', 'nom', 'article', 'description', 'titre', 'produit']);
+      if (!nameVal || !nameVal.toString().trim()) continue;
+      const name = normalizeAfficheurName(nameVal.toString().trim());
+
+      const skuVal = getVal(row, ['Réf produit', 'Rf produit', 'sku', 'ref', 'reference', 'code', 'ref produit', 'référence']);
+      let sku = skuVal ? skuVal.toString().trim() : '';
+
+      const stockRaw = getVal(row, ['Stock ( Unité )', 'Stock (Unité)', 'Stock (Unite)', 'Stock ( unite )', 'Stock', 'stock', 'qte', 'quantite', 'quantité', 'unite', 'unités']);
+      let parsedStock = null;
+      if (stockRaw !== '' && stockRaw !== undefined && stockRaw !== null) {
+        const val = parseInt(parsePrice(stockRaw), 10);
+        if (!isNaN(val)) parsedStock = val;
+      }
+
+      const priceDetail = parsePrice(getVal(row, ['Prix 1 TTC', 'Prix 1', 'Prix1 TTC', 'Prix1', 'detail', 'prix detail', 'price', 'priceDetail', 'prix']));
+      const priceDetailReparation = parsePrice(getVal(row, ['REPARATION TTC', 'REPARATION', 'Prix 2 TTC', 'Prix 2', 'Prix2 TTC', 'Prix2', 'detail reparation', 'priceDetailReparation', 'prix reparation']));
+      const priceReparation = parsePrice(getVal(row, ['Prix 5 TTC', 'Prix 5', 'Prix5 TTC', 'Prix5', 'reparation', 'priceReparation', 'reparateur', 'prix 5']));
+      const priceDemiGros = parsePrice(getVal(row, ['DEMI GROS TTC', 'DEMI GROS', 'DEMIGROS TTC', 'demi gros', 'demigros', 'priceDemiGros', 'prix demi gros']));
+      const priceSuperGros = parsePrice(getVal(row, ['SUPER GROS TTC', 'SUPER GROS', 'SUPERGROS TTC', 'super gros', 'supergros', 'priceSuperGros', 'prix super gros']));
+      const pricePromo = parsePrice(getVal(row, ['Prix Promo TTC', 'Prix Promo', 'promo', 'prix promo', 'pricePromo', 'discountPrice', 'prix promo ttc']));
+
+      let famille = getVal(row, ['Famille', 'category', 'famille', 'categorie', 'catégorie'], '').toString().trim();
+      let sousFamille = getVal(row, ['Sous famille', 'sous-famille', 'subcategory', 'sousFamille', 'sous categorie', 'sous-catégorie'], '').toString().trim();
+      let marqueStr = getVal(row, ['Marque', 'brand', 'marque'], '').toString().trim();
+      const imageVal = getVal(row, ['Image', 'image', 'images', 'photo', 'lien image', 'photos'], '').toString().trim();
+
+      if (famille.toUpperCase() === 'ECRAN' || famille.toUpperCase() === 'LCD') {
+        famille = 'AFFICHEUR';
+      }
+
+      if (!marqueStr || marqueStr === 'NaN' || marqueStr === 'nan' || marqueStr.toLowerCase() === 'generique') {
+        const upperName = name.toUpperCase();
+        for (const b of KNOWN_BRANDS) {
+          if (new RegExp(`\\b${b}\\b`, 'i').test(upperName)) {
+            marqueStr = b;
+            break;
+          }
+        }
+      }
+
+      if (!famille || famille === 'PIECE') {
+        const upperName = name.toUpperCase();
+        if (upperName.includes('BUZZER')) {
+          famille = 'BUZZER';
+        } else if (upperName.includes('AFFICHEUR') || upperName.includes('ECRAN') || upperName.includes('LCD') || upperName.includes('OLED') || upperName.includes('DISPLAY')) {
+          famille = 'AFFICHEUR';
+        } else if (upperName.includes('BATTERIE') || upperName.includes('BAT ')) {
+          famille = 'BATTERIE';
+        } else if (upperName.includes('CONNECTEUR') || upperName.includes('CHARGE') || upperName.includes('NAPPE')) {
+          famille = 'CONNECTEUR';
+        } else if (upperName.includes('VITRE') || upperName.includes('TACTILE') || upperName.includes('GLASS')) {
+          famille = 'GLASS';
+        } else if (upperName.includes('POCHETTE') || upperName.includes('COQUE') || upperName.includes('ETUI')) {
+          famille = 'POCHETTE';
+        } else if (upperName.includes('CAM') || upperName.includes('CAMERA')) {
+          famille = 'CAMERA';
+        } else if (upperName.includes('ECOUTEUR') || upperName.includes('HAUT-PARLEUR') || upperName.includes('HP')) {
+          famille = 'AUDIO';
+        } else {
+          famille = 'PIECE';
+        }
+      }
+
+      const categoryId = await getCategoryId(famille);
+      const brandId = await getBrandId(marqueStr);
+
+      const lowerSku = sku ? normalizeLookup(sku) : '';
+      const lowerName = normalizeLookup(name);
+      const existing = (lowerSku && skuMap.get(lowerSku)) || nameMap.get(lowerName);
+
+      if (!sku) {
+        if (existing && existing.sku) {
+          sku = existing.sku;
+        } else {
+          const baseSlug = name.toUpperCase()
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^A-Z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '')
+            .substring(0, 35);
+          sku = baseSlug || `PROD-${Date.now().toString(36).toUpperCase()}`;
+        }
+      }
+
+      if (existing) {
+        matchedProductIds.add(existing._id.toString());
+
+        const dp1 = existing.priceDetail || existing.price || 0;
+        const dp2 = existing.priceDetailReparation || 0;
+        const dp5 = existing.priceReparation || 0;
+        const dpDemi = existing.priceDemiGros || existing.demiGrosPrice || 0;
+        const dpSuper = existing.priceSuperGros || existing.superGrosPrice || 0;
+        const dpPromo = existing.pricePromo || existing.discountPrice || 0;
+
+        // Check price differences
+        const diffs = [];
+        if (priceDetail !== dp1) diffs.push({ label: 'Prix Détail', oldVal: dp1, newVal: priceDetail });
+        if (priceDetailReparation !== dp2) diffs.push({ label: 'Prix Réparation', oldVal: dp2, newVal: priceDetailReparation });
+        if (priceReparation !== dp5) diffs.push({ label: 'Prix 5', oldVal: dp5, newVal: priceReparation });
+        if (priceDemiGros !== dpDemi) diffs.push({ label: 'Demi-gros', oldVal: dpDemi, newVal: priceDemiGros });
+        if (priceSuperGros !== dpSuper) diffs.push({ label: 'Super-gros', oldVal: dpSuper, newVal: priceSuperGros });
+        if (pricePromo !== dpPromo) diffs.push({ label: 'Promo', oldVal: dpPromo, newVal: pricePromo });
+
+        if (diffs.length > 0) {
+          priceUpdatedCount++;
+          if (priceChangedItems.length < 50) {
+            priceChangedItems.push({
+              id: existing._id,
+              name: existing.name,
+              sku: existing.sku || sku,
+              diffs
+            });
+          }
+        }
+
+        const updateDoc = {
+          name,
+          sku,
+          price: priceDetail,
+          priceDetail,
+          priceDetailReparation,
+          priceReparation,
+          demiGrosPrice: priceDemiGros,
+          priceDemiGros,
+          superGrosPrice: priceSuperGros,
+          priceSuperGros,
+          discountPrice: pricePromo,
+          pricePromo,
+          famille,
+          sousFamille,
+          marque: marqueStr,
+          category: categoryId,
+          brand: brandId,
+          isAvailable: true
+        };
+
+        // Determine stock to apply
+        if (parsedStock !== null) {
+          updateDoc.stock = parsedStock;
+          if (parsedStock > 0 && existing.stock === 0) restoredStockCount++;
+        } else {
+          // If product is present in Excel without explicit stock column, ensure it is available
+          if (existing.stock === 0) {
+            updateDoc.stock = 9999;
+            restoredStockCount++;
+          }
+        }
+
+        if (imageVal) {
+          updateDoc.images = [imageVal];
+        }
+
+        bulkOps.push({
+          updateOne: {
+            filter: { _id: existing._id },
+            update: { $set: updateDoc }
+          }
+        });
+        inStockConfirmedCount++;
+      } else {
+        // New product found in Excel
+        let images = [];
+        if (imageVal) {
+          images = [imageVal];
+        } else {
+          const lowerNameStr = name.toLowerCase();
+          const upperFamille = famille.toUpperCase();
+          let imagePath = '/uploads/spare_part.png';
+
+          if (upperFamille === 'BAT' || upperFamille === 'BATTERIE') {
+            imagePath = '/uploads/battery.png';
+          } else if (upperFamille === 'GLASS' || upperFamille === 'T GLASS') {
+            imagePath = '/uploads/glass.png';
+          } else if (upperFamille === 'POCH' || upperFamille === 'POCHETTE') {
+            imagePath = '/uploads/pouch.png';
+          } else if (upperFamille === 'ACC') {
+            imagePath = '/uploads/spare_part.png';
+          } else if (upperFamille === 'MATERIEL') {
+            imagePath = '/uploads/connecteur.png';
+          } else {
+            if (lowerNameStr.includes('ecran') || lowerNameStr.includes('oled') || lowerNameStr.includes('lcd') || lowerNameStr.includes('display') || lowerNameStr.includes('vitre tactile')) {
+              imagePath = '/uploads/screen.png';
+            } else if (lowerNameStr.includes('batterie') || lowerNameStr.includes('bat ')) {
+              imagePath = '/uploads/battery.png';
+            } else if (lowerNameStr.includes('connecteur') || lowerNameStr.includes('charge') || lowerNameStr.includes('con only') || lowerNameStr.includes('charging') || lowerNameStr.includes('nappe')) {
+              imagePath = '/uploads/connecteur.png';
+            } else if (lowerNameStr.includes('vitre') || lowerNameStr.includes('glass') || lowerNameStr.includes('verre')) {
+              imagePath = '/uploads/glass.png';
+            } else if (lowerNameStr.includes('pochette') || lowerNameStr.includes('coque') || lowerNameStr.includes('poch') || lowerNameStr.includes('pouch') || lowerNameStr.includes('etui')) {
+              imagePath = '/uploads/pouch.png';
+            } else if (lowerNameStr.includes('outil') || lowerNameStr.includes('tournevis') || lowerNameStr.includes('separatrice') || lowerNameStr.includes('machine') || lowerNameStr.includes('souder') || lowerNameStr.includes('station') || lowerNameStr.includes('falcon') || lowerNameStr.includes('mechanic') || lowerNameStr.includes('ds01')) {
+              imagePath = '/uploads/repair_tool.png';
+            }
+          }
+          images = [imagePath];
+        }
+
+        const newStock = parsedStock !== null ? parsedStock : 9999;
+        const newProduct = {
+          sku,
+          name,
+          description: `Composant ${name}`,
+          stock: newStock,
+          price: priceDetail,
+          priceDetail,
+          priceDetailReparation,
+          priceReparation,
+          demiGrosPrice: priceDemiGros,
+          priceDemiGros,
+          superGrosPrice: priceSuperGros,
+          priceSuperGros,
+          discountPrice: pricePromo,
+          pricePromo,
+          famille,
+          sousFamille,
+          marque: marqueStr,
+          category: categoryId,
+          brand: brandId,
+          images,
+          isAvailable: newStock > 0
+        };
+
+        bulkOps.push({
+          insertOne: {
+            document: newProduct
+          }
+        });
+
+        const simObj = { _id: new mongoose.Types.ObjectId(), sku, name, images, stock: newStock };
+        if (sku) skuMap.set(normalizeLookup(sku), simObj);
+        nameMap.set(lowerName, simObj);
+        matchedProductIds.add(simObj._id.toString());
+        createdCount++;
+      }
+    }
+
+    // 2. Identify products in DB that are MISSING from this Excel file
+    // These products are no longer in the management software catalog -> mark them out of stock (stock = 0)
+    let markedOutOfStockCount = 0;
+    const outOfStockSamples = [];
+
+    for (const prod of allProducts) {
+      if (!matchedProductIds.has(prod._id.toString())) {
+        if (prod.stock > 0) {
+          markedOutOfStockCount++;
+          if (outOfStockSamples.length < 30) {
+            outOfStockSamples.push({
+              id: prod._id,
+              name: prod.name,
+              sku: prod.sku,
+              previousStock: prod.stock
+            });
+          }
+          bulkOps.push({
+            updateOne: {
+              filter: { _id: prod._id },
+              update: { $set: { stock: 0, isAvailable: false } }
+            }
+          });
+        }
+      }
+    }
+
+    // Execute bulkWrite in batches
+    const BATCH_SIZE = 1000;
+    for (let i = 0; i < bulkOps.length; i += BATCH_SIZE) {
+      const batch = bulkOps.slice(i, i + BATCH_SIZE);
+      if (batch.length > 0) {
+        await Product.bulkWrite(batch, { ordered: false });
+      }
+    }
+
+    if (filePath && fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+
+    return res.json({
+      success: true,
+      message: 'Synchronisation terminée avec succès !',
+      stats: {
+        totalExcelRows: rows.length,
+        matchedInDb: matchedProductIds.size,
+        priceUpdatedCount,
+        restoredStockCount,
+        createdCount,
+        markedOutOfStockCount,
+        totalDbProducts: allProducts.length + createdCount
+      },
+      priceChangedItems,
+      outOfStockSamples
+    });
+  } catch (error) {
+    console.error('Sync Products Controller Error:', error);
+    if (filePath && fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+    return res.status(500).json({
+      success: false,
+      message: 'Erreur lors de la synchronisation : ' + (error.message || 'Erreur serveur')
     });
   }
 };

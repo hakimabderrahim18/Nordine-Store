@@ -133,6 +133,17 @@ export const productService = {
     });
     return response.data;
   },
+  syncProducts: async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await API.post('/products/sync', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      },
+      timeout: 180000
+    });
+    return response.data;
+  },
   exportProducts: async () => {
     const response = await API.get('/products/export', {
       responseType: 'blob'

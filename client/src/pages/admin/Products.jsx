@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Plus, Edit2, Trash2, Search, X, Upload } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, X, Upload, RefreshCw, CheckCircle2, AlertTriangle, ArrowRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { productService, categoryService, brandService, getImageUrl } from '../../services/api';
 import { useTranslation } from '../../context/LanguageContext';
@@ -79,6 +79,9 @@ export default function Products() {
   const [priceDetailReparation, setPriceDetailReparation] = useState('');
   const [priceReparation, setPriceReparation] = useState('');
   const [importing, setImporting] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+  const [syncReport, setSyncReport] = useState(null);
+  const [isSyncModalOpen, setIsSyncModalOpen] = useState(false);
   const [isAvailable, setIsAvailable] = useState(true);
   const [description, setDescription] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -214,6 +217,34 @@ export default function Products() {
       }
     } finally {
       setImporting(false);
+      e.target.value = ''; // Reset file input
+    }
+  };
+
+  const handleSyncExcel = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setSyncing(true);
+    const toastId = toast.loading('Synchronisation avec le logiciel de gestion en cours...');
+    try {
+      const res = await productService.syncProducts(file);
+      if (res.success) {
+        setSyncReport(res);
+        setIsSyncModalOpen(true);
+        toast.success('Synchronisation terminée avec succès !', { id: toastId, duration: 5000 });
+        fetchProductsList();
+      } else {
+        toast.error(res.message || 'Erreur lors de la synchronisation', { id: toastId });
+      }
+    } catch (err) {
+      if (err.response?.status === 401) {
+        toast.error('Votre session administrateur a expiré. Veuillez vous reconnecter.', { id: toastId, duration: 6000 });
+      } else {
+        toast.error(err.response?.data?.message || err.message || 'Erreur lors de la synchronisation', { id: toastId, duration: 6000 });
+      }
+    } finally {
+      setSyncing(false);
       e.target.value = ''; // Reset file input
     }
   };
@@ -491,6 +522,17 @@ export default function Products() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
+          <label className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase tracking-wider px-6 py-4 rounded-[16px] flex items-center space-x-2 shadow-sm transition-all cursor-pointer select-none active:scale-95">
+            <RefreshCw size={15} className={syncing ? 'animate-spin' : ''} />
+            <span>{isAr ? 'مزامنة مع البرنامج (Excel)' : 'Synchroniser (Excel)'}</span>
+            <input
+              type="file"
+              accept=".xls,.xlsx,.csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv"
+              className="hidden"
+              onChange={handleSyncExcel}
+              disabled={syncing}
+            />
+          </label>
           <label className="bg-white border border-gray-300 text-slate-700 font-black text-xs uppercase tracking-wider px-6 py-4 rounded-[16px] flex items-center space-x-2 hover:bg-gray-50 transition-colors cursor-pointer select-none">
             <Upload size={14} />
             <span>{isAr ? 'استيراد Excel' : 'Importer Excel'}</span>
@@ -663,6 +705,179 @@ export default function Products() {
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* SYNCHRONIZATION REPORT MODAL */}
+      {isSyncModalOpen && syncReport && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+          <div className="bg-white w-full max-w-3xl rounded-[28px] shadow-2xl p-6 sm:p-8 max-h-[90vh] overflow-y-auto relative text-start">
+            <button
+              onClick={() => setIsSyncModalOpen(false)}
+              className="absolute right-5 top-5 p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors"
+            >
+              <X size={20} />
+            </button>
+
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-11 h-11 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-black">
+                <CheckCircle2 size={24} />
+              </div>
+              <div>
+                <h2 className="text-lg font-black text-slate-800 uppercase tracking-wide">
+                  {isAr ? 'تقرير مزامنة المخزون والأسعار' : 'Rapport de Synchronisation du Logiciel'}
+                </h2>
+                <p className="text-xs text-slate-500">
+                  {isAr
+                    ? 'تم فحص ومطابقة جميع المنتجات بين البرنامج والموقع بنجاح'
+                    : 'Vérification et alignement complets des prix et de la disponibilité effectués avec succès.'}
+                </p>
+              </div>
+            </div>
+
+            {/* Key Metrics Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+              <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 text-center">
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                  {isAr ? 'سطور الملف' : 'Lignes Excel'}
+                </p>
+                <p className="text-xl font-black text-slate-800">
+                  {syncReport.stats?.totalExcelRows || 0}
+                </p>
+                <p className="text-[10px] text-slate-500 font-medium mt-0.5">
+                  {isAr ? 'منتج في البرنامج' : 'articles dans le fichier'}
+                </p>
+              </div>
+
+              <div className="bg-blue-50/70 border border-blue-100 rounded-2xl p-4 text-center">
+                <p className="text-[10px] font-bold text-blue-500 uppercase tracking-wider mb-1">
+                  {isAr ? 'تغير في الأسعار' : 'Prix Modifiés'}
+                </p>
+                <p className="text-xl font-black text-blue-700">
+                  {syncReport.stats?.priceUpdatedCount || 0}
+                </p>
+                <p className="text-[10px] text-blue-600/80 font-medium mt-0.5">
+                  {isAr ? 'تم تعديل أسعارها' : 'tarifs mis à jour'}
+                </p>
+              </div>
+
+              <div className="bg-emerald-50/70 border border-emerald-100 rounded-2xl p-4 text-center">
+                <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider mb-1">
+                  {isAr ? 'استعادة التوفر' : 'Stock Restauré'}
+                </p>
+                <p className="text-xl font-black text-emerald-700">
+                  {syncReport.stats?.restoredStockCount || 0}
+                </p>
+                <p className="text-[10px] text-emerald-600/80 font-medium mt-0.5">
+                  {isAr ? 'أصبحت متوفرة' : 'redevenus disponibles'}
+                </p>
+              </div>
+
+              <div className="bg-amber-50/70 border border-amber-100 rounded-2xl p-4 text-center">
+                <p className="text-[10px] font-bold text-amber-600 uppercase tracking-wider mb-1">
+                  {isAr ? 'غير متوفرة' : 'Rupture Stock'}
+                </p>
+                <p className="text-xl font-black text-amber-700">
+                  {syncReport.stats?.markedOutOfStockCount || 0}
+                </p>
+                <p className="text-[10px] text-amber-700/80 font-medium mt-0.5">
+                  {isAr ? 'نفذت من البرنامج' : 'absents du logiciel'}
+                </p>
+              </div>
+            </div>
+
+            {/* Additional Info summary */}
+            <div className="flex flex-wrap items-center justify-between gap-2 p-3.5 bg-slate-50 rounded-xl border border-slate-100 text-xs mb-6">
+              <span className="text-slate-600 font-medium">
+                {isAr ? 'إجمالي المنتجات المطابقة في الموقع:' : 'Articles existants reconnus et confirmés :'} <strong className="text-slate-900">{syncReport.stats?.matchedInDb || 0}</strong>
+              </span>
+              {syncReport.stats?.createdCount > 0 && (
+                <span className="text-purple-600 font-bold bg-purple-50 px-2.5 py-1 rounded-lg">
+                  +{syncReport.stats?.createdCount} {isAr ? 'منتج جديد أُضيف للموقع' : 'nouveaux produits créés'}
+                </span>
+              )}
+            </div>
+
+            {/* Detailed Price Changes Section */}
+            {syncReport.priceChangedItems && syncReport.priceChangedItems.length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-xs font-black text-slate-700 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                  <span>{isAr ? 'تفاصيل تغيرات الأسعار' : 'Détail des modifications de prix'}</span>
+                  <span className="text-[10px] font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
+                    {syncReport.priceChangedItems.length}
+                  </span>
+                </h3>
+                <div className="border border-slate-100 rounded-2xl overflow-hidden max-h-56 overflow-y-auto">
+                  <table className="w-full text-start border-collapse text-xs">
+                    <thead className="bg-slate-50 text-slate-600 font-bold uppercase text-[10px]">
+                      <tr>
+                        <th className="py-2.5 px-3 text-start">{isAr ? 'المنتج' : 'Article'}</th>
+                        <th className="py-2.5 px-3 text-start">{isAr ? 'النوع' : 'Tarif'}</th>
+                        <th className="py-2.5 px-3 text-end">{isAr ? 'السعر القديم' : 'Ancien'}</th>
+                        <th className="py-2.5 px-3 text-end">{isAr ? 'السعر الجديد' : 'Nouveau'}</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {syncReport.priceChangedItems.map((item, idx) => (
+                        <React.Fragment key={idx}>
+                          {item.diffs.map((d, dIdx) => (
+                            <tr key={`${idx}-${dIdx}`} className="hover:bg-slate-50/70">
+                              <td className="py-2 px-3 font-semibold text-slate-800">
+                                {dIdx === 0 ? item.name : ''}
+                              </td>
+                              <td className="py-2 px-3 text-slate-600 font-medium">
+                                <span className="bg-slate-100 px-2 py-0.5 rounded text-[10px] font-bold">
+                                  {d.label}
+                                </span>
+                              </td>
+                              <td className="py-2 px-3 text-end text-slate-400 line-through">
+                                {d.oldVal} DA
+                              </td>
+                              <td className="py-2 px-3 text-end font-black text-emerald-600">
+                                {d.newVal} DA
+                              </td>
+                            </tr>
+                          ))}
+                        </React.Fragment>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* Out of Stock notice */}
+            {syncReport.stats?.markedOutOfStockCount > 0 && (
+              <div className="p-4 bg-amber-50/60 rounded-2xl border border-amber-200/60 mb-6">
+                <div className="flex items-start gap-3">
+                  <AlertTriangle className="text-amber-600 shrink-0 mt-0.5" size={18} />
+                  <div className="text-xs">
+                    <p className="font-bold text-amber-900 mb-1">
+                      {isAr
+                        ? `تم وضع ${syncReport.stats.markedOutOfStockCount} منتج في حالة "نفذ المخزون"`
+                        : `${syncReport.stats.markedOutOfStockCount} produits ont été mis en "Rupture de Stock"`}
+                    </p>
+                    <p className="text-amber-800/90 text-[11px] leading-relaxed">
+                      {isAr
+                        ? 'هذه المنتجات مسجلة في الموقع ولكنها غير موجودة في ملف البرنامج الحالي، لذلك تم وضع حالتها تلقائياً كغير متوفرة حتى لا يتم طلبها بالخطأ.'
+                        : 'Ces articles sont présents dans la base du site mais absents de votre fichier exporté. Ils sont désormais indiqués comme indisponibles pour vos clients.'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Modal Actions */}
+            <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setIsSyncModalOpen(false)}
+                className="bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase tracking-wider px-6 py-3.5 rounded-xl transition-all cursor-pointer"
+              >
+                {isAr ? 'إغلاق ومتابعة' : 'Fermer et continuer'}
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

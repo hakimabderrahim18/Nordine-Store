@@ -10,6 +10,7 @@ import {
   getProductReviews,
   respondToReview,
   importProducts,
+  syncProducts,
   exportProducts,
   bulkDeleteProducts
 } from '../controllers/productController.js';
@@ -20,6 +21,7 @@ const router = express.Router();
 
 router.get('/devices', getDevices);
 router.post('/import', protect, admin, uploadExcel, importProducts);
+router.post('/sync', protect, admin, uploadExcel, syncProducts);
 router.get('/export', protect, admin, exportProducts);
 router.post('/bulk-delete', protect, admin, bulkDeleteProducts);
 
