@@ -149,6 +149,14 @@ export const productService = {
       responseType: 'blob'
     });
     return response.data;
+  },
+  getSyncHistory: async () => {
+    const response = await API.get('/products/sync-history');
+    return response.data;
+  },
+  rollbackSync: async (id) => {
+    const response = await API.post(`/products/sync-history/${id}/rollback`, {}, { timeout: 180000 });
+    return response.data;
   }
 };
 

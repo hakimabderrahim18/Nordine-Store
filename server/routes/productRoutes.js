@@ -12,7 +12,9 @@ import {
   importProducts,
   syncProducts,
   exportProducts,
-  bulkDeleteProducts
+  bulkDeleteProducts,
+  getSyncHistory,
+  rollbackSync
 } from '../controllers/productController.js';
 import { protect, admin } from '../middlewares/authMiddleware.js';
 import { uploadImages, uploadExcel } from '../middlewares/uploadMiddleware.js';
@@ -20,6 +22,8 @@ import { uploadImages, uploadExcel } from '../middlewares/uploadMiddleware.js';
 const router = express.Router();
 
 router.get('/devices', getDevices);
+router.get('/sync-history', protect, admin, getSyncHistory);
+router.post('/sync-history/:id/rollback', protect, admin, rollbackSync);
 router.post('/import', protect, admin, uploadExcel, importProducts);
 router.post('/sync', protect, admin, uploadExcel, syncProducts);
 router.get('/export', protect, admin, exportProducts);

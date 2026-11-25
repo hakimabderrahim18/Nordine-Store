@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Plus, Edit2, Trash2, Search, X, Upload, RefreshCw, CheckCircle2, AlertTriangle, ArrowRight } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, X, Upload, RefreshCw, CheckCircle2, AlertTriangle, ArrowRight, History, RotateCcw } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { productService, categoryService, brandService, getImageUrl } from '../../services/api';
 import { useTranslation } from '../../context/LanguageContext';
@@ -82,6 +82,10 @@ export default function Products() {
   const [syncing, setSyncing] = useState(false);
   const [syncReport, setSyncReport] = useState(null);
   const [isSyncModalOpen, setIsSyncModalOpen] = useState(false);
+  const [isSyncHistoryModalOpen, setIsSyncHistoryModalOpen] = useState(false);
+  const [syncHistoryList, setSyncHistoryList] = useState([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
+  const [rollingBackId, setRollingBackId] = useState(null);
   const [isAvailable, setIsAvailable] = useState(true);
   const [description, setDescription] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -246,6 +250,51 @@ export default function Products() {
     } finally {
       setSyncing(false);
       e.target.value = ''; // Reset file input
+    }
+  };
+
+  const handleOpenSyncHistory = () => {
+    setIsSyncHistoryModalOpen(true);
+    fetchSyncHistory();
+  };
+
+  const fetchSyncHistory = async () => {
+    setLoadingHistory(true);
+    try {
+      const res = await productService.getSyncHistory();
+      if (res.success) {
+        setSyncHistoryList(res.history || []);
+      }
+    } catch (err) {
+      toast.error('Erreur lors du chargement de l\'historique des synchronisations');
+    } finally {
+      setLoadingHistory(false);
+    }
+  };
+
+  const handleRollback = async (historyItem) => {
+    const dateFormatted = new Date(historyItem.createdAt).toLocaleString();
+    const confirmMsg = isAr
+      ? `هل أنت متأكد من رغبتك في التراجع عن المزامنة (${historyItem.filename}) المؤرخة في ${dateFormatted} واستعادة كافة الأسعار والمخزون السابق؟`
+      : `Êtes-vous sûr de vouloir annuler la synchronisation "${historyItem.filename}" du ${dateFormatted} ? Tous les prix et stocks modifiés seront restaurés à leur valeur précédente.`;
+
+    if (!window.confirm(confirmMsg)) return;
+
+    setRollingBackId(historyItem._id);
+    const toastId = toast.loading('Restauration des données précédentes en cours...');
+    try {
+      const res = await productService.rollbackSync(historyItem._id);
+      if (res.success) {
+        toast.success(res.message || 'Synchronisation annulée et données restaurées avec succès !', { id: toastId, duration: 6000 });
+        fetchSyncHistory();
+        fetchProductsList();
+      } else {
+        toast.error(res.message || 'Erreur lors de la restauration', { id: toastId });
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || err.message || 'Erreur lors de la restauration', { id: toastId });
+    } finally {
+      setRollingBackId(null);
     }
   };
 
@@ -533,6 +582,15 @@ export default function Products() {
               disabled={syncing}
             />
           </label>
+          <button
+            type="button"
+            onClick={handleOpenSyncHistory}
+            className="bg-slate-800 hover:bg-slate-900 text-white font-black text-xs uppercase tracking-wider px-5 py-4 rounded-[16px] flex items-center space-x-2 shadow-sm transition-all cursor-pointer active:scale-95"
+            title={isAr ? 'عرض سجل المزامنة وإمكانية التراجع' : 'Historique des synchronisations et restauration'}
+          >
+            <History size={15} />
+            <span>{isAr ? 'سجل المزامنة' : 'Historique'}</span>
+          </button>
           <label className="bg-white border border-gray-300 text-slate-700 font-black text-xs uppercase tracking-wider px-6 py-4 rounded-[16px] flex items-center space-x-2 hover:bg-gray-50 transition-colors cursor-pointer select-none">
             <Upload size={14} />
             <span>{isAr ? 'استيراد Excel' : 'Importer Excel'}</span>
@@ -868,13 +926,195 @@ export default function Products() {
             )}
 
             {/* Modal Actions */}
-            <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+            <div className="flex items-center justify-between gap-3 pt-4 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsSyncModalOpen(false);
+                  handleOpenSyncHistory();
+                }}
+                className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-black text-xs uppercase tracking-wider px-5 py-3.5 rounded-xl transition-all cursor-pointer flex items-center gap-2"
+              >
+                <History size={15} />
+                <span>{isAr ? 'عرض سجل المزامنات' : 'Historique des synchros'}</span>
+              </button>
               <button
                 type="button"
                 onClick={() => setIsSyncModalOpen(false)}
                 className="bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase tracking-wider px-6 py-3.5 rounded-xl transition-all cursor-pointer"
               >
                 {isAr ? 'إغلاق ومتابعة' : 'Fermer et continuer'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* SYNCHRONIZATION HISTORY MODAL */}
+      {isSyncHistoryModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+          <div className="bg-white w-full max-w-4xl rounded-[28px] shadow-2xl p-6 sm:p-8 max-h-[90vh] overflow-y-auto relative text-start">
+            <button
+              onClick={() => setIsSyncHistoryModalOpen(false)}
+              className="absolute right-5 top-5 p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors"
+            >
+              <X size={20} />
+            </button>
+
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-11 h-11 rounded-2xl bg-slate-900 text-white flex items-center justify-center font-black">
+                <History size={22} />
+              </div>
+              <div>
+                <h2 className="text-lg font-black text-slate-800 uppercase tracking-wide">
+                  {isAr ? 'سجل عمليات المزامنة والتراجع' : 'Historique des synchronisations'}
+                </h2>
+                <p className="text-xs text-slate-500">
+                  {isAr 
+                    ? 'عرض تفاصيل المزامنات السابقة وإمكانية استرجاع الأسعار والمخزون السابق في حال حدوث أي خطأ.' 
+                    : 'Consultez les synchronisations passées et restaurez l\'état précédent de vos produits en cas d\'erreur.'}
+                </p>
+              </div>
+            </div>
+
+            {loadingHistory ? (
+              <div className="flex flex-col items-center justify-center py-16">
+                <div className="w-10 h-10 border-4 border-slate-200 border-t-brand-primary rounded-full animate-spin mb-3" />
+                <p className="text-xs text-slate-500 font-bold">{isAr ? 'جاري تحميل السجل...' : 'Chargement de l\'historique...'}</p>
+              </div>
+            ) : syncHistoryList.length === 0 ? (
+              <div className="text-center py-16 px-4 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                <History size={36} className="mx-auto text-slate-300 mb-3" />
+                <h3 className="text-sm font-bold text-slate-700 mb-1">
+                  {isAr ? 'لا يوجد أي سجل مزامنة' : 'Aucun historique de synchronisation'}
+                </h3>
+                <p className="text-xs text-slate-500 max-w-md mx-auto">
+                  {isAr
+                    ? 'عند قيامك بمزامنة المنتجات عبر ملف Excel، سيتم تسجيل نسخة احتياطية من التغييرات هنا تلقائياً لتتمكن من الرجوع إليها.'
+                    : 'Lorsque vous synchronisez des produits via un fichier Excel, chaque opération est archivée ici pour vous permettre de revenir en arrière.'}
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="border border-slate-100 rounded-2xl overflow-hidden shadow-xs">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-start border-collapse text-xs">
+                      <thead className="bg-slate-50 text-slate-600 font-bold uppercase text-[10px]">
+                        <tr>
+                          <th className="py-3 px-4">{isAr ? 'التاريخ والملف' : 'Date & Fichier'}</th>
+                          <th className="py-3 px-4">{isAr ? 'المنتجات المعدلة' : 'Modifications'}</th>
+                          <th className="py-3 px-4 text-center">{isAr ? 'الحالة' : 'Statut'}</th>
+                          <th className="py-3 px-4 text-center">{isAr ? 'الإجراء' : 'Action'}</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {syncHistoryList.map((item) => {
+                          const isReverted = item.status === 'reverted';
+                          const isCurrentRollingBack = rollingBackId === item._id;
+                          return (
+                            <tr key={item._id} className="hover:bg-slate-50/70 transition-colors">
+                              <td className="py-3 px-4">
+                                <div className="font-bold text-slate-800 text-xs">
+                                  {new Date(item.createdAt).toLocaleString(isAr ? 'ar-DZ' : 'fr-FR', {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  })}
+                                </div>
+                                <div className="text-[11px] text-slate-500 font-mono truncate max-w-[220px]" title={item.filename}>
+                                  📄 {item.filename}
+                                </div>
+                              </td>
+
+                              <td className="py-3 px-4">
+                                <div className="flex flex-wrap gap-1.5 text-[10px]">
+                                  <span className="bg-blue-50 text-blue-700 font-semibold px-2 py-0.5 rounded-md">
+                                    {item.stats?.priceUpdatedCount || 0} {isAr ? 'أسعار' : 'prix modifiés'}
+                                  </span>
+                                  <span className="bg-emerald-50 text-emerald-700 font-semibold px-2 py-0.5 rounded-md">
+                                    {item.stats?.restoredStockCount || 0} {isAr ? 'في المخزون' : 'en stock'}
+                                  </span>
+                                  {item.stats?.createdCount > 0 && (
+                                    <span className="bg-purple-50 text-purple-700 font-semibold px-2 py-0.5 rounded-md">
+                                      +{item.stats?.createdCount} {isAr ? 'جديد' : 'créés'}
+                                    </span>
+                                  )}
+                                  {item.stats?.markedOutOfStockCount > 0 && (
+                                    <span className="bg-amber-50 text-amber-700 font-semibold px-2 py-0.5 rounded-md">
+                                      {item.stats?.markedOutOfStockCount} {isAr ? 'نفذ' : 'épuisés'}
+                                    </span>
+                                  )}
+                                </div>
+                              </td>
+
+                              <td className="py-3 px-4 text-center">
+                                {isReverted ? (
+                                  <div className="inline-flex flex-col items-center">
+                                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200">
+                                      <RotateCcw size={10} />
+                                      {isAr ? 'تم التراجع' : 'Annulée'}
+                                    </span>
+                                    {item.revertedAt && (
+                                      <span className="text-[9px] text-slate-400 mt-0.5">
+                                        {new Date(item.revertedAt).toLocaleDateString(isAr ? 'ar-DZ' : 'fr-FR')}
+                                      </span>
+                                    )}
+                                  </div>
+                                ) : (
+                                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                    <CheckCircle2 size={10} />
+                                    {isAr ? 'مطبقة ونشطة' : 'Active'}
+                                  </span>
+                                )}
+                              </td>
+
+                              <td className="py-3 px-4 text-center">
+                                {isReverted ? (
+                                  <span className="text-[11px] text-slate-400 font-medium italic">
+                                    {isAr ? 'مسترجعة مسبقاً' : 'Déjà restaurée'}
+                                  </span>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRollback(item)}
+                                    disabled={isCurrentRollingBack}
+                                    className="inline-flex items-center gap-1.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-[11px] px-3.5 py-2 rounded-xl shadow-xs transition-all cursor-pointer active:scale-95 disabled:opacity-50"
+                                    title={isAr ? 'إلغاء واسترجاع المخزون والأسعار السابقة' : 'Annuler cette synchronisation et restaurer les stocks/prix'}
+                                  >
+                                    <RotateCcw size={12} className={isCurrentRollingBack ? 'animate-spin' : ''} />
+                                    <span>
+                                      {isCurrentRollingBack
+                                        ? (isAr ? 'جاري الاسترجاع...' : 'Restauration...')
+                                        : (isAr ? 'تراجع واسترجاع' : 'Restaurer')}
+                                    </span>
+                                  </button>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <p className="text-[11px] text-slate-500 italic px-1">
+                  💡 {isAr
+                    ? 'ملاحظة: الضغط على "تراجع واسترجاع" يعيد المنتجات فوراً إلى الأسعار ومستوى المخزون الذي كانت عليه قبل رفع ذلك الملف.'
+                    : 'Remarque : Cliquer sur "Restaurer" rétablit immédiatement les produits aux prix et stocks qu\'ils avaient avant l\'importation de ce fichier.'}
+                </p>
+              </div>
+            )}
+
+            <div className="flex items-center justify-end pt-5 mt-6 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setIsSyncHistoryModalOpen(false)}
+                className="bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase tracking-wider px-6 py-3.5 rounded-xl transition-all cursor-pointer"
+              >
+                {isAr ? 'إغلاق' : 'Fermer'}
               </button>
             </div>
           </div>

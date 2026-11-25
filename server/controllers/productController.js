@@ -5,6 +5,7 @@ import Product from '../models/Product.js';
 import Review from '../models/Review.js';
 import Category from '../models/Category.js';
 import Brand from '../models/Brand.js';
+import SyncHistory from '../models/SyncHistory.js';
 
 // @desc    Get all products (with filters & search)
 // @route   GET /api/products
@@ -942,10 +943,50 @@ export const syncProducts = async (req, res, next) => {
 
     const skuMap = new Map();
     const nameMap = new Map();
+    const usedSkus = new Set();
+
     allProducts.forEach(p => {
-      if (p.sku) skuMap.set(normalizeLookup(p.sku), p);
-      if (p.name) nameMap.set(normalizeLookup(p.name), p);
+      if (p.sku) {
+        const normSku = normalizeLookup(p.sku);
+        skuMap.set(normSku, p);
+        usedSkus.add(normSku);
+        usedSkus.add(p.sku.toUpperCase());
+      }
+      if (p.name) {
+        nameMap.set(normalizeLookup(p.name), p);
+        nameMap.set(normalizeLookup(normalizeAfficheurName(p.name)), p);
+      }
     });
+
+    const ensureUniqueSku = (baseCandidate, currentProductId = null) => {
+      let base = (baseCandidate || 'PROD')
+        .toUpperCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^A-Z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+
+      if (base.length > 60) {
+        base = base.substring(0, 60).replace(/-+$/, '');
+      }
+      if (!base) base = 'PROD';
+
+      let candidate = base;
+      let counter = 1;
+
+      while (usedSkus.has(normalizeLookup(candidate))) {
+        const existingHolder = skuMap.get(normalizeLookup(candidate));
+        if (currentProductId && existingHolder && existingHolder._id.toString() === currentProductId.toString()) {
+          break;
+        }
+        candidate = `${base}-${counter}`;
+        counter++;
+      }
+
+      usedSkus.add(normalizeLookup(candidate));
+      usedSkus.add(candidate.toUpperCase());
+      return candidate;
+    };
 
     const getCategoryId = async (catName) => {
       if (!catName) return null;
@@ -986,6 +1027,7 @@ export const syncProducts = async (req, res, next) => {
     const bulkOps = [];
     const matchedProductIds = new Set();
     const priceChangedItems = [];
+    const snapshot = [];
     let priceUpdatedCount = 0;
     let inStockConfirmedCount = 0;
     let restoredStockCount = 0;
@@ -995,7 +1037,8 @@ export const syncProducts = async (req, res, next) => {
     for (const row of rows) {
       const nameVal = getVal(row, ['Désignation', 'Designation', 'name', 'nom', 'article', 'description', 'titre', 'produit']);
       if (!nameVal || !nameVal.toString().trim()) continue;
-      const name = normalizeAfficheurName(nameVal.toString().trim());
+      const rawName = nameVal.toString().trim();
+      const name = normalizeAfficheurName(rawName);
 
       const skuVal = getVal(row, ['Réf produit', 'Rf produit', 'sku', 'ref', 'reference', 'code', 'ref produit', 'référence']);
       let sku = skuVal ? skuVal.toString().trim() : '';
@@ -1061,23 +1104,15 @@ export const syncProducts = async (req, res, next) => {
 
       const lowerSku = sku ? normalizeLookup(sku) : '';
       const lowerName = normalizeLookup(name);
-      const existing = (lowerSku && skuMap.get(lowerSku)) || nameMap.get(lowerName);
-
-      if (!sku) {
-        if (existing && existing.sku) {
-          sku = existing.sku;
-        } else {
-          const baseSlug = name.toUpperCase()
-            .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-            .replace(/[^A-Z0-9]+/g, '-')
-            .replace(/^-+|-+$/g, '')
-            .substring(0, 35);
-          sku = baseSlug || `PROD-${Date.now().toString(36).toUpperCase()}`;
-        }
-      }
+      const lowerRawName = normalizeLookup(rawName);
+      const existing = (lowerSku && skuMap.get(lowerSku)) || nameMap.get(lowerName) || nameMap.get(lowerRawName);
 
       if (existing) {
         matchedProductIds.add(existing._id.toString());
+
+        const finalSku = sku 
+          ? ensureUniqueSku(sku, existing._id) 
+          : (existing.sku ? ensureUniqueSku(existing.sku, existing._id) : ensureUniqueSku(name, existing._id));
 
         const dp1 = existing.priceDetail || existing.price || 0;
         const dp2 = existing.priceDetailReparation || 0;
@@ -1101,15 +1136,37 @@ export const syncProducts = async (req, res, next) => {
             priceChangedItems.push({
               id: existing._id,
               name: existing.name,
-              sku: existing.sku || sku,
+              sku: existing.sku || finalSku,
               diffs
             });
           }
         }
 
+        // Record snapshot for rollback
+        snapshot.push({
+          productId: existing._id,
+          name: existing.name,
+          sku: existing.sku || finalSku,
+          isNewlyCreated: false,
+          previousState: {
+            stock: existing.stock !== undefined ? existing.stock : 0,
+            isAvailable: existing.isAvailable !== undefined ? existing.isAvailable : false,
+            price: existing.price !== undefined ? existing.price : 0,
+            priceDetail: existing.priceDetail !== undefined ? existing.priceDetail : 0,
+            priceDetailReparation: existing.priceDetailReparation !== undefined ? existing.priceDetailReparation : 0,
+            priceReparation: existing.priceReparation !== undefined ? existing.priceReparation : 0,
+            demiGrosPrice: existing.demiGrosPrice !== undefined ? existing.demiGrosPrice : 0,
+            priceDemiGros: existing.priceDemiGros !== undefined ? existing.priceDemiGros : 0,
+            superGrosPrice: existing.superGrosPrice !== undefined ? existing.superGrosPrice : 0,
+            priceSuperGros: existing.priceSuperGros !== undefined ? existing.priceSuperGros : 0,
+            discountPrice: existing.discountPrice !== undefined ? existing.discountPrice : 0,
+            pricePromo: existing.pricePromo !== undefined ? existing.pricePromo : 0
+          }
+        });
+
         const updateDoc = {
           name,
-          sku,
+          sku: finalSku,
           price: priceDetail,
           priceDetail,
           priceDetailReparation,
@@ -1140,8 +1197,9 @@ export const syncProducts = async (req, res, next) => {
           }
         }
 
-        if (imageVal) {
-          updateDoc.images = [imageVal];
+        // Strictly preserve images unless non-empty valid image URL is passed in Excel
+        if (imageVal && imageVal.trim() && !['nan', 'null', 'undefined', ''].includes(imageVal.trim().toLowerCase())) {
+          updateDoc.images = [imageVal.trim()];
         }
 
         bulkOps.push({
@@ -1153,9 +1211,13 @@ export const syncProducts = async (req, res, next) => {
         inStockConfirmedCount++;
       } else {
         // New product found in Excel
+        const finalSku = sku 
+          ? ensureUniqueSku(sku, null) 
+          : ensureUniqueSku(name, null);
+
         let images = [];
-        if (imageVal) {
-          images = [imageVal];
+        if (imageVal && imageVal.trim() && !['nan', 'null', 'undefined', ''].includes(imageVal.trim().toLowerCase())) {
+          images = [imageVal.trim()];
         } else {
           const lowerNameStr = name.toLowerCase();
           const upperFamille = famille.toUpperCase();
@@ -1169,7 +1231,7 @@ export const syncProducts = async (req, res, next) => {
             imagePath = '/uploads/pouch.png';
           } else if (upperFamille === 'ACC') {
             imagePath = '/uploads/spare_part.png';
-          } else if (upperFamille === 'MATERIEL') {
+          } else if (upperFamille === 'MATERIEL' || upperFamille.includes('OUTIL')) {
             imagePath = '/uploads/connecteur.png';
           } else {
             if (lowerNameStr.includes('ecran') || lowerNameStr.includes('oled') || lowerNameStr.includes('lcd') || lowerNameStr.includes('display') || lowerNameStr.includes('vitre tactile')) {
@@ -1190,8 +1252,10 @@ export const syncProducts = async (req, res, next) => {
         }
 
         const newStock = parsedStock !== null ? parsedStock : 9999;
+        const newProductId = new mongoose.Types.ObjectId();
         const newProduct = {
-          sku,
+          _id: newProductId,
+          sku: finalSku,
           name,
           description: `Composant ${name}`,
           stock: newStock,
@@ -1214,28 +1278,50 @@ export const syncProducts = async (req, res, next) => {
           isAvailable: newStock > 0
         };
 
+        // Record snapshot for rollback (as newly created)
+        snapshot.push({
+          productId: newProductId,
+          name,
+          sku: finalSku,
+          isNewlyCreated: true,
+          previousState: {
+            stock: 0,
+            isAvailable: false,
+            price: 0,
+            priceDetail: 0,
+            priceDetailReparation: 0,
+            priceReparation: 0,
+            demiGrosPrice: 0,
+            priceDemiGros: 0,
+            superGrosPrice: 0,
+            priceSuperGros: 0,
+            discountPrice: 0,
+            pricePromo: 0
+          }
+        });
+
         bulkOps.push({
           insertOne: {
             document: newProduct
           }
         });
 
-        const simObj = { _id: new mongoose.Types.ObjectId(), sku, name, images, stock: newStock };
-        if (sku) skuMap.set(normalizeLookup(sku), simObj);
+        const simObj = { _id: newProductId, sku: finalSku, name, images, stock: newStock };
+        skuMap.set(normalizeLookup(finalSku), simObj);
         nameMap.set(lowerName, simObj);
-        matchedProductIds.add(simObj._id.toString());
+        nameMap.set(lowerRawName, simObj);
+        matchedProductIds.add(newProductId.toString());
         createdCount++;
       }
     }
 
     // 2. Identify products in DB that are MISSING from this Excel file
-    // These products are no longer in the management software catalog -> mark them out of stock (stock = 0)
     let markedOutOfStockCount = 0;
     const outOfStockSamples = [];
 
     for (const prod of allProducts) {
       if (!matchedProductIds.has(prod._id.toString())) {
-        if (prod.stock > 0) {
+        if (prod.stock > 0 || prod.isAvailable) {
           markedOutOfStockCount++;
           if (outOfStockSamples.length < 30) {
             outOfStockSamples.push({
@@ -1245,6 +1331,26 @@ export const syncProducts = async (req, res, next) => {
               previousStock: prod.stock
             });
           }
+          snapshot.push({
+            productId: prod._id,
+            name: prod.name,
+            sku: prod.sku || '',
+            isNewlyCreated: false,
+            previousState: {
+              stock: prod.stock !== undefined ? prod.stock : 0,
+              isAvailable: prod.isAvailable !== undefined ? prod.isAvailable : false,
+              price: prod.price !== undefined ? prod.price : 0,
+              priceDetail: prod.priceDetail !== undefined ? prod.priceDetail : 0,
+              priceDetailReparation: prod.priceDetailReparation !== undefined ? prod.priceDetailReparation : 0,
+              priceReparation: prod.priceReparation !== undefined ? prod.priceReparation : 0,
+              demiGrosPrice: prod.demiGrosPrice !== undefined ? prod.demiGrosPrice : 0,
+              priceDemiGros: prod.priceDemiGros !== undefined ? prod.priceDemiGros : 0,
+              superGrosPrice: prod.superGrosPrice !== undefined ? prod.superGrosPrice : 0,
+              priceSuperGros: prod.priceSuperGros !== undefined ? prod.priceSuperGros : 0,
+              discountPrice: prod.discountPrice !== undefined ? prod.discountPrice : 0,
+              pricePromo: prod.pricePromo !== undefined ? prod.pricePromo : 0
+            }
+          });
           bulkOps.push({
             updateOne: {
               filter: { _id: prod._id },
@@ -1264,6 +1370,30 @@ export const syncProducts = async (req, res, next) => {
       }
     }
 
+    // Save synchronization record in SyncHistory
+    let savedHistory = null;
+    try {
+      savedHistory = await SyncHistory.create({
+        filename: req.file?.originalname || 'synchronisation.xlsx',
+        stats: {
+          totalExcelRows: rows.length,
+          matchedInDb: matchedProductIds.size,
+          priceUpdatedCount,
+          restoredStockCount,
+          createdCount,
+          markedOutOfStockCount,
+          totalDbProducts: allProducts.length + createdCount
+        },
+        priceChangedItems: priceChangedItems.slice(0, 50),
+        outOfStockSamples: outOfStockSamples.slice(0, 30),
+        status: 'completed',
+        syncedBy: req.user?._id,
+        snapshot
+      });
+    } catch (histErr) {
+      console.error('Error saving SyncHistory:', histErr);
+    }
+
     if (filePath && fs.existsSync(filePath)) {
       fs.unlinkSync(filePath);
     }
@@ -1271,6 +1401,7 @@ export const syncProducts = async (req, res, next) => {
     return res.json({
       success: true,
       message: 'Synchronisation terminée avec succès !',
+      syncHistoryId: savedHistory?._id,
       stats: {
         totalExcelRows: rows.length,
         matchedInDb: matchedProductIds.size,
@@ -1291,6 +1422,128 @@ export const syncProducts = async (req, res, next) => {
     return res.status(500).json({
       success: false,
       message: 'Erreur lors de la synchronisation : ' + (error.message || 'Erreur serveur')
+    });
+  }
+};
+
+// @desc    Get synchronization history
+// @route   GET /api/products/sync-history
+// @access  Private/Admin
+export const getSyncHistory = async (req, res, next) => {
+  try {
+    const history = await SyncHistory.find({})
+      .select('-snapshot')
+      .populate('syncedBy', 'name email')
+      .populate('revertedBy', 'name email')
+      .sort({ createdAt: -1 })
+      .limit(30);
+
+    return res.json({
+      success: true,
+      history
+    });
+  } catch (error) {
+    console.error('Get Sync History Error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Erreur lors de la récupération de l\'historique : ' + error.message
+    });
+  }
+};
+
+// @desc    Rollback / revert a synchronization
+// @route   POST /api/products/sync-history/:id/rollback
+// @access  Private/Admin
+export const rollbackSync = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const history = await SyncHistory.findById(id);
+
+    if (!history) {
+      return res.status(404).json({
+        success: false,
+        message: 'Historique de synchronisation introuvable'
+      });
+    }
+
+    if (history.status === 'reverted') {
+      return res.status(400).json({
+        success: false,
+        message: 'Cette synchronisation a déjà été annulée.'
+      });
+    }
+
+    if (!history.snapshot || history.snapshot.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Aucune donnée de restauration disponible pour cette synchronisation'
+      });
+    }
+
+    const bulkOps = [];
+    let restoredCount = 0;
+    let deletedCount = 0;
+
+    for (const item of history.snapshot) {
+      if (item.isNewlyCreated) {
+        bulkOps.push({
+          deleteOne: {
+            filter: { _id: item.productId }
+          }
+        });
+        deletedCount++;
+      } else {
+        const prev = item.previousState || {};
+        bulkOps.push({
+          updateOne: {
+            filter: { _id: item.productId },
+            update: {
+              $set: {
+                stock: prev.stock !== undefined ? prev.stock : 0,
+                isAvailable: prev.isAvailable !== undefined ? prev.isAvailable : false,
+                price: prev.price !== undefined ? prev.price : 0,
+                priceDetail: prev.priceDetail !== undefined ? prev.priceDetail : 0,
+                priceDetailReparation: prev.priceDetailReparation !== undefined ? prev.priceDetailReparation : 0,
+                priceReparation: prev.priceReparation !== undefined ? prev.priceReparation : 0,
+                demiGrosPrice: prev.demiGrosPrice !== undefined ? prev.demiGrosPrice : 0,
+                priceDemiGros: prev.priceDemiGros !== undefined ? prev.priceDemiGros : 0,
+                superGrosPrice: prev.superGrosPrice !== undefined ? prev.superGrosPrice : 0,
+                priceSuperGros: prev.priceSuperGros !== undefined ? prev.priceSuperGros : 0,
+                discountPrice: prev.discountPrice !== undefined ? prev.discountPrice : 0,
+                pricePromo: prev.pricePromo !== undefined ? prev.pricePromo : 0
+              }
+            }
+          }
+        });
+        restoredCount++;
+      }
+    }
+
+    // Execute bulk write in batches
+    const BATCH_SIZE = 1000;
+    for (let i = 0; i < bulkOps.length; i += BATCH_SIZE) {
+      const batch = bulkOps.slice(i, i + BATCH_SIZE);
+      if (batch.length > 0) {
+        await Product.bulkWrite(batch, { ordered: false });
+      }
+    }
+
+    history.status = 'reverted';
+    history.revertedAt = new Date();
+    if (req.user) history.revertedBy = req.user._id;
+    await history.save();
+
+    return res.json({
+      success: true,
+      message: 'La synchronisation a été annulée avec succès et les stocks/prix précédents ont été restaurés.',
+      restoredCount,
+      deletedCount
+    });
+  } catch (error) {
+    console.error('Rollback Sync Error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Erreur lors de l\'annulation de la synchronisation : ' + error.message
     });
   }
 };
