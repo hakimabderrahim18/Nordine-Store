@@ -1182,19 +1182,17 @@ export const syncProducts = async (req, res, next) => {
           marque: marqueStr,
           category: categoryId,
           brand: brandId,
-          isAvailable: true
+          isAvailable: parsedStock !== null && parsedStock > 0
         };
 
-        // Determine stock to apply
-        if (parsedStock !== null) {
+        // Determine stock to apply: if no value, 0 or negative -> out of stock (rupture)
+        if (parsedStock !== null && parsedStock > 0) {
           updateDoc.stock = parsedStock;
-          if (parsedStock > 0 && existing.stock === 0) restoredStockCount++;
+          updateDoc.isAvailable = true;
+          if (existing.stock === 0 || !existing.isAvailable) restoredStockCount++;
         } else {
-          // If product is present in Excel without explicit stock column, ensure it is available
-          if (existing.stock === 0) {
-            updateDoc.stock = 9999;
-            restoredStockCount++;
-          }
+          updateDoc.stock = 0;
+          updateDoc.isAvailable = false;
         }
 
         // Strictly preserve images unless non-empty valid image URL is passed in Excel
@@ -1251,7 +1249,7 @@ export const syncProducts = async (req, res, next) => {
           images = [imagePath];
         }
 
-        const newStock = parsedStock !== null ? parsedStock : 9999;
+        const newStock = (parsedStock !== null && parsedStock > 0) ? parsedStock : 0;
         const newProductId = new mongoose.Types.ObjectId();
         const newProduct = {
           _id: newProductId,
@@ -1321,7 +1319,8 @@ export const syncProducts = async (req, res, next) => {
 
     for (const prod of allProducts) {
       if (!matchedProductIds.has(prod._id.toString())) {
-        if (prod.stock > 0 || prod.isAvailable) {
+        const wasInStock = Boolean(prod.stock && prod.stock > 0 && prod.isAvailable !== false);
+        if (wasInStock) {
           markedOutOfStockCount++;
           if (outOfStockSamples.length < 30) {
             outOfStockSamples.push({
@@ -1331,33 +1330,33 @@ export const syncProducts = async (req, res, next) => {
               previousStock: prod.stock
             });
           }
-          snapshot.push({
-            productId: prod._id,
-            name: prod.name,
-            sku: prod.sku || '',
-            isNewlyCreated: false,
-            previousState: {
-              stock: prod.stock !== undefined ? prod.stock : 0,
-              isAvailable: prod.isAvailable !== undefined ? prod.isAvailable : false,
-              price: prod.price !== undefined ? prod.price : 0,
-              priceDetail: prod.priceDetail !== undefined ? prod.priceDetail : 0,
-              priceDetailReparation: prod.priceDetailReparation !== undefined ? prod.priceDetailReparation : 0,
-              priceReparation: prod.priceReparation !== undefined ? prod.priceReparation : 0,
-              demiGrosPrice: prod.demiGrosPrice !== undefined ? prod.demiGrosPrice : 0,
-              priceDemiGros: prod.priceDemiGros !== undefined ? prod.priceDemiGros : 0,
-              superGrosPrice: prod.superGrosPrice !== undefined ? prod.superGrosPrice : 0,
-              priceSuperGros: prod.priceSuperGros !== undefined ? prod.priceSuperGros : 0,
-              discountPrice: prod.discountPrice !== undefined ? prod.discountPrice : 0,
-              pricePromo: prod.pricePromo !== undefined ? prod.pricePromo : 0
-            }
-          });
-          bulkOps.push({
-            updateOne: {
-              filter: { _id: prod._id },
-              update: { $set: { stock: 0, isAvailable: false } }
-            }
-          });
         }
+        snapshot.push({
+          productId: prod._id,
+          name: prod.name,
+          sku: prod.sku || '',
+          isNewlyCreated: false,
+          previousState: {
+            stock: prod.stock !== undefined ? prod.stock : 0,
+            isAvailable: prod.isAvailable !== undefined ? prod.isAvailable : false,
+            price: prod.price !== undefined ? prod.price : 0,
+            priceDetail: prod.priceDetail !== undefined ? prod.priceDetail : 0,
+            priceDetailReparation: prod.priceDetailReparation !== undefined ? prod.priceDetailReparation : 0,
+            priceReparation: prod.priceReparation !== undefined ? prod.priceReparation : 0,
+            demiGrosPrice: prod.demiGrosPrice !== undefined ? prod.demiGrosPrice : 0,
+            priceDemiGros: prod.priceDemiGros !== undefined ? prod.priceDemiGros : 0,
+            superGrosPrice: prod.superGrosPrice !== undefined ? prod.superGrosPrice : 0,
+            priceSuperGros: prod.priceSuperGros !== undefined ? prod.priceSuperGros : 0,
+            discountPrice: prod.discountPrice !== undefined ? prod.discountPrice : 0,
+            pricePromo: prod.pricePromo !== undefined ? prod.pricePromo : 0
+          }
+        });
+        bulkOps.push({
+          updateOne: {
+            filter: { _id: prod._id },
+            update: { $set: { stock: 0, isAvailable: false } }
+          }
+        });
       }
     }
 

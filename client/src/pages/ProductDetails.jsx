@@ -237,6 +237,8 @@ export default function ProductDetails() {
     );
   }
 
+  const isOutOfStock = !product.stock || Number(product.stock) <= 0 || product.isAvailable === false;
+
   return (
     <div className="pt-28 max-w-7xl mx-auto px-6 min-h-screen bg-brand-bg pb-24 text-left">
       {/* Breadcrumbs */}
@@ -283,11 +285,17 @@ export default function ProductDetails() {
         {/* Right Column: Specifications & Checkout Panel */}
         <div className="flex flex-col justify-between py-2 space-y-6">
           <div className="space-y-4">
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 flex-wrap gap-y-1">
               <span className="text-[9px] font-black uppercase tracking-widest bg-brand-primary/10 text-brand-primary px-3 py-1 rounded-full">
-                {product.brand?.name}
+                {product.brand?.name || product.marque || 'ORIGINAL'}
               </span>
               <span className="text-[10px] font-bold text-slate-400">SKU: <span className="ltr-text">{product.sku}</span></span>
+              <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                isOutOfStock ? 'bg-rose-50 text-rose-600 border border-rose-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+              }`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${isOutOfStock ? 'bg-rose-500' : 'bg-emerald-500'}`} />
+                {isOutOfStock ? (language === 'ar' ? 'نفذ المخزون' : 'Rupture de Stock') : (language === 'ar' ? 'متوفر بالمخزون' : 'En Stock')}
+              </span>
             </div>
 
             <h1 className="text-xl md:text-2xl lg:text-3xl font-black text-slate-800 leading-tight uppercase">
@@ -310,51 +318,74 @@ export default function ProductDetails() {
             </div>
 
             {/* Price display */}
-            <div className="flex flex-col text-left space-y-1.5 pt-2">
-              {!isAuthenticated ? (
-                <div className="bg-amber-50/50 border border-amber-100 rounded-[18px] p-4.5 text-slate-800 space-y-1.5 max-w-md">
-                  <span className="font-black uppercase tracking-wider text-[10px] text-amber-700 flex items-center gap-1.5">
-                    {language === 'ar' ? 'محتوى محمي للمحترفين' : 'Prix réservé aux membres'}
-                  </span>
-                  <p className="text-xs font-semibold leading-relaxed">
-                    {language === 'ar' ? 'يرجى تسجيل الدخول أو إنشاء حساب لعرض الأسعار وطلب المنتجات.' : 'Veuillez vous connecter ou créer un compte approuvé pour afficher les prix et commander.'}
-                  </p>
-                  <Link to="/login" className="inline-block mt-2 bg-brand-primary text-slate-900 text-xs font-black uppercase tracking-wider px-5 py-2.5 rounded-[12px]">
-                    {language === 'ar' ? 'تسجيل الدخول' : 'Se connecter'}
-                  </Link>
-                </div>
-              ) : (() => {
-                let price = product.discountPrice || product.price;
+            <div className="flex flex-col text-left space-y-2 pt-2">
+              {(() => {
+                let price = product.priceDetail || product.price || 0;
                 let isB2B = false;
-                if (user) {
-                  if (user.clientType === 'demi-gros' && product.demiGrosPrice) {
-                    price = product.demiGrosPrice;
+                let b2bLabel = '';
+
+                if (user && isAuthenticated) {
+                  if (user.clientType === 'demi-gros' && (product.priceDemiGros || product.demiGrosPrice)) {
+                    price = product.priceDemiGros || product.demiGrosPrice;
                     isB2B = true;
-                  } else if (user.clientType === 'super-gros' && product.superGrosPrice) {
-                    price = product.superGrosPrice;
+                    b2bLabel = 'Demi-gros';
+                  } else if (user.clientType === 'super-gros' && (product.priceSuperGros || product.superGrosPrice)) {
+                    price = product.priceSuperGros || product.superGrosPrice;
                     isB2B = true;
+                    b2bLabel = 'Super-gros';
+                  } else if (user.clientType === 'reparateur' && (product.priceReparation || product.priceDetailReparation)) {
+                    price = product.priceReparation || product.priceDetailReparation;
+                    isB2B = true;
+                    b2bLabel = 'Réparateur';
                   }
                 }
-                const hasDiscount = product.discountPrice && !isB2B;
+
+                const promoPrice = product.pricePromo || product.discountPrice;
+                const hasDiscount = Boolean(!isB2B && promoPrice && promoPrice > 0 && promoPrice < price);
+                const finalPrice = hasDiscount ? promoPrice : price;
+                const strikethroughPrice = hasDiscount ? price : (isB2B ? (product.priceDetail || product.price) : null);
                 const quality = getProductQualityBadge(product.name);
 
                 return (
-                  <div className="flex items-center space-x-3 flex-wrap gap-y-2">
-                    <span className="text-2xl md:text-3xl font-black text-slate-900 ltr-text">{price.toLocaleString()} DA</span>
-                    {quality && (
-                      <span className={`text-xs font-black uppercase px-2.5 py-1 rounded-lg border whitespace-nowrap ${quality.color}`}>
-                        {quality.label}
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-3 flex-wrap gap-y-2">
+                      <span className="text-2xl md:text-3xl font-black text-slate-900 ltr-text">
+                        {finalPrice.toLocaleString('fr-FR')} <span className="text-lg text-amber-600 font-bold">DA</span>
                       </span>
-                    )}
-                    {(hasDiscount || isB2B) && (
-                      <span className="text-sm text-slate-400 line-through ltr-text">
-                        {product.price.toLocaleString()} DA
-                      </span>
-                    )}
-                    {isB2B && (
-                      <span className="bg-brand-primary/10 text-brand-primary border border-brand-primary/20 text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full">
-                        Tarif {user.clientType === 'demi-gros' ? 'demi-gros' : 'super-gros'} actif
-                      </span>
+
+                      {quality && (
+                        <span className={`text-xs font-black uppercase px-2.5 py-1 rounded-lg border whitespace-nowrap ${quality.color}`}>
+                          {quality.label}
+                        </span>
+                      )}
+
+                      {strikethroughPrice && strikethroughPrice > finalPrice && (
+                        <span className="text-sm text-slate-400 line-through ltr-text">
+                          {strikethroughPrice.toLocaleString('fr-FR')} DA
+                        </span>
+                      )}
+
+                      {isB2B && (
+                        <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-black uppercase tracking-wider px-2.5 py-1 rounded-full">
+                          ★ Tarif {b2bLabel} actif
+                        </span>
+                      )}
+                    </div>
+
+                    {!isAuthenticated && (
+                      <div className="bg-amber-50/70 border border-amber-200/70 rounded-xl p-3 text-slate-700 text-xs flex items-center justify-between gap-3 max-w-lg">
+                        <div>
+                          <p className="font-bold text-amber-950">
+                            {language === 'ar' ? 'هل أنت مصلح أو تاجر جملة؟' : 'Vous êtes réparateur ou revendeur ?'}
+                          </p>
+                          <p className="text-[11px] text-amber-900/80">
+                            {language === 'ar' ? 'سجل الدخول للاستفادة من أسعار الجملة ونصف الجملة الخاصة.' : 'Connectez-vous pour débloquer les tarifs professionnels B2B.'}
+                          </p>
+                        </div>
+                        <Link to="/login" className="shrink-0 bg-brand-primary text-slate-950 font-black text-[11px] uppercase tracking-wider px-3.5 py-1.5 rounded-lg shadow-xs hover:bg-amber-400 transition-colors">
+                          {language === 'ar' ? 'دخول' : 'Connexion'}
+                        </Link>
+                      </div>
                     )}
                   </div>
                 );
@@ -421,10 +452,10 @@ export default function ProductDetails() {
                 <div className="flex items-center space-x-3">
                   <button
                     onClick={handleAddToCart}
-                    disabled={product.stock === 0}
+                    disabled={isOutOfStock}
                     className="flex-1 gold-bg-gradient text-slate-950 font-black text-xs uppercase tracking-wider py-4.5 rounded-[16px] shadow-md hover:scale-102 active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed transition-transform duration-300"
                   >
-                    {product.stock === 0 ? 'Rupture de Stock' : 'Ajouter au panier'}
+                    {isOutOfStock ? (language === 'ar' ? 'نفذ المخزون' : 'Rupture de Stock') : (language === 'ar' ? 'أضف إلى السلة' : 'Ajouter au panier')}
                   </button>
                   <button
                     onClick={handleWishlistToggle}
@@ -618,13 +649,9 @@ export default function ProductDetails() {
                   <img src={getImageUrl(item.images?.[0])} alt="" className="max-h-full object-contain group-hover:scale-105 transition-transform duration-300" />
                 </div>
                 <h4 className="text-xs font-bold text-slate-800 truncate uppercase tracking-wide">{item.name}</h4>
-                {isAuthenticated ? (
-                  <span className="text-xs font-black text-slate-900">{item.price.toLocaleString()} DA</span>
-                ) : (
-                  <span className="text-[10px] font-black text-brand-primary uppercase tracking-wide">
-                    {language === 'ar' ? 'سجل لرؤية السعر' : 'Se connecter'}
-                  </span>
-                )}
+                <span className="text-xs font-black text-slate-900 ltr-text">
+                  {(item.priceDetail || item.price || 0).toLocaleString('fr-FR')} DA
+                </span>
               </Link>
             ))}
           </div>

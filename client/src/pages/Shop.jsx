@@ -423,10 +423,10 @@ export default function Shop() {
                 {[...Array(6)].map((_, idx) => (
                   <div
                     key={idx}
-                    className="w-full h-[390px] bg-white border border-slate-100 rounded-[20px] overflow-hidden p-5 flex flex-col justify-between relative"
+                    className="w-full min-h-[380px] bg-white border border-slate-100 rounded-[22px] overflow-hidden p-4.5 flex flex-col justify-between relative"
                   >
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-slate-100/50 to-transparent -translate-x-full animate-shimmer" />
-                    <div className="aspect-square bg-slate-50 rounded-[14px] w-full" />
+                    <div className="w-full h-44 sm:h-48 md:h-52 bg-slate-100/60 rounded-xl" />
                     <div className="space-y-2 pt-4 flex-grow flex flex-col justify-end">
                       <div className="h-3 bg-slate-100 rounded-full w-1/3" />
                       <div className="h-4 bg-slate-100 rounded-full w-3/4" />

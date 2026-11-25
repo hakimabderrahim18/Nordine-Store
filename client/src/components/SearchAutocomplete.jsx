@@ -388,20 +388,18 @@ export default function SearchAutocomplete({ isMobile = false, isHeaderSearch = 
                             {quality.shortLabel || quality.label}
                           </span>
                         )}
-                        {isAuthenticated ? (
-                          <span className="text-[11px] sm:text-sm font-black text-slate-900 ltr-text whitespace-nowrap">
-                            {displayPrice.toLocaleString()} <span className="text-[9px] sm:text-xs text-amber-600 font-bold">DA</span>
-                          </span>
-                        ) : (
-                          <span className="text-[8px] sm:text-[9px] font-bold text-amber-700 bg-amber-50 border border-amber-200/80 px-1 sm:px-1.5 py-0.5 rounded flex items-center gap-1 whitespace-nowrap">
-                            <Lock size={8} />
-                            {isAr ? 'عضو' : 'Prix membre'}
-                          </span>
-                        )}
-                        <span className={`text-[8px] sm:text-[9px] font-semibold flex items-center gap-1 ${prod.stock > 0 ? 'text-emerald-600' : 'text-rose-500'}`}>
-                          <span className={`w-1 sm:w-1.5 h-1 sm:h-1.5 rounded-full ${prod.stock > 0 ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
-                          {prod.stock > 0 ? (isAr ? 'متوفر' : 'En stock') : (isAr ? 'نفذ' : 'Rupture')}
+                        <span className="text-[11px] sm:text-sm font-black text-slate-900 ltr-text whitespace-nowrap">
+                          {displayPrice.toLocaleString('fr-FR')} <span className="text-[9px] sm:text-xs text-amber-600 font-bold">DA</span>
                         </span>
+                        {(() => {
+                          const isProdInStock = Boolean(prod.stock && Number(prod.stock) > 0 && prod.isAvailable !== false);
+                          return (
+                            <span className={`text-[8px] sm:text-[9px] font-semibold flex items-center gap-1 ${isProdInStock ? 'text-emerald-600' : 'text-rose-500'}`}>
+                              <span className={`w-1 sm:w-1.5 h-1 sm:h-1.5 rounded-full ${isProdInStock ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
+                              {isProdInStock ? (isAr ? 'متوفر' : 'En stock') : (isAr ? 'نفذ' : 'Rupture')}
+                            </span>
+                          );
+                        })()}
                       </div>
                     </div>
                   );

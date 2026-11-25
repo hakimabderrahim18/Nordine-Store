@@ -102,6 +102,10 @@ const ProductSchema = new mongoose.Schema({
     min: [0, 'Stock cannot be negative'],
     default: 0
   },
+  isAvailable: {
+    type: Boolean,
+    default: true
+  },
   variants: [VariantSchema],
   specifications: [SpecificationSchema],
   isFeatured: {

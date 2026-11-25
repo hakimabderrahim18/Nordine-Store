@@ -1,63 +1,47 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { motion, useMotionValue, useTransform } from 'framer-motion';
 import { Heart, ShoppingBag, Star } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { toggleWishlist } from '../store/wishlistSlice';
-import { addCartItem, addGuestItem } from '../store/cartSlice';
+import { addCartItem } from '../store/cartSlice';
 import { getImageUrl } from '../services/api';
 import { useTranslation } from '../context/LanguageContext';
 import { getProductQualityBadge } from '../utils/qualityHelper';
 
 export default function ProductCard({ product }) {
   const { t, language } = useTranslation();
+  const isAr = language === 'ar';
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { isAuthenticated, user } = useSelector((state) => state.auth);
-  const wishlistItems = useSelector((state) => state.wishlist.products);
+  const wishlistItems = useSelector((state) => state.wishlist.products || []);
 
   const isFavorited = wishlistItems.some(p => p._id === product._id || p === product._id);
 
-  // Smooth 3D Tilt Values
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const rotateX = useTransform(y, [-100, 100], [8, -8]);
-  const rotateY = useTransform(x, [-100, 100], [-8, 8]);
-
-  const handleMouseMove = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
-    const mouseX = e.clientX - rect.left - width / 2;
-    const mouseY = e.clientY - rect.top - height / 2;
-    x.set(mouseX);
-    y.set(mouseY);
-  };
-
-  const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
-  };
+  // Exact Rupture de Stock check: no value, null, undefined, 0, or isAvailable === false
+  const isOutOfStock = !product.stock || Number(product.stock) <= 0 || product.isAvailable === false;
 
   const handleWishlist = (e) => {
     e.preventDefault();
     e.stopPropagation();
     if (!isAuthenticated) {
-      toast.error(language === 'ar' ? 'يرجى تسجيل الدخول أولاً لإضافة المنتجات إلى المفضلة' : 'Veuillez vous connecter pour gérer vos favoris');
+      toast.error(isAr ? 'يرجى تسجيل الدخول أولاً لإضافة المنتجات إلى المفضلة' : 'Veuillez vous connecter pour gérer vos favoris');
       return;
     }
     dispatch(toggleWishlist(product._id));
     toast.success(
       isFavorited
-        ? (language === 'ar' ? 'تمت الإزالة من المفضلة' : 'Retiré des favoris')
-        : (language === 'ar' ? 'تمت الإضافة للمفضلة' : 'Ajouté aux favoris')
+        ? (isAr ? 'تمت الإزالة من المفضلة' : 'Retiré des favoris')
+        : (isAr ? 'تمت الإضافة للمفضلة' : 'Ajouté aux favoris')
     );
   };
 
   const handleAddToCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
+
+    if (isOutOfStock) return;
 
     const defaultVariant = {};
     if (product.variants && product.variants.length > 0) {
@@ -66,139 +50,177 @@ export default function ProductCard({ product }) {
       });
     }
 
-    if (!isAuthenticated) {
-      toast.error(language === 'ar' ? 'يرجى تسجيل الدخول أولاً لعرض الأسعار والطلب' : 'Veuillez vous connecter pour voir les prix et commander');
-      navigate('/login');
-      return;
-    }
-
     dispatch(addCartItem({ productId: product._id, quantity: 1, variant: defaultVariant }));
-    toast.success(t('added_to_cart'));
+    toast.success(t('added_to_cart') || (isAr ? 'تمت الإضافة إلى السلة' : 'Ajouté au panier !'));
   };
 
+  // Pricing calculations
+  let basePrice = product.priceDetail || product.price || 0;
+  let activePrice = basePrice;
+  let isB2B = false;
+  let b2bLabel = '';
+
+  if (user && isAuthenticated) {
+    if (user.clientType === 'demi-gros' && (product.priceDemiGros || product.demiGrosPrice)) {
+      activePrice = product.priceDemiGros || product.demiGrosPrice;
+      isB2B = true;
+      b2bLabel = t('b2b_demi') || 'Demi-gros';
+    } else if (user.clientType === 'super-gros' && (product.priceSuperGros || product.superGrosPrice)) {
+      activePrice = product.priceSuperGros || product.superGrosPrice;
+      isB2B = true;
+      b2bLabel = t('b2b_super') || 'Super-gros';
+    } else if (user.clientType === 'reparateur' && (product.priceReparation || product.priceDetailReparation)) {
+      activePrice = product.priceReparation || product.priceDetailReparation;
+      isB2B = true;
+      b2bLabel = isAr ? 'مصلح' : 'Réparateur';
+    }
+  }
+
+  const promoPrice = product.pricePromo || product.discountPrice;
+  const hasPromo = Boolean(!isB2B && promoPrice && promoPrice > 0 && promoPrice < activePrice);
+  const finalPrice = hasPromo ? promoPrice : activePrice;
+  const strikethroughPrice = hasPromo ? activePrice : (isB2B ? basePrice : null);
+  const discountPercent = hasPromo && basePrice > 0 ? Math.round(((basePrice - promoPrice) / basePrice) * 100) : null;
+
+  const quality = getProductQualityBadge(product.name);
+  const brandName = product.marque || product.brand?.name || (isAr ? 'قطع غيار' : 'COMPOSANT');
+
   return (
-    <motion.div
-      style={{ rotateX, rotateY, transformStyle: 'preserve-3d' }}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      whileHover={{ y: -6, transition: { duration: 0.3, ease: 'easeOut' } }}
-      className="w-full relative bg-brand-card border border-gray-200 rounded-[20px] shadow-[0_4px_20px_-5px_rgba(0,0,0,0.06)] overflow-hidden group hover:shadow-[0_20px_40px_-10px_rgba(247,181,0,0.15)] transition-shadow duration-500 flex flex-col justify-between h-[390px] text-left"
+    <div
+      className="w-full relative bg-white border border-slate-200/80 hover:border-amber-400/90 rounded-[22px] shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between group overflow-hidden text-left"
     >
-      {/* Badges / Top Actions */}
-      <div className="absolute top-3 left-3 z-10 flex flex-col space-y-1.5 pointer-events-none">
-        <span className="text-[9px] font-black uppercase tracking-widest bg-white/90 border border-gray-200 text-brand-primary px-2.5 py-1 rounded-full backdrop-blur-sm shadow-sm">
-          {product.brand?.name || 'ORIGINAL'}
-        </span>
-        {product.discountPrice && (
-          <span className="text-[9px] font-black bg-brand-primary text-brand-secondary px-2.5 py-1 rounded-full shadow-sm">
-            -{Math.round(((product.price - product.discountPrice) / product.price) * 100)}%
+      {/* Top Badges & Wishlist Button */}
+      <div className="absolute top-2.5 inset-x-2.5 z-10 flex items-center justify-between pointer-events-none">
+        <div className="flex flex-col gap-1 items-start">
+          <span className="text-[9px] font-black uppercase tracking-wider bg-white/95 border border-slate-200/90 text-amber-700 px-2.5 py-0.5 rounded-full backdrop-blur-md shadow-xs">
+            {brandName}
           </span>
-        )}
+          {Boolean(discountPercent && discountPercent > 0) && (
+            <span className="text-[9px] font-black bg-rose-500 text-white px-2 py-0.5 rounded-full shadow-xs">
+              -{discountPercent}%
+            </span>
+          )}
+        </div>
+
+        <button
+          type="button"
+          onClick={handleWishlist}
+          className="pointer-events-auto p-2 rounded-full bg-white/90 hover:bg-white border border-slate-200/80 text-slate-400 hover:text-rose-500 shadow-xs backdrop-blur-md transition-all active:scale-90 cursor-pointer"
+          title={isFavorited ? (isAr ? 'إزالة من المفضلة' : 'Retirer des favoris') : (isAr ? 'إضافة للمفضلة' : 'Ajouter aux favoris')}
+        >
+          <Heart size={14} className={isFavorited ? 'fill-rose-500 text-rose-500' : ''} />
+        </button>
       </div>
 
-      <button
-        onClick={handleWishlist}
-        className="absolute top-3 right-3 z-10 p-2 rounded-full bg-white/80 hover:bg-white border border-gray-200 text-slate-400 hover:text-red-500 shadow-sm backdrop-blur-sm transition-all duration-300 active:scale-90 cursor-pointer"
+      {/* Product Image Area */}
+      <Link
+        to={`/products/${product._id}`}
+        className="block relative w-full h-44 sm:h-48 md:h-52 bg-gradient-to-b from-slate-50/70 to-white flex items-center justify-center p-4.5 overflow-hidden flex-shrink-0"
       >
-        <Heart size={14} className={isFavorited ? 'fill-red-500 text-red-500' : ''} />
-      </button>
-
-      {/* Image container */}
-      <Link to={`/products/${product._id}`} className="block relative aspect-square overflow-hidden bg-gray-50 flex-shrink-0">
         <img
           src={getImageUrl(product.images?.[0])}
           alt={product.name}
-          className="w-full h-full object-contain p-6 group-hover:scale-106 transition-transform duration-500 ease-out"
+          className={`max-h-full max-w-full object-contain transition-transform duration-300 ease-out group-hover:scale-106 ${
+            isOutOfStock ? 'opacity-35 grayscale-[50%]' : ''
+          }`}
+          loading="lazy"
         />
-        {product.stock === 0 && (
-          <div className="absolute inset-0 bg-white/80 backdrop-blur-[1px] flex items-center justify-center">
-            <span className="text-[9px] font-black text-red-500 tracking-wider uppercase border border-red-500 px-2.5 py-1 rounded">
-              {t('out_of_stock')}
+        {isOutOfStock && (
+          <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] flex items-center justify-center p-2">
+            <span className="text-[10px] font-black text-rose-600 tracking-wider uppercase border border-rose-300 bg-rose-50/95 px-3 py-1 rounded-full shadow-xs">
+              {t('out_of_stock') || (isAr ? 'نفذ المخزون' : 'Rupture de stock')}
             </span>
           </div>
         )}
       </Link>
 
-      {/* Info details */}
-      <div className="p-5 flex-grow flex flex-col justify-between">
-        <div className="space-y-1">
-          {/* Rating */}
-          <div className="flex items-center space-x-1">
-            <Star size={11} className="fill-brand-primary text-brand-primary" />
-            <span className="text-[10px] font-black text-slate-600">{product.rating}</span>
-            <span className="text-[9px] text-slate-500">({product.numReviews})</span>
+      {/* Content Area */}
+      <div className="p-4 sm:p-4.5 flex-grow flex flex-col justify-between space-y-3">
+        <div className="space-y-1.5">
+          {/* Subfamily / Quality / Stock Status Header */}
+          <div className="flex items-center justify-between gap-1 text-[10px]">
+            <div className="flex items-center gap-1.5 overflow-hidden">
+              {quality && (
+                <span className={`text-[8px] font-black uppercase px-1.5 py-0.5 rounded border whitespace-nowrap shadow-2xs ${quality.color}`}>
+                  {quality.shortLabel || quality.label}
+                </span>
+              )}
+              {product.sousFamille && (
+                <span className="text-slate-400 font-bold uppercase truncate max-w-[110px]">
+                  {product.sousFamille}
+                </span>
+              )}
+            </div>
+
+            {/* Stock pill */}
+            <span className={`inline-flex items-center gap-1 text-[9px] font-bold ${
+              isOutOfStock ? 'text-rose-500' : 'text-emerald-600'
+            }`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${isOutOfStock ? 'bg-rose-500' : 'bg-emerald-500'}`} />
+              {isOutOfStock ? (isAr ? 'غير متوفر' : 'Rupture') : (isAr ? 'متوفر' : 'En stock')}
+            </span>
           </div>
 
           {/* Product Title */}
-          <Link to={`/products/${product._id}`} className="block">
-            <h3 className="text-xs font-black text-slate-800 tracking-wide line-clamp-2 h-9 leading-relaxed hover:text-brand-primary transition-colors">
+          <Link to={`/products/${product._id}`} className="block group-hover:text-amber-600 transition-colors">
+            <h3
+              className="text-xs sm:text-[13px] font-extrabold text-slate-800 line-clamp-2 min-h-[34px] leading-snug tracking-tight"
+              title={product.name}
+            >
               {product.name}
             </h3>
           </Link>
         </div>
 
-        {/* Pricing & Add to Cart button */}
-        <div className="flex items-end justify-between pt-3 border-t border-gray-200 mt-2">
-          <div className="flex flex-col text-left">
-            {!isAuthenticated ? (
-              <span className="text-[10px] font-black text-brand-primary uppercase tracking-wide">
-                {language === 'ar' ? 'سجل لرؤية السعر' : 'Se connecter pour voir le prix'}
-              </span>
-            ) : (() => {
-              let price = product.discountPrice || product.price;
-              let isB2B = false;
-              if (user) {
-                if (user.clientType === 'demi-gros' && product.demiGrosPrice) {
-                  price = product.demiGrosPrice;
-                  isB2B = true;
-                } else if (user.clientType === 'super-gros' && product.superGrosPrice) {
-                  price = product.superGrosPrice;
-                  isB2B = true;
-                }
-              }
-              const hasDiscount = product.discountPrice && !isB2B;
+        {/* Pricing & Add to Cart footer */}
+        <div className="pt-3 border-t border-slate-100 flex items-end justify-between gap-2">
+          <div className="flex flex-col text-left overflow-hidden">
+            <div className="flex items-baseline gap-1.5 flex-wrap">
+              {finalPrice > 0 ? (
+                <span className="text-base sm:text-lg font-black text-slate-900 tracking-tight ltr-text">
+                  {finalPrice.toLocaleString('fr-FR')} <span className="text-[11px] font-black text-amber-600">DA</span>
+                </span>
+              ) : (
+                <span className="text-xs font-black text-amber-600">
+                  {isAr ? 'السعر عند الطلب' : 'Sur devis'}
+                </span>
+              )}
 
-              const quality = getProductQualityBadge(product.name);
+              {Boolean(strikethroughPrice && strikethroughPrice > finalPrice) && (
+                <span className="text-[11px] text-slate-400 line-through ltr-text">
+                  {strikethroughPrice.toLocaleString('fr-FR')} DA
+                </span>
+              )}
+            </div>
 
-              return (
-                <div className="flex flex-col">
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className="text-base font-black text-slate-800 ltr-text">{price.toLocaleString()} DA</span>
-                    {quality && (
-                      <span className={`text-[8px] font-black uppercase px-1.5 py-0.5 rounded border whitespace-nowrap ${quality.color}`}>
-                        {quality.shortLabel || quality.label}
-                      </span>
-                    )}
-                    {(hasDiscount || isB2B) && (
-                      <span className="text-[10px] text-slate-500 line-through ltr-text">
-                        {product.price.toLocaleString()} DA
-                      </span>
-                    )}
-                  </div>
-                  {isB2B && (
-                    <span className="text-[8px] font-black text-brand-primary uppercase tracking-wider mt-0.5">
-                      {t('b2b_active')} {user.clientType === 'demi-gros' ? t('b2b_demi') : t('b2b_super')}
-                    </span>
-                  )}
-                </div>
-              );
-            })()}
-            <span className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">{t('sku')}: <span className="ltr-text">{product.sku}</span></span>
+            <div className="flex items-center gap-1.5 mt-0.5">
+              {isB2B ? (
+                <span className="text-[8px] font-black text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-1.5 py-0.2 rounded">
+                  ★ {b2bLabel}
+                </span>
+              ) : (
+                <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest truncate">
+                  {product.sku ? `SKU: ${product.sku}` : ''}
+                </span>
+              )}
+            </div>
           </div>
 
           <button
+            type="button"
             onClick={handleAddToCart}
-            disabled={product.stock === 0}
-            className={`p-2.5 rounded-full shadow-sm transition-all duration-300 cursor-pointer ${
-              product.stock === 0
-                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                : 'bg-gray-100 text-brand-primary hover:bg-brand-primary hover:text-white hover:scale-108 active:scale-95'
+            disabled={isOutOfStock}
+            className={`w-9 h-9 sm:w-9.5 sm:h-9.5 rounded-xl flex items-center justify-center shrink-0 shadow-xs transition-all active:scale-92 cursor-pointer ${
+              isOutOfStock
+                ? 'bg-slate-100 text-slate-300 cursor-not-allowed'
+                : 'bg-brand-primary hover:bg-amber-400 text-slate-950 hover:shadow-md'
             }`}
+            title={isOutOfStock ? (isAr ? 'نفذ المخzون' : 'Rupture de stock') : (isAr ? 'أضف إلى السلة' : 'Ajouter au panier')}
           >
-            <ShoppingBag size={14} />
+            <ShoppingBag size={15} />
           </button>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
