@@ -44,7 +44,19 @@ const SyncHistorySchema = new mongoose.Schema({
     type: Array,
     default: []
   },
+  outOfStockItems: {
+    type: Array,
+    default: []
+  },
   outOfStockSamples: {
+    type: Array,
+    default: []
+  },
+  stockChangedItems: {
+    type: Array,
+    default: []
+  },
+  createdItems: {
     type: Array,
     default: []
   },

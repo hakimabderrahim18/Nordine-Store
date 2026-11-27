@@ -154,6 +154,10 @@ export const productService = {
     const response = await API.get('/products/sync-history');
     return response.data;
   },
+  getSyncHistoryById: async (id) => {
+    const response = await API.get(`/products/sync-history/${id}`);
+    return response.data;
+  },
   rollbackSync: async (id) => {
     const response = await API.post(`/products/sync-history/${id}/rollback`, {}, { timeout: 180000 });
     return response.data;

@@ -1027,6 +1027,9 @@ export const syncProducts = async (req, res, next) => {
     const bulkOps = [];
     const matchedProductIds = new Set();
     const priceChangedItems = [];
+    const stockChangedItems = [];
+    const createdItems = [];
+    const outOfStockItems = [];
     const snapshot = [];
     let priceUpdatedCount = 0;
     let inStockConfirmedCount = 0;
@@ -1132,14 +1135,12 @@ export const syncProducts = async (req, res, next) => {
 
         if (diffs.length > 0) {
           priceUpdatedCount++;
-          if (priceChangedItems.length < 50) {
-            priceChangedItems.push({
-              id: existing._id,
-              name: existing.name,
-              sku: existing.sku || finalSku,
-              diffs
-            });
-          }
+          priceChangedItems.push({
+            id: existing._id,
+            name: existing.name,
+            sku: existing.sku || finalSku,
+            diffs
+          });
         }
 
         // Record snapshot for rollback
@@ -1186,13 +1187,30 @@ export const syncProducts = async (req, res, next) => {
         };
 
         // Determine stock to apply: if no value, 0 or negative -> out of stock (rupture)
+        const prevStock = existing.stock !== undefined ? Number(existing.stock) : 0;
+        const prevAvailable = Boolean(existing.isAvailable !== false && prevStock > 0);
+        const nextStock = parsedStock !== null && parsedStock > 0 ? parsedStock : 0;
+        const nextAvailable = Boolean(nextStock > 0);
+
         if (parsedStock !== null && parsedStock > 0) {
           updateDoc.stock = parsedStock;
           updateDoc.isAvailable = true;
-          if (existing.stock === 0 || !existing.isAvailable) restoredStockCount++;
+          if (!prevAvailable || prevStock === 0) restoredStockCount++;
         } else {
           updateDoc.stock = 0;
           updateDoc.isAvailable = false;
+        }
+
+        if (prevStock !== nextStock || prevAvailable !== nextAvailable) {
+          stockChangedItems.push({
+            id: existing._id,
+            name: existing.name,
+            sku: existing.sku || finalSku,
+            oldStock: prevStock,
+            newStock: nextStock,
+            isRestored: (!prevAvailable || prevStock === 0) && nextStock > 0,
+            isOutOfStock: prevAvailable && nextStock === 0
+          });
         }
 
         // Strictly preserve images unless non-empty valid image URL is passed in Excel
@@ -1310,27 +1328,35 @@ export const syncProducts = async (req, res, next) => {
         nameMap.set(lowerRawName, simObj);
         matchedProductIds.add(newProductId.toString());
         createdCount++;
+
+        createdItems.push({
+          id: newProductId,
+          name,
+          sku: finalSku,
+          price: priceDetail,
+          stock: newStock,
+          category: famille,
+          brand: marqueStr
+        });
       }
     }
 
     // 2. Identify products in DB that are MISSING from this Excel file
     let markedOutOfStockCount = 0;
-    const outOfStockSamples = [];
 
     for (const prod of allProducts) {
       if (!matchedProductIds.has(prod._id.toString())) {
-        const wasInStock = Boolean(prod.stock && prod.stock > 0 && prod.isAvailable !== false);
+        const wasInStock = Boolean(prod.stock && Number(prod.stock) > 0 && prod.isAvailable !== false);
         if (wasInStock) {
           markedOutOfStockCount++;
-          if (outOfStockSamples.length < 30) {
-            outOfStockSamples.push({
-              id: prod._id,
-              name: prod.name,
-              sku: prod.sku,
-              previousStock: prod.stock
-            });
-          }
         }
+        outOfStockItems.push({
+          id: prod._id,
+          name: prod.name,
+          sku: prod.sku || '',
+          previousStock: prod.stock !== undefined ? prod.stock : 0,
+          wasInStock
+        });
         snapshot.push({
           productId: prod._id,
           name: prod.name,
@@ -1383,8 +1409,11 @@ export const syncProducts = async (req, res, next) => {
           markedOutOfStockCount,
           totalDbProducts: allProducts.length + createdCount
         },
-        priceChangedItems: priceChangedItems.slice(0, 50),
-        outOfStockSamples: outOfStockSamples.slice(0, 30),
+        priceChangedItems,
+        outOfStockItems,
+        outOfStockSamples: outOfStockItems,
+        stockChangedItems,
+        createdItems,
         status: 'completed',
         syncedBy: req.user?._id,
         snapshot
@@ -1411,7 +1440,10 @@ export const syncProducts = async (req, res, next) => {
         totalDbProducts: allProducts.length + createdCount
       },
       priceChangedItems,
-      outOfStockSamples
+      outOfStockItems,
+      outOfStockSamples: outOfStockItems,
+      stockChangedItems,
+      createdItems
     });
   } catch (error) {
     console.error('Sync Products Controller Error:', error);
@@ -1446,6 +1478,37 @@ export const getSyncHistory = async (req, res, next) => {
     return res.status(500).json({
       success: false,
       message: 'Erreur lors de la récupération de l\'historique : ' + error.message
+    });
+  }
+};
+
+// @desc    Get synchronization details by ID
+// @route   GET /api/products/sync-history/:id
+// @access  Private/Admin
+export const getSyncHistoryById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const history = await SyncHistory.findById(id)
+      .select('-snapshot')
+      .populate('syncedBy', 'name email')
+      .populate('revertedBy', 'name email');
+
+    if (!history) {
+      return res.status(404).json({
+        success: false,
+        message: 'Historique de synchronisation introuvable'
+      });
+    }
+
+    return res.json({
+      success: true,
+      history
+    });
+  } catch (error) {
+    console.error('Get Sync History Details Error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Erreur lors de la récupération des détails : ' + error.message
     });
   }
 };

@@ -14,6 +14,7 @@ import {
   exportProducts,
   bulkDeleteProducts,
   getSyncHistory,
+  getSyncHistoryById,
   rollbackSync
 } from '../controllers/productController.js';
 import { protect, admin } from '../middlewares/authMiddleware.js';
@@ -23,6 +24,7 @@ const router = express.Router();
 
 router.get('/devices', getDevices);
 router.get('/sync-history', protect, admin, getSyncHistory);
+router.get('/sync-history/:id', protect, admin, getSyncHistoryById);
 router.post('/sync-history/:id/rollback', protect, admin, rollbackSync);
 router.post('/import', protect, admin, uploadExcel, importProducts);
 router.post('/sync', protect, admin, uploadExcel, syncProducts);
