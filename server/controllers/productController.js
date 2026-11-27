@@ -1637,19 +1637,34 @@ export const getExportFilters = async (req, res, next) => {
 // @access  Private/Admin
 export const getExportPreview = async (req, res, next) => {
   try {
-    const { famille, sousFamille, marque } = req.query;
-    const filter = {};
+    const { famille, sousFamille, marque, tarif } = req.query;
+    const conditions = [];
 
     if (famille && famille !== 'all' && famille.trim()) {
-      filter.famille = new RegExp('^' + famille.trim().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + '$', 'i');
+      conditions.push({ famille: new RegExp('^' + famille.trim().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + '$', 'i') });
     }
     if (sousFamille && sousFamille !== 'all' && sousFamille.trim()) {
-      filter.sousFamille = new RegExp('^' + sousFamille.trim().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + '$', 'i');
+      conditions.push({ sousFamille: new RegExp('^' + sousFamille.trim().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + '$', 'i') });
     }
     if (marque && marque !== 'all' && marque.trim()) {
-      filter.marque = new RegExp('^' + marque.trim().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + '$', 'i');
+      conditions.push({ marque: new RegExp('^' + marque.trim().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + '$', 'i') });
     }
 
+    if (tarif && tarif !== 'all' && tarif.trim()) {
+      if (tarif === 'superGros') {
+        conditions.push({ $or: [{ superGrosPrice: { $gt: 0 } }, { priceSuperGros: { $gt: 0 } }] });
+      } else if (tarif === 'demiGros') {
+        conditions.push({ $or: [{ demiGrosPrice: { $gt: 0 } }, { priceDemiGros: { $gt: 0 } }] });
+      } else if (tarif === 'reparation') {
+        conditions.push({ $or: [{ priceDetailReparation: { $gt: 0 } }, { priceReparation: { $gt: 0 } }] });
+      } else if (tarif === 'detail') {
+        conditions.push({ $or: [{ priceDetail: { $gt: 0 } }, { price: { $gt: 0 } }] });
+      } else if (tarif === 'promo') {
+        conditions.push({ $or: [{ pricePromo: { $gt: 0 } }, { discountPrice: { $gt: 0 } }] });
+      }
+    }
+
+    const filter = conditions.length > 0 ? { $and: conditions } : {};
     const count = await Product.countDocuments(filter);
     return res.json({ success: true, count });
   } catch (error) {
@@ -1662,39 +1677,87 @@ export const getExportPreview = async (req, res, next) => {
 // @access  Private/Admin
 export const exportProducts = async (req, res, next) => {
   try {
-    const { famille, sousFamille, marque } = req.query;
-    const filter = {};
+    const { famille, sousFamille, marque, tarif, exportFormat } = req.query;
+    const conditions = [];
 
     if (famille && famille !== 'all' && famille.trim()) {
-      filter.famille = new RegExp('^' + famille.trim().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + '$', 'i');
+      conditions.push({ famille: new RegExp('^' + famille.trim().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + '$', 'i') });
     }
     if (sousFamille && sousFamille !== 'all' && sousFamille.trim()) {
-      filter.sousFamille = new RegExp('^' + sousFamille.trim().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + '$', 'i');
+      conditions.push({ sousFamille: new RegExp('^' + sousFamille.trim().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + '$', 'i') });
     }
     if (marque && marque !== 'all' && marque.trim()) {
-      filter.marque = new RegExp('^' + marque.trim().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + '$', 'i');
+      conditions.push({ marque: new RegExp('^' + marque.trim().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + '$', 'i') });
     }
 
+    if (tarif && tarif !== 'all' && tarif.trim()) {
+      if (tarif === 'superGros') {
+        conditions.push({ $or: [{ superGrosPrice: { $gt: 0 } }, { priceSuperGros: { $gt: 0 } }] });
+      } else if (tarif === 'demiGros') {
+        conditions.push({ $or: [{ demiGrosPrice: { $gt: 0 } }, { priceDemiGros: { $gt: 0 } }] });
+      } else if (tarif === 'reparation') {
+        conditions.push({ $or: [{ priceDetailReparation: { $gt: 0 } }, { priceReparation: { $gt: 0 } }] });
+      } else if (tarif === 'detail') {
+        conditions.push({ $or: [{ priceDetail: { $gt: 0 } }, { price: { $gt: 0 } }] });
+      } else if (tarif === 'promo') {
+        conditions.push({ $or: [{ pricePromo: { $gt: 0 } }, { discountPrice: { $gt: 0 } }] });
+      }
+    }
+
+    const filter = conditions.length > 0 ? { $and: conditions } : {};
     const products = await Product.find(filter)
       .populate('category', 'name')
       .populate('brand', 'name')
       .sort({ name: 1 });
 
-    // Build format matching the standard Excel layout
-    const data = products.map(p => ({
-      'Désignation': p.name || '',
-      'Stock ( Unité )': p.stock !== undefined ? p.stock : 0,
-      'Prix 1 TTC': p.priceDetail || p.price || 0,
-      'REPARATION TTC': p.priceDetailReparation || 0,
-      'SUPER GROS TTC': p.priceSuperGros || p.superGrosPrice || 0,
-      'DEMI GROS TTC': p.priceDemiGros || p.demiGrosPrice || 0,
-      'Prix 5 TTC': p.priceReparation || 0,
-      'Prix Promo TTC': p.pricePromo || p.discountPrice || 0,
-      'Famille': p.famille || (p.category ? p.category.name : 'PIECE'),
-      'Sous famille': p.sousFamille || '',
-      'Marque': p.marque || (p.brand ? p.brand.name : ''),
-      'Réf produit': p.sku || ''
-    }));
+    let data = [];
+    if (exportFormat === 'single_price' && tarif && tarif !== 'all') {
+      let priceColName = 'Prix TTC';
+      let getPrice = (p) => p.priceDetail || p.price || 0;
+
+      if (tarif === 'superGros') {
+        priceColName = 'SUPER GROS TTC';
+        getPrice = (p) => p.priceSuperGros || p.superGrosPrice || 0;
+      } else if (tarif === 'demiGros') {
+        priceColName = 'DEMI GROS TTC';
+        getPrice = (p) => p.priceDemiGros || p.demiGrosPrice || 0;
+      } else if (tarif === 'reparation') {
+        priceColName = 'REPARATION TTC';
+        getPrice = (p) => p.priceDetailReparation || p.priceReparation || 0;
+      } else if (tarif === 'detail') {
+        priceColName = 'Prix 1 TTC';
+        getPrice = (p) => p.priceDetail || p.price || 0;
+      } else if (tarif === 'promo') {
+        priceColName = 'Prix Promo TTC';
+        getPrice = (p) => p.pricePromo || p.discountPrice || 0;
+      }
+
+      data = products.map(p => ({
+        'Désignation': p.name || '',
+        'Réf produit': p.sku || '',
+        'Stock ( Unité )': p.stock !== undefined ? p.stock : 0,
+        [priceColName]: getPrice(p),
+        'Famille': p.famille || (p.category ? p.category.name : 'PIECE'),
+        'Sous famille': p.sousFamille || '',
+        'Marque': p.marque || (p.brand ? p.brand.name : '')
+      }));
+    } else {
+      // Standard full 12-column layout matching Excel import/software specs
+      data = products.map(p => ({
+        'Désignation': p.name || '',
+        'Stock ( Unité )': p.stock !== undefined ? p.stock : 0,
+        'Prix 1 TTC': p.priceDetail || p.price || 0,
+        'REPARATION TTC': p.priceDetailReparation || 0,
+        'SUPER GROS TTC': p.priceSuperGros || p.superGrosPrice || 0,
+        'DEMI GROS TTC': p.priceDemiGros || p.demiGrosPrice || 0,
+        'Prix 5 TTC': p.priceReparation || 0,
+        'Prix Promo TTC': p.pricePromo || p.discountPrice || 0,
+        'Famille': p.famille || (p.category ? p.category.name : 'PIECE'),
+        'Sous famille': p.sousFamille || '',
+        'Marque': p.marque || (p.brand ? p.brand.name : ''),
+        'Réf produit': p.sku || ''
+      }));
+    }
 
     const worksheet = xlsx.utils.json_to_sheet(data);
     const workbook = xlsx.utils.book_new();
@@ -1707,6 +1770,7 @@ export const exportProducts = async (req, res, next) => {
     if (famille && famille !== 'all' && famille.trim()) filename += `_${famille.trim().replace(/\s+/g, '_')}`;
     if (sousFamille && sousFamille !== 'all' && sousFamille.trim()) filename += `_${sousFamille.trim().replace(/\s+/g, '_')}`;
     if (marque && marque !== 'all' && marque.trim()) filename += `_${marque.trim().replace(/\s+/g, '_')}`;
+    if (tarif && tarif !== 'all' && tarif.trim()) filename += `_${tarif.trim()}`;
     filename += `_${new Date().toISOString().slice(0, 10)}.xlsx`;
 
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');

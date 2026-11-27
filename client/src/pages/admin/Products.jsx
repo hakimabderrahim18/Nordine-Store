@@ -95,6 +95,8 @@ export default function Products() {
   const [exportFamille, setExportFamille] = useState('');
   const [exportSousFamille, setExportSousFamille] = useState('');
   const [exportMarque, setExportMarque] = useState('');
+  const [exportTarif, setExportTarif] = useState('');
+  const [exportFormat, setExportFormat] = useState('all_columns');
   const [exportFiltersData, setExportFiltersData] = useState({ familles: [], sousFamilles: [], marques: [] });
   const [exportCount, setExportCount] = useState(null);
   const [loadingExportPreview, setLoadingExportPreview] = useState(false);
@@ -428,7 +430,8 @@ export default function Products() {
         const res = await productService.getExportPreview({
           famille: exportFamille,
           sousFamille: exportSousFamille,
-          marque: exportMarque
+          marque: exportMarque,
+          tarif: exportTarif
         });
         if (!isCancelled && res.success) {
           setExportCount(res.count);
@@ -441,7 +444,7 @@ export default function Products() {
     };
     fetchPreview();
     return () => { isCancelled = true; };
-  }, [isExportModalOpen, exportFamille, exportSousFamille, exportMarque]);
+  }, [isExportModalOpen, exportFamille, exportSousFamille, exportMarque, exportTarif]);
 
   const handleExportExcel = async () => {
     setExportingExcel(true);
@@ -451,6 +454,8 @@ export default function Products() {
       if (exportFamille) params.famille = exportFamille;
       if (exportSousFamille) params.sousFamille = exportSousFamille;
       if (exportMarque) params.marque = exportMarque;
+      if (exportTarif) params.tarif = exportTarif;
+      if (exportFormat) params.exportFormat = exportFormat;
 
       const blob = await productService.exportProducts(params);
       const url = window.URL.createObjectURL(new Blob([blob], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
@@ -461,6 +466,7 @@ export default function Products() {
       if (exportFamille) filename += `_${exportFamille.replace(/\s+/g, '_')}`;
       if (exportSousFamille) filename += `_${exportSousFamille.replace(/\s+/g, '_')}`;
       if (exportMarque) filename += `_${exportMarque.replace(/\s+/g, '_')}`;
+      if (exportTarif) filename += `_${exportTarif}`;
       filename += `_${new Date().toISOString().split('T')[0]}.xlsx`;
 
       link.setAttribute('download', filename);
@@ -1624,8 +1630,8 @@ export default function Products() {
                 </h2>
                 <p className="text-xs text-slate-500 mt-0.5">
                   {isAr
-                    ? 'اختر الفلاتر المرغوبة (العائلة، العائلة الفرعية، العلامة التجارية) لتصدير ملف مخصص، أو اتركها لتصدير الكل.'
-                    : 'Filtrez par famille, sous-famille et marque pour générer un fichier sur mesure, ou exportez l\'inventaire complet.'}
+                    ? 'اختر الفلاتر المرغوبة (العائلة، العائلة الفرعية، العلامة التجارية، مستوى السعر) لتصدير ملف مخصص، أو اتركها لتصدير الكل.'
+                    : 'Filtrez par famille, sous-famille, marque et niveau de tarif pour générer un fichier sur mesure, ou exportez l\'inventaire complet.'}
                 </p>
               </div>
             </div>
@@ -1688,6 +1694,74 @@ export default function Products() {
                 </select>
               </div>
 
+              {/* 4. Tarif / Niveau de prix */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  {isAr ? '4. نوع السعر / التعريفة (Tarif)' : '4. Tarif / Niveau de prix'}
+                </label>
+                <select
+                  value={exportTarif}
+                  onChange={(e) => setExportTarif(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs text-slate-800 font-semibold focus:outline-hidden focus:ring-2 focus:ring-brand-primary"
+                >
+                  <option value="">{isAr ? '-- جميع الأسعار (الكتالوج بالكامل) --' : '-- Tous les tarifs (Catalogue complet) --'}</option>
+                  <option value="superGros">{isAr ? 'سوبر قرو (SUPER GROS TTC)' : 'Super-Gros (SUPER GROS TTC)'}</option>
+                  <option value="demiGros">{isAr ? 'دومي قرو (DEMI GROS TTC)' : 'Demi-Gros (DEMI GROS TTC)'}</option>
+                  <option value="reparation">{isAr ? 'سعر الإصلاح (REPARATION TTC)' : 'Réparation (REPARATION TTC)'}</option>
+                  <option value="detail">{isAr ? 'سعر التجزئة (PRIX 1 TTC)' : 'Détail (PRIX 1 TTC)'}</option>
+                  <option value="promo">{isAr ? 'التخفيضات (PROMO TTC)' : 'Promotions (PROMO TTC)'}</option>
+                </select>
+              </div>
+
+              {/* Option Format de colonnes si un tarif est sélectionné */}
+              {exportTarif && (
+                <div className="p-3.5 bg-amber-50/70 rounded-2xl border border-amber-200/80 space-y-2">
+                  <p className="text-[11px] font-bold text-amber-900 flex items-center gap-1.5">
+                    <span>⚡</span>
+                    <span>{isAr ? 'طريقة عرض الأعمدة في ملف Excel المصدّر:' : 'Format des colonnes du fichier Excel :'}</span>
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs pt-1">
+                    <label className={`flex items-start gap-2.5 p-2.5 rounded-xl border cursor-pointer transition-all ${exportFormat === 'all_columns' ? 'bg-white border-amber-400 shadow-xs' : 'bg-transparent border-amber-200/50 hover:bg-white/50'}`}>
+                      <input
+                        type="radio"
+                        name="exportFormat"
+                        value="all_columns"
+                        checked={exportFormat === 'all_columns'}
+                        onChange={() => setExportFormat('all_columns')}
+                        className="mt-0.5 text-brand-primary focus:ring-brand-primary cursor-pointer"
+                      />
+                      <div>
+                        <span className="font-bold text-slate-800 block text-xs">
+                          {isAr ? 'ملف كامل (برنامج التسيير)' : 'Complet (Pour logiciel)'}
+                        </span>
+                        <span className="text-[10px] text-slate-500 block leading-tight mt-0.5">
+                          {isAr ? 'جميع أعمدة الأسعار (12 عمود) متوافقة مع الاستيراد' : 'Conserve toutes les colonnes de prix pour réimportation logicielle'}
+                        </span>
+                      </div>
+                    </label>
+
+                    <label className={`flex items-start gap-2.5 p-2.5 rounded-xl border cursor-pointer transition-all ${exportFormat === 'single_price' ? 'bg-white border-amber-400 shadow-xs' : 'bg-transparent border-amber-200/50 hover:bg-white/50'}`}>
+                      <input
+                        type="radio"
+                        name="exportFormat"
+                        value="single_price"
+                        checked={exportFormat === 'single_price'}
+                        onChange={() => setExportFormat('single_price')}
+                        className="mt-0.5 text-brand-primary focus:ring-brand-primary cursor-pointer"
+                      />
+                      <div>
+                        <span className="font-bold text-slate-800 block text-xs">
+                          {isAr ? 'قائمة أسعار خاصة بالزبائن' : 'Épuré (Spécial clients B2B)'}
+                        </span>
+                        <span className="text-[10px] text-slate-500 block leading-tight mt-0.5">
+                          {isAr ? 'عمود السعر المختار فقط (دون كشف باقي الأسعار)' : 'Affiche uniquement ce tarif sélectionné sans dévoiler les autres prix'}
+                        </span>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              )}
+
               {/* Live Count Badge */}
               <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between gap-3 text-xs">
                 <span className="text-slate-600 font-medium">
@@ -1705,13 +1779,15 @@ export default function Products() {
 
             {/* Actions */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-100">
-              {(exportFamille || exportSousFamille || exportMarque) ? (
+              {(exportFamille || exportSousFamille || exportMarque || exportTarif) ? (
                 <button
                   type="button"
                   onClick={() => {
                     setExportFamille('');
                     setExportSousFamille('');
                     setExportMarque('');
+                    setExportTarif('');
+                    setExportFormat('all_columns');
                   }}
                   className="text-xs text-slate-500 hover:text-slate-800 font-bold underline transition-colors cursor-pointer"
                 >
