@@ -144,10 +144,19 @@ export const productService = {
     });
     return response.data;
   },
-  exportProducts: async () => {
+  exportProducts: async (params = {}) => {
     const response = await API.get('/products/export', {
+      params,
       responseType: 'blob'
     });
+    return response.data;
+  },
+  getExportFilters: async () => {
+    const response = await API.get('/products/export-filters');
+    return response.data;
+  },
+  getExportPreview: async (params = {}) => {
+    const response = await API.get('/products/export-preview', { params });
     return response.data;
   },
   getSyncHistory: async () => {

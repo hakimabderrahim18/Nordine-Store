@@ -91,6 +91,14 @@ export default function Products() {
   const [syncHistoryList, setSyncHistoryList] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [rollingBackId, setRollingBackId] = useState(null);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [exportFamille, setExportFamille] = useState('');
+  const [exportSousFamille, setExportSousFamille] = useState('');
+  const [exportMarque, setExportMarque] = useState('');
+  const [exportFiltersData, setExportFiltersData] = useState({ familles: [], sousFamilles: [], marques: [] });
+  const [exportCount, setExportCount] = useState(null);
+  const [loadingExportPreview, setLoadingExportPreview] = useState(false);
+  const [exportingExcel, setExportingExcel] = useState(false);
   const [isAvailable, setIsAvailable] = useState(true);
   const [description, setDescription] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -395,21 +403,77 @@ export default function Products() {
     }
   };
 
-  const handleExportExcel = async () => {
-    const toastId = toast.loading('Génération du fichier d\'export...');
+  const handleOpenExportModal = async () => {
+    setIsExportModalOpen(true);
     try {
-      const blob = await productService.exportProducts();
+      const res = await productService.getExportFilters();
+      if (res.success) {
+        setExportFiltersData({
+          familles: res.familles || [],
+          sousFamilles: res.sousFamilles || [],
+          marques: res.marques || []
+        });
+      }
+    } catch (err) {
+      console.error('Failed to load export filters:', err);
+    }
+  };
+
+  useEffect(() => {
+    if (!isExportModalOpen) return;
+    let isCancelled = false;
+    const fetchPreview = async () => {
+      setLoadingExportPreview(true);
+      try {
+        const res = await productService.getExportPreview({
+          famille: exportFamille,
+          sousFamille: exportSousFamille,
+          marque: exportMarque
+        });
+        if (!isCancelled && res.success) {
+          setExportCount(res.count);
+        }
+      } catch (err) {
+        console.error('Preview error:', err);
+      } finally {
+        if (!isCancelled) setLoadingExportPreview(false);
+      }
+    };
+    fetchPreview();
+    return () => { isCancelled = true; };
+  }, [isExportModalOpen, exportFamille, exportSousFamille, exportMarque]);
+
+  const handleExportExcel = async () => {
+    setExportingExcel(true);
+    const toastId = toast.loading(isAr ? 'جاري إنشاء ملف Excel...' : 'Génération du fichier d\'export...');
+    try {
+      const params = {};
+      if (exportFamille) params.famille = exportFamille;
+      if (exportSousFamille) params.sousFamille = exportSousFamille;
+      if (exportMarque) params.marque = exportMarque;
+
+      const blob = await productService.exportProducts(params);
       const url = window.URL.createObjectURL(new Blob([blob], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `produits_export_${new Date().toISOString().split('T')[0]}.xlsx`);
+
+      let filename = 'produits_export';
+      if (exportFamille) filename += `_${exportFamille.replace(/\s+/g, '_')}`;
+      if (exportSousFamille) filename += `_${exportSousFamille.replace(/\s+/g, '_')}`;
+      if (exportMarque) filename += `_${exportMarque.replace(/\s+/g, '_')}`;
+      filename += `_${new Date().toISOString().split('T')[0]}.xlsx`;
+
+      link.setAttribute('download', filename);
       document.body.appendChild(link);
       link.click();
       link.parentNode.removeChild(link);
       window.URL.revokeObjectURL(url);
-      toast.success('Fichier exporté avec succès !', { id: toastId });
+      toast.success(isAr ? 'تم تصدير ملف Excel بنجاح !' : 'Fichier exporté avec succès !', { id: toastId });
+      setIsExportModalOpen(false);
     } catch (err) {
-      toast.error('Erreur lors de l\'exportation', { id: toastId });
+      toast.error(isAr ? 'حدث خطأ أثناء التصدير' : 'Erreur lors de l\'exportation', { id: toastId });
+    } finally {
+      setExportingExcel(false);
     }
   };
 
@@ -764,9 +828,11 @@ export default function Products() {
           </label>
           <button
             type="button"
-            onClick={handleExportExcel}
-            className="bg-white border border-gray-300 text-slate-700 font-black text-xs uppercase tracking-wider px-6 py-4 rounded-[16px] flex items-center space-x-2 hover:bg-gray-50 transition-colors cursor-pointer"
+            onClick={handleOpenExportModal}
+            className="bg-white border border-gray-300 text-slate-700 font-black text-xs uppercase tracking-wider px-5 py-4 rounded-[16px] flex items-center space-x-2 hover:bg-gray-50 transition-colors cursor-pointer"
+            title={isAr ? 'تصدير المنتجات مع فلاتر العائلة والمجموعة والعلامة التجارية' : 'Exporter avec filtres famille, sous-famille et marque'}
           >
+            <Download size={15} />
             <span>{isAr ? 'تصدير Excel' : 'Exporter Excel'}</span>
           </button>
           <button
@@ -1532,6 +1598,149 @@ export default function Products() {
               >
                 {isAr ? 'إغلاق' : 'Fermer'}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* EXPORT PRODUCTS MODAL WITH FILTERS (Famille, Sous-famille, Marque) */}
+      {isExportModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+          <div className="bg-white w-full max-w-xl rounded-[28px] shadow-2xl p-6 sm:p-8 relative text-start">
+            <button
+              onClick={() => setIsExportModalOpen(false)}
+              className="absolute right-5 top-5 p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors cursor-pointer"
+            >
+              <X size={20} />
+            </button>
+
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-11 h-11 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-black shrink-0">
+                <FileSpreadsheet size={24} />
+              </div>
+              <div>
+                <h2 className="text-lg font-black text-slate-900 uppercase tracking-wide">
+                  {isAr ? 'تصدير المنتجات (Excel)' : 'Exportation Filtrée Excel'}
+                </h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  {isAr
+                    ? 'اختر الفلاتر المرغوبة (العائلة، العائلة الفرعية، العلامة التجارية) لتصدير ملف مخصص، أو اتركها لتصدير الكل.'
+                    : 'Filtrez par famille, sous-famille et marque pour générer un fichier sur mesure, ou exportez l\'inventaire complet.'}
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-4 mb-6">
+              {/* 1. Famille */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  {isAr ? '1. العائلة (Famille)' : '1. Famille'}
+                </label>
+                <select
+                  value={exportFamille}
+                  onChange={(e) => setExportFamille(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs text-slate-800 font-semibold focus:outline-hidden focus:ring-2 focus:ring-brand-primary"
+                >
+                  <option value="">{isAr ? '-- جميع العائلات (الكل) --' : '-- Toutes les familles (Catalogue complet) --'}</option>
+                  {(exportFiltersData.familles || []).map((f, idx) => (
+                    <option key={idx} value={f}>
+                      {f}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* 2. Sous-famille */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  {isAr ? '2. العائلة الفرعية (Sous-famille)' : '2. Sous-famille'}
+                </label>
+                <select
+                  value={exportSousFamille}
+                  onChange={(e) => setExportSousFamille(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs text-slate-800 font-semibold focus:outline-hidden focus:ring-2 focus:ring-brand-primary"
+                >
+                  <option value="">{isAr ? '-- جميع العائلات الفرعية --' : '-- Toutes les sous-familles --'}</option>
+                  {(exportFiltersData.sousFamilles || []).map((sf, idx) => (
+                    <option key={idx} value={sf}>
+                      {sf}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* 3. Marque */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  {isAr ? '3. العلامة التجارية (Marque)' : '3. Marque'}
+                </label>
+                <select
+                  value={exportMarque}
+                  onChange={(e) => setExportMarque(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs text-slate-800 font-semibold focus:outline-hidden focus:ring-2 focus:ring-brand-primary"
+                >
+                  <option value="">{isAr ? '-- جميع العلامات التجارية --' : '-- Toutes les marques --'}</option>
+                  {(exportFiltersData.marques || []).map((m, idx) => (
+                    <option key={idx} value={m}>
+                      {m}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Live Count Badge */}
+              <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between gap-3 text-xs">
+                <span className="text-slate-600 font-medium">
+                  {isAr ? 'عدد المنتجات المطابقة للفلاتر:' : 'Articles correspondants prêts à l\'export :'}
+                </span>
+                <span className="inline-flex items-center gap-1.5 font-black text-slate-900 bg-white px-3 py-1 rounded-xl border border-slate-200 shadow-xs">
+                  {loadingExportPreview ? (
+                    <RefreshCw size={12} className="animate-spin text-slate-400" />
+                  ) : (
+                    <span>{exportCount !== null ? exportCount : '...'} {isAr ? 'منتج' : 'produits'}</span>
+                  )}
+                </span>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-100">
+              {(exportFamille || exportSousFamille || exportMarque) ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setExportFamille('');
+                    setExportSousFamille('');
+                    setExportMarque('');
+                  }}
+                  className="text-xs text-slate-500 hover:text-slate-800 font-bold underline transition-colors cursor-pointer"
+                >
+                  {isAr ? 'إعادة ضبط الفلاتر' : 'Réinitialiser les filtres'}
+                </button>
+              ) : <div />}
+              
+              <div className="flex items-center gap-2 w-full sm:w-auto sm:ml-auto">
+                <button
+                  type="button"
+                  onClick={() => setIsExportModalOpen(false)}
+                  className="flex-1 sm:flex-none bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs uppercase tracking-wider px-5 py-3 rounded-xl transition-all cursor-pointer"
+                >
+                  {isAr ? 'إلغاء' : 'Annuler'}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleExportExcel}
+                  disabled={exportingExcel || exportCount === 0}
+                  className="flex-1 sm:flex-none gold-bg-gradient text-slate-950 font-black text-xs uppercase tracking-wider px-6 py-3 rounded-xl shadow-md hover:scale-102 active:scale-98 disabled:opacity-50 disabled:pointer-events-none transition-all cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <Download size={14} className={exportingExcel ? 'animate-bounce' : ''} />
+                  <span>
+                    {exportingExcel
+                      ? (isAr ? 'جاري التصدير...' : 'Génération...')
+                      : (isAr ? 'تحميل ملف Excel' : 'Télécharger (.xlsx)')}
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
         </div>

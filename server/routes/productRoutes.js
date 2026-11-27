@@ -12,6 +12,8 @@ import {
   importProducts,
   syncProducts,
   exportProducts,
+  getExportFilters,
+  getExportPreview,
   bulkDeleteProducts,
   getSyncHistory,
   getSyncHistoryById,
@@ -28,6 +30,8 @@ router.get('/sync-history/:id', protect, admin, getSyncHistoryById);
 router.post('/sync-history/:id/rollback', protect, admin, rollbackSync);
 router.post('/import', protect, admin, uploadExcel, importProducts);
 router.post('/sync', protect, admin, uploadExcel, syncProducts);
+router.get('/export-filters', protect, admin, getExportFilters);
+router.get('/export-preview', protect, admin, getExportPreview);
 router.get('/export', protect, admin, exportProducts);
 router.post('/bulk-delete', protect, admin, bulkDeleteProducts);
 

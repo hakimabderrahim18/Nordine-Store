@@ -1610,12 +1610,75 @@ export const rollbackSync = async (req, res, next) => {
   }
 };
 
+// @desc    Get export filter options (familles, sous-familles, marques)
+// @route   GET /api/products/export-filters
+// @access  Private/Admin
+export const getExportFilters = async (req, res, next) => {
+  try {
+    const [familles, sousFamilles, marques] = await Promise.all([
+      Product.distinct('famille'),
+      Product.distinct('sousFamille'),
+      Product.distinct('marque')
+    ]);
+
+    return res.json({
+      success: true,
+      familles: (familles || []).filter(Boolean).sort(),
+      sousFamilles: (sousFamilles || []).filter(Boolean).sort(),
+      marques: (marques || []).filter(Boolean).sort()
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Preview product count for export filters
+// @route   GET /api/products/export-preview
+// @access  Private/Admin
+export const getExportPreview = async (req, res, next) => {
+  try {
+    const { famille, sousFamille, marque } = req.query;
+    const filter = {};
+
+    if (famille && famille !== 'all' && famille.trim()) {
+      filter.famille = new RegExp('^' + famille.trim().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + '$', 'i');
+    }
+    if (sousFamille && sousFamille !== 'all' && sousFamille.trim()) {
+      filter.sousFamille = new RegExp('^' + sousFamille.trim().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + '$', 'i');
+    }
+    if (marque && marque !== 'all' && marque.trim()) {
+      filter.marque = new RegExp('^' + marque.trim().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + '$', 'i');
+    }
+
+    const count = await Product.countDocuments(filter);
+    return res.json({ success: true, count });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // @desc    Export products as Excel file
 // @route   GET /api/products/export
 // @access  Private/Admin
 export const exportProducts = async (req, res, next) => {
   try {
-    const products = await Product.find({}).populate('category', 'name').populate('brand', 'name').sort({ createdAt: -1 });
+    const { famille, sousFamille, marque } = req.query;
+    const filter = {};
+
+    if (famille && famille !== 'all' && famille.trim()) {
+      filter.famille = new RegExp('^' + famille.trim().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + '$', 'i');
+    }
+    if (sousFamille && sousFamille !== 'all' && sousFamille.trim()) {
+      filter.sousFamille = new RegExp('^' + sousFamille.trim().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + '$', 'i');
+    }
+    if (marque && marque !== 'all' && marque.trim()) {
+      filter.marque = new RegExp('^' + marque.trim().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + '$', 'i');
+    }
+
+    const products = await Product.find(filter)
+      .populate('category', 'name')
+      .populate('brand', 'name')
+      .sort({ name: 1 });
 
     // Build format matching the standard Excel layout
     const data = products.map(p => ({
@@ -1640,8 +1703,14 @@ export const exportProducts = async (req, res, next) => {
     // Generate buffer in XLSX format
     const buffer = xlsx.write(workbook, { type: 'buffer', bookType: 'xlsx' });
 
+    let filename = 'produits_export';
+    if (famille && famille !== 'all' && famille.trim()) filename += `_${famille.trim().replace(/\s+/g, '_')}`;
+    if (sousFamille && sousFamille !== 'all' && sousFamille.trim()) filename += `_${sousFamille.trim().replace(/\s+/g, '_')}`;
+    if (marque && marque !== 'all' && marque.trim()) filename += `_${marque.trim().replace(/\s+/g, '_')}`;
+    filename += `_${new Date().toISOString().slice(0, 10)}.xlsx`;
+
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', 'attachment; filename=produits_export.xlsx');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
     res.send(buffer);
   } catch (error) {
     next(error);
